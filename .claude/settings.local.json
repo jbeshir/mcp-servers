@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:beta.workflowy.com)",
+      "WebFetch(domain:workflowy.com)",
+      "WebFetch(domain:community.workflowy.com)",
+      "Bash(go mod init:*)",
+      "Bash(go get:*)",
+      "Bash(go version:*)",
+      "Bash(go mod tidy:*)",
+      "Bash(go build:*)",
+      "Bash(printf:*)",
+      "Bash(WORKFLOWY_API_TOKEN=test /mnt/berath/mcp-servers/workflowy/mcp:*)"
+    ]
+  }
+}
