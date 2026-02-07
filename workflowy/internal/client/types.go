@@ -48,6 +48,19 @@ type MoveNodeRequest struct {
 	Position string `json:"position,omitempty"`
 }
 
+// API response wrappers.
+type nodeResponse struct {
+	Node Node `json:"node"`
+}
+
+type nodesResponse struct {
+	Nodes []Node `json:"nodes"`
+}
+
+type targetsResponse struct {
+	Targets []Target `json:"targets"`
+}
+
 // CreateNodeResponse is the response from creating a node.
 type CreateNodeResponse struct {
 	ItemID string `json:"item_id"`

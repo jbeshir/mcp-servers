@@ -64,11 +64,11 @@ func (c *Client) GetNode(ctx context.Context, nodeID string) (*Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	var node Node
-	if err := handleResponse(resp, &node); err != nil {
+	var wrapper nodeResponse
+	if err := handleResponse(resp, &wrapper); err != nil {
 		return nil, fmt.Errorf("getting node %s: %w", nodeID, err)
 	}
-	return &node, nil
+	return &wrapper.Node, nil
 }
 
 // ListChildren lists children of a parent node.
@@ -82,11 +82,11 @@ func (c *Client) ListChildren(ctx context.Context, parentID string) ([]Node, err
 	if err != nil {
 		return nil, err
 	}
-	var nodes []Node
-	if err := handleResponse(resp, &nodes); err != nil {
+	var wrapper nodesResponse
+	if err := handleResponse(resp, &wrapper); err != nil {
 		return nil, fmt.Errorf("listing children: %w", err)
 	}
-	return nodes, nil
+	return wrapper.Nodes, nil
 }
 
 // CreateNode creates a new node.
@@ -174,11 +174,11 @@ func (c *Client) ExportNodes(ctx context.Context) ([]Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	var nodes []Node
-	if err := handleResponse(resp, &nodes); err != nil {
+	var wrapper nodesResponse
+	if err := handleResponse(resp, &wrapper); err != nil {
 		return nil, fmt.Errorf("exporting nodes: %w", err)
 	}
-	return nodes, nil
+	return wrapper.Nodes, nil
 }
 
 // ListTargets returns all targets (system locations and shortcuts).
@@ -187,9 +187,9 @@ func (c *Client) ListTargets(ctx context.Context) ([]Target, error) {
 	if err != nil {
 		return nil, err
 	}
-	var targets []Target
-	if err := handleResponse(resp, &targets); err != nil {
+	var wrapper targetsResponse
+	if err := handleResponse(resp, &wrapper); err != nil {
 		return nil, fmt.Errorf("listing targets: %w", err)
 	}
-	return targets, nil
+	return wrapper.Targets, nil
 }

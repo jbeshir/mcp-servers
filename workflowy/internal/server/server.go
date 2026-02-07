@@ -47,7 +47,7 @@ func (s *Server) registerTools() {
 			mcp.Description("Search query to match in node names and notes (case-insensitive substring match)"),
 		),
 		mcp.WithBoolean("completed",
-			mcp.Description("Filter by completion status: true for completed only, false for uncompleted only, omit for all"),
+			mcp.Description("Filter by completion status: true for completed only, false for uncompleted only (default: false)"),
 		),
 		mcp.WithNumber("limit",
 			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),

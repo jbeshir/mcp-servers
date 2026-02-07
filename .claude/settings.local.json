@@ -13,7 +13,10 @@
       "Bash(go build:*)",
       "Bash(printf:*)",
       "Bash(WORKFLOWY_API_TOKEN=test /mnt/berath/mcp-servers/workflowy/mcp:*)",
-      "Bash(make build:*)"
+      "Bash(make build:*)",
+      "Bash(make lint:*)",
+      "Bash(make test-short:*)",
+      "Bash(make validate:*)"
     ]
   }
 }

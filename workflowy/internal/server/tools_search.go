@@ -53,11 +53,12 @@ func searchNodes(
 	queryLower string, filterCompleted *bool, limit int,
 ) []SearchResult {
 	var results []SearchResult
+	completedMemo := make(map[string]bool)
 
 	for i := range nodes {
 		node := &nodes[i]
 
-		if !matchesFilter(node, filterCompleted) {
+		if !matchesFilter(node, index, completedMemo, filterCompleted) {
 			continue
 		}
 
@@ -78,15 +79,44 @@ func searchNodes(
 	return results
 }
 
-func matchesFilter(node *client.Node, filterCompleted *bool) bool {
+func matchesFilter(
+	node *client.Node, index map[string]*client.Node,
+	memo map[string]bool, filterCompleted *bool,
+) bool {
+	completed := isEffectivelyCompleted(node, index, memo)
 	if filterCompleted == nil {
-		return true
+		// Default: exclude completed items.
+		return !completed
 	}
-	isCompleted := node.CompletedAt != nil
+	return completed == *filterCompleted
+}
+
+// isEffectivelyCompleted returns true if this node or any ancestor is completed.
+// Results are memoized so repeated ancestor lookups are O(1).
+func isEffectivelyCompleted(
+	node *client.Node, index map[string]*client.Node,
+	memo map[string]bool,
+) bool {
+	if v, ok := memo[node.ID]; ok {
+		return v
+	}
+
+	completed := nodeIsCompleted(node)
+	if !completed && node.ParentID != nil && *node.ParentID != "" {
+		if parent, ok := index[*node.ParentID]; ok {
+			completed = isEffectivelyCompleted(parent, index, memo)
+		}
+	}
+
+	memo[node.ID] = completed
+	return completed
+}
+
+func nodeIsCompleted(node *client.Node) bool {
 	if node.Completed != nil {
-		isCompleted = *node.Completed
+		return *node.Completed
 	}
-	return isCompleted == *filterCompleted
+	return node.CompletedAt != nil && *node.CompletedAt != 0
 }
 
 func matchesQuery(node *client.Node, queryLower string) bool {
