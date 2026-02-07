@@ -34,46 +34,40 @@ func (s *Server) handleSearchNodes(
 		return mcp.NewToolResultError("failed to fetch nodes: " + err.Error()), nil
 	}
 
-	// Build ID→Node index for parent lookups.
+	index := buildIndex(nodes)
+	results := searchNodes(nodes, index, strings.ToLower(query), filterCompleted, limit)
+
+	return formatSearchResults(results)
+}
+
+func buildIndex(nodes []client.Node) map[string]*client.Node {
 	index := make(map[string]*client.Node, len(nodes))
 	for i := range nodes {
 		index[nodes[i].ID] = &nodes[i]
 	}
+	return index
+}
 
-	queryLower := strings.ToLower(query)
+func searchNodes(
+	nodes []client.Node, index map[string]*client.Node,
+	queryLower string, filterCompleted *bool, limit int,
+) []SearchResult {
 	var results []SearchResult
 
 	for i := range nodes {
 		node := &nodes[i]
 
-		// Filter by completion status if specified.
-		if filterCompleted != nil {
-			isCompleted := node.CompletedAt != nil
-			if node.Completed != nil {
-				isCompleted = *node.Completed
-			}
-			if isCompleted != *filterCompleted {
-				continue
-			}
-		}
-
-		// Case-insensitive substring match on name and note.
-		nameLower := strings.ToLower(node.Name)
-		noteLower := ""
-		if node.Note != nil {
-			noteLower = strings.ToLower(*node.Note)
-		}
-
-		if !strings.Contains(nameLower, queryLower) && !strings.Contains(noteLower, queryLower) {
+		if !matchesFilter(node, filterCompleted) {
 			continue
 		}
 
-		// Build breadcrumb path.
-		path := buildPath(node, index)
+		if !matchesQuery(node, queryLower) {
+			continue
+		}
 
 		results = append(results, SearchResult{
 			Node: *node,
-			Path: path,
+			Path: buildPath(node, index),
 		})
 
 		if len(results) >= limit {
@@ -81,7 +75,28 @@ func (s *Server) handleSearchNodes(
 		}
 	}
 
-	return formatSearchResults(results)
+	return results
+}
+
+func matchesFilter(node *client.Node, filterCompleted *bool) bool {
+	if filterCompleted == nil {
+		return true
+	}
+	isCompleted := node.CompletedAt != nil
+	if node.Completed != nil {
+		isCompleted = *node.Completed
+	}
+	return isCompleted == *filterCompleted
+}
+
+func matchesQuery(node *client.Node, queryLower string) bool {
+	if strings.Contains(strings.ToLower(node.Name), queryLower) {
+		return true
+	}
+	if node.Note != nil && strings.Contains(strings.ToLower(*node.Note), queryLower) {
+		return true
+	}
+	return false
 }
 
 // buildPath walks the ParentID chain to build a breadcrumb trail of ancestor names.

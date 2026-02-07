@@ -1,0 +1,47 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+
+linters:
+  enable:
+    - asasalint
+    - dupl
+    - errcheck
+    - errchkjson
+    - errorlint
+    - exhaustive
+    - fatcontext
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - gosec
+    - govet
+    - iface
+    - lll
+    - loggercheck
+    - makezero
+    - misspell
+    - musttag
+    - nolintlint
+    - reassign
+    - recvcheck
+    - sloglint
+    - staticcheck
+    - unparam
+    - unused
+    - usestdlibvars
+  exclusions:
+    rules:
+      - linters:
+        - lll
+        path: ".*_test\\.go$"
+  settings:
+    gocyclo:
+      min-complexity: 12

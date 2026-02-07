@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*/v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract module from tag
+        id: meta
+        run: |
+          # Tag format: <module>/v<version> (e.g. workflowy/v1.0.0)
+          TAG="${GITHUB_REF#refs/tags/}"
+          MODULE="${TAG%%/v*}"
+          VERSION="${TAG#*/}"
+          echo "module=${MODULE}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Releasing module=${MODULE} version=${VERSION}"
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Build platform binaries
+        run: make build-${{ steps.meta.outputs.module }}-all-platforms
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: bin/${{ steps.meta.outputs.module }}-mcp-*
+          generate_release_notes: true

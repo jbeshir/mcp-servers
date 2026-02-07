@@ -47,7 +47,7 @@ func (c *Client) doRequestJSON(ctx context.Context, method, path string, payload
 }
 
 func handleResponse(resp *http.Response, result any) error {
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
