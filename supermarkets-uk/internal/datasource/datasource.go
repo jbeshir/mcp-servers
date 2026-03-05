@@ -1,7 +1,10 @@
 // Package datasource defines the interface and types for supermarket product data sources.
 package datasource
 
-import "context"
+import (
+	"context"
+	"net/http"
+)
 
 // SupermarketID identifies a supermarket.
 type SupermarketID string
@@ -58,4 +61,15 @@ type Datasource interface {
 	SearchProducts(ctx context.Context, query string) ([]Product, error)
 	GetProductDetails(ctx context.Context, productID string) (*Product, error)
 	BrowseCategories(ctx context.Context) ([]Category, error)
+}
+
+// CookieSetter is implemented by datasources that support session cookies.
+type CookieSetter interface {
+	SetCookies(cookies []*http.Cookie)
+}
+
+// AuthDatasource is a Datasource that supports session cookie injection.
+type AuthDatasource interface {
+	Datasource
+	CookieSetter
 }

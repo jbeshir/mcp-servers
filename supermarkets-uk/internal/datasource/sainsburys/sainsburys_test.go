@@ -90,6 +90,46 @@ func TestHTTPErrorPropagates(t *testing.T) {
 	}
 }
 
+func TestCookiesAndWCAuthTokenSent(t *testing.T) {
+	fixture, err := os.ReadFile("testdata/sainsburys_search.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var gotCookies string
+	var gotAuthToken string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotCookies = r.Header.Get("Cookie")
+		gotAuthToken = r.Header.Get("wcauthtoken")
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(fixture)
+	}))
+	defer srv.Close()
+
+	cookies := []*http.Cookie{
+		{Name: "session_id", Value: "abc123"},
+		{Name: "WC_AUTHENTICATION_12345", Value: "my-auth-token"},
+	}
+	ds := sainsburys.NewDatasourceWithURL(srv.URL)
+	ds.SetCookies(cookies)
+
+	_, err = ds.SearchProducts(context.Background(), "milk")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !strings.Contains(gotCookies, "session_id=abc123") {
+		t.Errorf("expected session_id cookie, got Cookie header: %q", gotCookies)
+	}
+	if !strings.Contains(gotCookies, "WC_AUTHENTICATION_12345=my-auth-token") {
+		t.Errorf("expected WC_AUTHENTICATION cookie, got Cookie header: %q", gotCookies)
+	}
+	expectedWCAuth := "my-auth-token"
+	if gotAuthToken != expectedWCAuth {
+		t.Errorf("wcauthtoken header = %q, want %q", gotAuthToken, expectedWCAuth)
+	}
+}
+
 func TestSearchIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")

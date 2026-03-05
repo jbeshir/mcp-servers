@@ -19,7 +19,7 @@ func NewServer(c *client.Client) *Server {
 	}
 
 	s.mcpServer = server.NewMCPServer(
-		"supermarket",
+		"supermarkets-uk",
 		"1.0.0",
 		server.WithLogging(),
 	)

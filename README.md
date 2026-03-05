@@ -33,7 +33,13 @@ Add to your `claude_desktop_config.json`:
     },
     "supermarkets-uk": {
       "command": "/path/to/supermarkets-uk-mcp",
-      "env": { "SUPERMARKET_POSTCODE": "<your-uk-postcode>" }
+      "env": {
+        "TESCO_LOGIN": "true",
+        "SAINSBURYS_LOGIN": "true",
+        "OCADO_LOGIN": "true",
+        "MORRISONS_LOGIN": "true",
+        "SUPERMARKET_COOKIE_DIR": "/home/you/.supermarket-cookies"
+      }
     }
   }
 }
@@ -44,7 +50,7 @@ Add to your `claude_desktop_config.json`:
 ```
 claude mcp add workflowy -- env WORKFLOWY_API_TOKEN=<your-token> /path/to/workflowy-mcp
 claude mcp add manifold -- env MANIFOLD_API_KEY=<your-key> /path/to/manifold-mcp
-claude mcp add supermarkets-uk -- env SUPERMARKET_POSTCODE=<your-uk-postcode> /path/to/supermarkets-uk-mcp
+claude mcp add supermarkets-uk -- env TESCO_LOGIN=true SUPERMARKET_COOKIE_DIR=/path/to/cookies /path/to/supermarkets-uk-mcp
 ```
 
 ## Servers
@@ -76,7 +82,17 @@ Search and compare grocery prices across Tesco, Sainsbury's, Ocado, and Morrison
 Tools: `search_products`, `compare_prices`, `get_product_details`, `browse_categories`, `list_supermarkets`.
 
 ```
-SUPERMARKET_POSTCODE=SW1A1AA bin/supermarkets-uk-mcp
+bin/supermarkets-uk-mcp
 ```
 
-Requires a UK postcode for delivery availability. A headless Chromium browser is used at runtime.
+A headless Chromium browser is used at runtime.
+
+**Optional login for location-specific results:** Set `<SUPERMARKET>_LOGIN=true` (e.g. `TESCO_LOGIN=true`) to enable authenticated sessions. On first use of each enabled supermarket, a browser window opens for you to log in manually. Session cookies are cached to disk for subsequent runs.
+
+| Variable | Description |
+|---|---|
+| `TESCO_LOGIN` | Enable Tesco login (`true`/`1`/`yes`) |
+| `SAINSBURYS_LOGIN` | Enable Sainsbury's login |
+| `OCADO_LOGIN` | Enable Ocado login |
+| `MORRISONS_LOGIN` | Enable Morrisons login |
+| `SUPERMARKET_COOKIE_DIR` | Override cookie storage path (default: OS config dir). Required if your MCP client sandboxes the filesystem. |

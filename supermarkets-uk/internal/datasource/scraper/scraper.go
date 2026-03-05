@@ -83,6 +83,7 @@ type ProductPageSelectors struct {
 // direct HTTP requests. Use this for sites whose SSR response contains product data.
 type Scraper struct {
 	cfg        Config
+	cookies    []*http.Cookie
 	httpClient *http.Client
 }
 
@@ -93,6 +94,9 @@ func NewScraper(cfg Config) *Scraper {
 		httpClient: &http.Client{},
 	}
 }
+
+// SetCookies sets session cookies to inject into every HTTP request.
+func (s *Scraper) SetCookies(cookies []*http.Cookie) { s.cookies = cookies }
 
 // ID returns the supermarket identifier.
 func (s *Scraper) ID() datasource.SupermarketID { return s.cfg.ID }
@@ -139,6 +143,9 @@ func (s *Scraper) fetch(ctx context.Context, targetURL string) (io.ReadCloser, e
 		return nil, err
 	}
 	SetBrowserHeaders(req)
+	for _, c := range s.cookies {
+		req.AddCookie(c)
+	}
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {
@@ -157,6 +164,7 @@ func (s *Scraper) fetch(ctx context.Context, targetURL string) (io.ReadCloser, e
 type BrowserScraper struct {
 	cfg          Config
 	browser      *Browser
+	cookies      []*http.Cookie
 	waitSelector string // CSS selector to wait for before capturing HTML
 }
 
@@ -169,6 +177,9 @@ func NewBrowserScraper(cfg Config, browser *Browser, waitSelector string) *Brows
 	}
 }
 
+// SetCookies sets session cookies to inject into every browser page load.
+func (s *BrowserScraper) SetCookies(cookies []*http.Cookie) { s.cookies = cookies }
+
 // ID returns the supermarket identifier.
 func (s *BrowserScraper) ID() datasource.SupermarketID { return s.cfg.ID }
 
@@ -177,7 +188,7 @@ func (s *BrowserScraper) Name() string { return s.cfg.Name }
 
 // SearchProducts searches for products matching the query.
 func (s *BrowserScraper) SearchProducts(ctx context.Context, query string) ([]datasource.Product, error) {
-	body, err := s.browser.Fetch(ctx, s.cfg.SearchURL(query), s.waitSelector)
+	body, err := s.browser.Fetch(ctx, s.cfg.SearchURL(query), s.cookies, s.waitSelector)
 	if err != nil {
 		return nil, fmt.Errorf("%s search fetch: %w", s.cfg.ID, err)
 	}
@@ -188,7 +199,7 @@ func (s *BrowserScraper) SearchProducts(ctx context.Context, query string) ([]da
 
 // GetProductDetails fetches details for a specific product.
 func (s *BrowserScraper) GetProductDetails(ctx context.Context, productID string) (*datasource.Product, error) {
-	body, err := s.browser.Fetch(ctx, s.cfg.ProductURL(productID), s.waitSelector)
+	body, err := s.browser.Fetch(ctx, s.cfg.ProductURL(productID), s.cookies, s.waitSelector)
 	if err != nil {
 		return nil, fmt.Errorf("%s product fetch: %w", s.cfg.ID, err)
 	}
@@ -199,7 +210,7 @@ func (s *BrowserScraper) GetProductDetails(ctx context.Context, productID string
 
 // BrowseCategories returns the top-level grocery categories.
 func (s *BrowserScraper) BrowseCategories(ctx context.Context) ([]datasource.Category, error) {
-	body, err := s.browser.Fetch(ctx, s.cfg.CategoryURL, s.waitSelector)
+	body, err := s.browser.Fetch(ctx, s.cfg.CategoryURL, s.cookies, s.waitSelector)
 	if err != nil {
 		return nil, fmt.Errorf("%s categories fetch: %w", s.cfg.ID, err)
 	}

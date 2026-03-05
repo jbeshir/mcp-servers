@@ -4,11 +4,14 @@ package client
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
 	"strings"
 	"sync"
 
 	"golang.org/x/time/rate"
 
+	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/auth"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/osp"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/sainsburys"
@@ -29,11 +32,25 @@ type Client struct {
 	browser     *scraper.Browser
 }
 
+// Config holds configuration for creating a Client.
+type Config struct {
+	// Cookies holds pre-loaded session cookies per supermarket.
+	Cookies map[datasource.SupermarketID][]*http.Cookie
+	// NeedLogin is the set of supermarkets flagged for login that
+	// don't yet have cached cookies. These get lazy-auth wrappers.
+	NeedLogin map[datasource.SupermarketID]bool
+	// Store persists cookies obtained via interactive login.
+	Store *auth.CookieStore
+}
+
 // NewClient creates a new client with all four supermarket datasources.
-func NewClient(postcode string) *Client {
+// Supermarkets with cached cookies use them immediately. Supermarkets
+// flagged for login but without cached cookies get a lazy-auth wrapper
+// that triggers interactive login on first use.
+func NewClient(cfg Config) *Client {
 	browser := scraper.NewBrowser()
 
-	sources := []datasource.Datasource{
+	sources := []datasource.AuthDatasource{
 		tesco.NewDatasource(browser),
 		sainsburys.NewDatasource(),
 		osp.NewOcado(),
@@ -41,10 +58,54 @@ func NewClient(postcode string) *Client {
 	}
 
 	dsMap := make(
-		map[datasource.SupermarketID]datasource.Datasource, len(sources),
+		map[datasource.SupermarketID]datasource.Datasource,
+		len(sources),
 	)
 	for _, ds := range sources {
-		dsMap[ds.ID()] = wrapper.NewRateLimited(ds, rate.NewLimiter(1, 1))
+		id := ds.ID()
+
+		// Inject cached cookies if available.
+		if cookies := cfg.Cookies[id]; len(cookies) > 0 {
+			ds.SetCookies(cookies)
+		}
+
+		wrapped := datasource.Datasource(ds)
+
+		if cfg.NeedLogin[id] && cfg.Store != nil {
+			loginCfg, ok := auth.SupermarketLoginConfigs[id]
+			if ok {
+				store := cfg.Store
+				smID := id
+				doLogin := func(
+					ctx context.Context,
+				) ([]*http.Cookie, error) {
+					c, err := auth.InteractiveLogin(
+						ctx, smID, loginCfg,
+					)
+					if err != nil {
+						return nil, err
+					}
+					if err := store.Save(smID, c); err != nil {
+						log.Printf(
+							"warning: failed to save "+
+								"cookies for %s: %v",
+							smID, err,
+						)
+					} else {
+						log.Printf(
+							"saved %d cookies for %s",
+							len(c), smID,
+						)
+					}
+					return c, nil
+				}
+				wrapped = wrapper.NewLazyAuth(ds, doLogin)
+			}
+		}
+
+		dsMap[id] = wrapper.NewRateLimited(
+			wrapped, rate.NewLimiter(1, 1),
+		)
 	}
 
 	return &Client{

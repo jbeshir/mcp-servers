@@ -8,7 +8,7 @@ import (
 )
 
 func TestNewClient(t *testing.T) {
-	c := client.NewClient("SW1A1AA")
+	c := client.NewClient(client.Config{})
 
 	infos := c.ListSupermarkets()
 	if len(infos) != 4 {
@@ -35,7 +35,7 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestGetDatasource(t *testing.T) {
-	c := client.NewClient("SW1A1AA")
+	c := client.NewClient(client.Config{})
 
 	ds, ok := c.GetDatasource(datasource.Tesco)
 	if !ok {

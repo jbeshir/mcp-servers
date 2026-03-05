@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net/http"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
 )
 
@@ -52,10 +54,11 @@ func (b *Browser) start() {
 
 // Fetch navigates to the given URL in a new browser tab, waits for the
 // page to render, and returns the rendered HTML as an io.ReadCloser.
+// If cookies is non-empty, they are set on the browser before navigation.
 // If waitSelector is non-empty, the browser waits for that CSS selector
 // to become visible before capturing the HTML.
 func (b *Browser) Fetch(
-	ctx context.Context, targetURL string, waitSelector ...string,
+	ctx context.Context, targetURL string, cookies []*http.Cookie, waitSelector ...string,
 ) (io.ReadCloser, error) {
 	b.mu.Lock()
 	b.start()
@@ -78,10 +81,18 @@ func (b *Browser) Fetch(
 		}
 	}()
 
-	actions := []chromedp.Action{
+	var actions []chromedp.Action
+	for _, c := range cookies {
+		actions = append(actions,
+			network.SetCookie(c.Name, c.Value).
+				WithDomain(c.Domain).
+				WithPath(c.Path),
+		)
+	}
+	actions = append(actions,
 		chromedp.Navigate(targetURL),
 		chromedp.WaitReady("body", chromedp.ByQuery),
-	}
+	)
 
 	if len(waitSelector) > 0 && waitSelector[0] != "" {
 		actions = append(actions,

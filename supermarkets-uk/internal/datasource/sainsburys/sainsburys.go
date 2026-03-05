@@ -50,6 +50,7 @@ type category struct {
 
 // Datasource uses the Sainsbury's JSON API.
 type Datasource struct {
+	cookies    []*http.Cookie
 	httpClient *http.Client
 	apiBase    string
 }
@@ -69,6 +70,9 @@ func NewDatasourceWithURL(baseURL string) *Datasource {
 		apiBase:    baseURL,
 	}
 }
+
+// SetCookies sets session cookies to inject into every API request.
+func (s *Datasource) SetCookies(cookies []*http.Cookie) { s.cookies = cookies }
 
 // ID returns the supermarket identifier.
 func (s *Datasource) ID() datasource.SupermarketID { return datasource.Sainsburys }
@@ -168,6 +172,12 @@ func (s *Datasource) apiRequest(
 	scraper.SetBrowserHeaders(req)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Referer", baseURL+"/shop/gb/groceries")
+	for _, c := range s.cookies {
+		req.AddCookie(c)
+		if strings.HasPrefix(c.Name, "WC_AUTHENTICATION_") {
+			req.Header.Set("wcauthtoken", c.Value)
+		}
+	}
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {
