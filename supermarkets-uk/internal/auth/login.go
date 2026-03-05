@@ -21,6 +21,7 @@ type LoginConfig struct {
 	Domain        string
 	SessionCookie string // Cookie name that indicates a valid session.
 	SuccessQuery  string // CSS selector that indicates logged-in state.
+	SuccessText   string // Text content that indicates logged-in state.
 }
 
 // SupermarketLoginConfigs maps supermarket IDs to their login page configurations.
@@ -46,12 +47,14 @@ var SupermarketLoginConfigs = map[datasource.SupermarketID]LoginConfig{
 		SuccessQuery: `a[data-test="logout-button"]`,
 	},
 	datasource.Asda: {
-		LoginURL: "https://www.asda.com/account/login",
-		Domain:   ".asda.com",
+		LoginURL:     "https://www.asda.com/account",
+		Domain:       ".asda.com",
+		SuccessText:  "Sign in details",
 	},
 	datasource.Waitrose: {
-		LoginURL: "https://www.waitrose.com/ecom/login",
-		Domain:   ".waitrose.com",
+		LoginURL:     "https://www.waitrose.com/ecom/login",
+		Domain:       ".waitrose.com",
+		SuccessQuery: `a[data-test="signOut"]`,
 	},
 }
 
@@ -104,6 +107,11 @@ func InteractiveLogin(
 		jsCheck = fmt.Sprintf(
 			`document.querySelector(%q) !== null`,
 			cfg.SuccessQuery,
+		)
+	case cfg.SuccessText != "":
+		jsCheck = fmt.Sprintf(
+			`document.body.innerText.includes(%q)`,
+			cfg.SuccessText,
 		)
 	}
 	if jsCheck != "" {

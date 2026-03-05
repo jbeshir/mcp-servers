@@ -48,7 +48,7 @@ var config = scraper.Config{
 		Weight: scraper.ElemSel{Tag: "span", Att: "data-testid", Val: "product-size"},
 	},
 	SessionCheckURL:   baseURL + "/",
-	SessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "data-testid", Val: "logout-button"},
+	SessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "signOut"},
 	ProductSel: scraper.ProductPageSelectors{
 		Title: scraper.ElemSel{Tag: "span", Att: "data-testid", Val: "product-name"},
 		Price: scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-pod-price"},

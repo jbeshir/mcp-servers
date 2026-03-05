@@ -50,7 +50,7 @@ var browserConfig = scraper.Config{
 		Weight: scraper.ElemSel{Tag: "p", Att: "data-locator", Val: "txt-product-weight"},
 	},
 	SessionCheckURL:   baseURL + "/",
-	SessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "data-locator", Val: "btn-sign-in"},
+	SessionCheckQuery: scraper.ElemSel{Tag: "button", Att: "data-locator", Val: "btn-sign-off"},
 	ProductSel: scraper.ProductPageSelectors{
 		Title:  scraper.ElemSel{Tag: "h1", Att: "data-testid", Val: "txt-pdp-product-name"},
 		Price:  scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "txt-pdp-product-price"},
