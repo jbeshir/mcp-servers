@@ -37,7 +37,7 @@ var config = scraper.Config{
 	},
 	SessionCheckURL:   baseURL + "/",
 	SessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "id", Val: "app-bar-sign-out"},
-	ProductSel: scraper.ProductPageSelectors{
+	ProductSel: scraper.ProductSelectors{
 		Title: scraper.ElemSel{Tag: "h1", Att: "data-auto", Val: "pdp-product-title"},
 		Price: scraper.ElemSel{Tag: "p", Cls: "priceText"},
 		Unit:  scraper.ElemSel{Tag: "p", Cls: "subtext"},

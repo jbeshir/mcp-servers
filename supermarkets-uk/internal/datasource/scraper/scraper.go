@@ -55,7 +55,7 @@ type Config struct {
 	CategoryURL string
 	Container   ElemSel
 	SearchSel   ProductSelectors
-	ProductSel  ProductPageSelectors
+	ProductSel  ProductSelectors
 	CategorySel ElemSel
 
 	SessionCheckURL   string  // URL to fetch for session validation
@@ -66,16 +66,6 @@ type Config struct {
 type ProductSelectors struct {
 	Title  ElemSel
 	Link   ElemSel // optional: separate element for link href (if zero, title must be <a>)
-	Price  ElemSel
-	Unit   ElemSel
-	Promo  ElemSel
-	Image  ElemSel
-	Weight ElemSel
-}
-
-// ProductPageSelectors configures selectors for parsing product detail pages.
-type ProductPageSelectors struct {
-	Title  ElemSel
 	Price  ElemSel
 	Unit   ElemSel
 	Promo  ElemSel
@@ -443,7 +433,7 @@ func searchMatchers(sel ProductSelectors, baseURL string) []fieldMatcher {
 	return m
 }
 
-func pageMatchers(sel ProductPageSelectors) []fieldMatcher {
+func pageMatchers(sel ProductSelectors) []fieldMatcher {
 	m := []fieldMatcher{
 		{sel.Title, func(n *html.Node, p *datasource.Product) {
 			p.Name = TextContent(n)

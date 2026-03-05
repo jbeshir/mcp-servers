@@ -40,9 +40,10 @@ type Client struct {
 type Config struct {
 	// Cookies holds pre-loaded session cookies per supermarket.
 	Cookies map[datasource.SupermarketID][]*http.Cookie
-	// NeedLogin is the set of supermarkets flagged for login that
-	// don't yet have cached cookies. These get lazy-auth wrappers.
-	NeedLogin map[datasource.SupermarketID]bool
+	// LoginFlags is the set of supermarkets enabled for login.
+	// NewClient derives which ones actually need interactive login
+	// based on whether they have valid cached cookies.
+	LoginFlags map[datasource.SupermarketID]bool
 	// Store persists cookies obtained via interactive login.
 	Store *auth.CookieStore
 }
@@ -70,22 +71,27 @@ func NewClient(cfg Config) *Client {
 	for _, ds := range sources {
 		id := ds.ID()
 
-		// Inject cached cookies if available, then validate the session.
-		if cookies := cfg.Cookies[id]; len(cookies) > 0 {
-			ds.SetCookies(cookies)
-			if !ds.CheckSession(context.Background()) {
-				log.Printf("cached session for %s is invalid, clearing", id)
-				ds.SetCookies(nil)
-				if cfg.Store != nil {
-					_ = cfg.Store.Clear(id)
+		// Determine whether this supermarket needs interactive login.
+		needLogin := false
+		if cfg.LoginFlags[id] {
+			if cookies := cfg.Cookies[id]; len(cookies) > 0 {
+				ds.SetCookies(cookies)
+				if !ds.CheckSession(context.Background()) {
+					log.Printf("cached session for %s is invalid, clearing", id)
+					ds.SetCookies(nil)
+					if cfg.Store != nil {
+						_ = cfg.Store.Clear(id)
+					}
+					needLogin = true
 				}
-				cfg.NeedLogin[id] = true
+			} else {
+				needLogin = true
 			}
 		}
 
 		wrapped := datasource.Datasource(ds)
 
-		if cfg.NeedLogin[id] && cfg.Store != nil {
+		if needLogin && cfg.Store != nil {
 			loginCfg, ok := auth.SupermarketLoginConfigs[id]
 			if ok {
 				store := cfg.Store

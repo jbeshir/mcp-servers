@@ -47,9 +47,9 @@ var SupermarketLoginConfigs = map[datasource.SupermarketID]LoginConfig{
 		SuccessQuery: `a[data-test="logout-button"]`,
 	},
 	datasource.Asda: {
-		LoginURL:     "https://www.asda.com/account",
-		Domain:       ".asda.com",
-		SuccessText:  "Sign in details",
+		LoginURL:    "https://www.asda.com/account",
+		Domain:      ".asda.com",
+		SuccessText: "Sign in details",
 	},
 	datasource.Waitrose: {
 		LoginURL:     "https://www.waitrose.com/ecom/login",

@@ -51,7 +51,7 @@ var browserConfig = scraper.Config{
 	},
 	SessionCheckURL:   baseURL + "/",
 	SessionCheckQuery: scraper.ElemSel{Tag: "button", Att: "data-locator", Val: "btn-sign-off"},
-	ProductSel: scraper.ProductPageSelectors{
+	ProductSel: scraper.ProductSelectors{
 		Title:  scraper.ElemSel{Tag: "h1", Att: "data-testid", Val: "txt-pdp-product-name"},
 		Price:  scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "txt-pdp-product-price"},
 		Unit:   scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "txt-pdp-product-price-per-kg"},
@@ -102,13 +102,13 @@ func NewDatasource(browser *scraper.Browser) *Datasource {
 func (d *Datasource) SetCookies(cookies []*http.Cookie) { d.cookies = cookies }
 
 // ID returns the supermarket identifier.
-func (d *Datasource) ID() datasource.SupermarketID { return datasource.Asda }
+func (d *Datasource) ID() datasource.SupermarketID { return browserConfig.ID }
 
 // Name returns the human-readable name.
-func (d *Datasource) Name() string { return "Asda" }
+func (d *Datasource) Name() string { return browserConfig.Name }
 
 // Description returns a short description of the supermarket.
-func (d *Datasource) Description() string { return "One of the UK's largest supermarket chains" }
+func (d *Datasource) Description() string { return browserConfig.Description }
 
 // CheckSession validates whether cached cookies represent a valid session.
 func (d *Datasource) CheckSession(ctx context.Context) bool {
@@ -195,11 +195,6 @@ func ParseAlgoliaResults(r io.Reader) ([]datasource.Product, error) {
 		products = append(products, convertHit(hit))
 	}
 	return products, nil
-}
-
-// ParseSearchResults parses an Asda search results HTML page (legacy).
-func ParseSearchResults(r io.Reader) ([]datasource.Product, error) {
-	return scraper.ParseSearchResults(r, browserConfig)
 }
 
 // ParseProductPage parses an Asda product detail page.

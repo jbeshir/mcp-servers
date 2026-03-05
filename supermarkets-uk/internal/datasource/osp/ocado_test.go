@@ -3,40 +3,37 @@ package osp_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/osp"
+	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/testutil"
 )
 
 func TestParseOcadoSearchResults(t *testing.T) {
-	products := parseSearchFile(t, "testdata/ocado_search.html", osp.ParseOcadoSearchResults)
+	products := testutil.ParseSearchFile(t, "testdata/ocado_search.html", osp.ParseOcadoSearchResults)
 
-	if len(products) != 2 {
-		t.Fatalf("expected 2 products, got %d", len(products))
-	}
+	require.Len(t, products, 2)
 
 	p := products[0]
-	assertString(t, "name", p.Name, "Cravendale Filtered Fresh Whole Milk Fresher for Longer")
-	assertFloat(t, p.Price, 2.70)
-	assertString(t, "supermarket",
-		string(p.Supermarket), string(datasource.Ocado))
-	assertString(t, "id", p.ID, "24577011")
+	assert.Equal(t, "Cravendale Filtered Fresh Whole Milk Fresher for Longer", p.Name)
+	assert.Equal(t, 2.70, p.Price)
+	assert.Equal(t, datasource.Ocado, p.Supermarket)
+	assert.Equal(t, "24577011", p.ID)
 }
 
 func TestParseOcadoProductPage(t *testing.T) {
-	p := parseProductFile(t, "testdata/ocado_product.html", osp.ParseOcadoProductPage)
+	p := testutil.ParseProductFile(t, "testdata/ocado_product.html", osp.ParseOcadoProductPage)
 
-	assertString(t, "name", p.Name, "Cravendale Filtered Fresh Whole Milk Fresher for Longer")
-	assertFloat(t, p.Price, 2.70)
+	assert.Equal(t, "Cravendale Filtered Fresh Whole Milk Fresher for Longer", p.Name)
+	assert.Equal(t, 2.70, p.Price)
 }
 
 func TestParseOcadoCategories(t *testing.T) {
-	categories := parseCategoryFile(t, "testdata/ocado_categories.html", osp.ParseOcadoCategories)
+	categories := testutil.ParseCategoryFile(t, "testdata/ocado_categories.html", osp.ParseOcadoCategories)
 
-	if len(categories) != 2 {
-		t.Fatalf("expected 2 categories, got %d", len(categories))
-	}
-
-	assertString(t, "category 0 name", categories[0].Name, "Fresh & Chilled Food")
-	assertString(t, "category 0 supermarket",
-		string(categories[0].Supermarket), string(datasource.Ocado))
+	require.Len(t, categories, 2)
+	assert.Equal(t, "Fresh & Chilled Food", categories[0].Name)
+	assert.Equal(t, datasource.Ocado, categories[0].Supermarket)
 }

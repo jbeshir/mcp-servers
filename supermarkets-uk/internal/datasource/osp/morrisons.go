@@ -30,7 +30,7 @@ var morrisonsConfig = scraper.Config{
 	},
 	SessionCheckURL:   morrisonsBaseURL + "/",
 	SessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "logout-button"},
-	ProductSel: scraper.ProductPageSelectors{
+	ProductSel: scraper.ProductSelectors{
 		Title: scraper.ElemSel{Tag: "h1"},
 		Price: scraper.ElemSel{Tag: "div", Att: "data-test", Val: "price-container"},
 		Promo: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "offer-card-promotion"},
