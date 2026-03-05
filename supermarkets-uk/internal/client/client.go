@@ -64,9 +64,17 @@ func NewClient(cfg Config) *Client {
 	for _, ds := range sources {
 		id := ds.ID()
 
-		// Inject cached cookies if available.
+		// Inject cached cookies if available, then validate the session.
 		if cookies := cfg.Cookies[id]; len(cookies) > 0 {
 			ds.SetCookies(cookies)
+			if !ds.CheckSession(context.Background()) {
+				log.Printf("cached session for %s is invalid, clearing", id)
+				ds.SetCookies(nil)
+				if cfg.Store != nil {
+					_ = cfg.Store.Clear(id)
+				}
+				cfg.NeedLogin[id] = true
+			}
 		}
 
 		wrapped := datasource.Datasource(ds)

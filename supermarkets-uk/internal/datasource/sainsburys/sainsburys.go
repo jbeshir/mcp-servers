@@ -80,6 +80,27 @@ func (s *Datasource) ID() datasource.SupermarketID { return datasource.Sainsbury
 // Name returns the human-readable name.
 func (s *Datasource) Name() string { return "Sainsbury's" }
 
+// CheckSession validates whether cached cookies represent a valid session.
+// It makes a minimal search request because the categories endpoint works
+// without auth, so it can't detect stale cookies that cause 401s on search.
+func (s *Datasource) CheckSession(ctx context.Context) bool {
+	if len(s.cookies) == 0 {
+		return true
+	}
+	apiURL := s.apiBase + "/product/v1/product?" + url.Values{
+		"filter[keyword]": {"milk"},
+		"page_number":     {"1"},
+		"page_size":       {"1"},
+	}.Encode()
+	body, err := s.apiRequest(ctx, apiURL)
+	if err != nil {
+		return false
+	}
+	defer body.Close() //nolint:errcheck // Best-effort close.
+	var result json.RawMessage
+	return json.NewDecoder(body).Decode(&result) == nil
+}
+
 // SearchProducts searches for products using the Sainsbury's API.
 func (s *Datasource) SearchProducts(
 	ctx context.Context,

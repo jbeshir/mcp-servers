@@ -27,6 +27,8 @@ var ocadoConfig = scraper.Config{
 		Promo: scraper.ElemSel{Tag: "span", Att: "data-test", Val: "fop-offer-text"},
 		Image: scraper.ElemSel{Tag: "img", Att: "data-test", Val: "lazy-load-image"},
 	},
+	SessionCheckURL:   ocadoBaseURL + "/",
+	SessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "logout-button"},
 	ProductSel: scraper.ProductPageSelectors{
 		Title: scraper.ElemSel{Tag: "h1", Att: "data-test", Val: "product-title"},
 		Price: scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-price"},

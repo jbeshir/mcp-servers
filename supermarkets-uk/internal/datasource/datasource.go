@@ -63,13 +63,10 @@ type Datasource interface {
 	BrowseCategories(ctx context.Context) ([]Category, error)
 }
 
-// CookieSetter is implemented by datasources that support session cookies.
-type CookieSetter interface {
-	SetCookies(cookies []*http.Cookie)
-}
-
-// AuthDatasource is a Datasource that supports session cookie injection.
+// AuthDatasource is a Datasource that supports session cookie injection
+// and session validation.
 type AuthDatasource interface {
 	Datasource
-	CookieSetter
+	SetCookies(cookies []*http.Cookie)
+	CheckSession(ctx context.Context) bool
 }

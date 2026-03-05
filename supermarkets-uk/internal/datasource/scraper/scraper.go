@@ -56,6 +56,9 @@ type Config struct {
 	SearchSel   ProductSelectors
 	ProductSel  ProductPageSelectors
 	CategorySel ElemSel
+
+	SessionCheckURL   string  // URL to fetch for session validation
+	SessionCheckQuery ElemSel // element selector that indicates authenticated state
 }
 
 // ProductSelectors configures selectors for parsing search result product nodes.
@@ -103,6 +106,19 @@ func (s *Scraper) ID() datasource.SupermarketID { return s.cfg.ID }
 
 // Name returns the human-readable name.
 func (s *Scraper) Name() string { return s.cfg.Name }
+
+// CheckSession validates whether cached cookies represent a valid session.
+func (s *Scraper) CheckSession(ctx context.Context) bool {
+	if len(s.cookies) == 0 || s.cfg.SessionCheckURL == "" {
+		return true
+	}
+	body, err := s.fetch(ctx, s.cfg.SessionCheckURL)
+	if err != nil {
+		return false
+	}
+	defer body.Close() //nolint:errcheck // Best-effort close.
+	return htmlHasElement(body, s.cfg.SessionCheckQuery)
+}
 
 // SearchProducts searches for products matching the query.
 func (s *Scraper) SearchProducts(ctx context.Context, query string) ([]datasource.Product, error) {
@@ -185,6 +201,19 @@ func (s *BrowserScraper) ID() datasource.SupermarketID { return s.cfg.ID }
 
 // Name returns the human-readable name.
 func (s *BrowserScraper) Name() string { return s.cfg.Name }
+
+// CheckSession validates whether cached cookies represent a valid session.
+func (s *BrowserScraper) CheckSession(ctx context.Context) bool {
+	if len(s.cookies) == 0 || s.cfg.SessionCheckURL == "" {
+		return true
+	}
+	body, err := s.browser.Fetch(ctx, s.cfg.SessionCheckURL, s.cookies)
+	if err != nil {
+		return false
+	}
+	defer body.Close() //nolint:errcheck // Best-effort close.
+	return htmlHasElement(body, s.cfg.SessionCheckQuery)
+}
 
 // SearchProducts searches for products matching the query.
 func (s *BrowserScraper) SearchProducts(ctx context.Context, query string) ([]datasource.Product, error) {
@@ -487,6 +516,21 @@ func textContent(n *html.Node) string {
 		}
 	})
 	return strings.TrimSpace(sb.String())
+}
+
+// htmlHasElement parses HTML and returns whether any element matches the selector.
+func htmlHasElement(r io.Reader, sel ElemSel) bool {
+	doc, err := html.Parse(r)
+	if err != nil {
+		return false
+	}
+	var found bool
+	walkTree(doc, func(n *html.Node) {
+		if !found && sel.matches(n) {
+			found = true
+		}
+	})
+	return found
 }
 
 // SetBrowserHeaders sets standard browser-like headers on an HTTP request.

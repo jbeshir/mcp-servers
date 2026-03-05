@@ -27,6 +27,8 @@ var morrisonsConfig = scraper.Config{
 		Image:  scraper.ElemSel{Tag: "img", Att: "data-test", Val: "lazy-load-image"},
 		Weight: scraper.ElemSel{Tag: "span", Att: "data-test", Val: "fop-catch-weight"},
 	},
+	SessionCheckURL:   morrisonsBaseURL + "/",
+	SessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "logout-button"},
 	ProductSel: scraper.ProductPageSelectors{
 		Title:  scraper.ElemSel{Tag: "h1", Att: "data-test", Val: "product-title"},
 		Price:  scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-price"},

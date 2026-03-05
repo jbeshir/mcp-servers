@@ -28,6 +28,8 @@ var config = scraper.Config{
 		Promo: scraper.ElemSel{Tag: "span", Cls: "promotionText"},
 		Image: scraper.ElemSel{Tag: "img", Cls: "baseImage"},
 	},
+	SessionCheckURL:   baseURL + "/",
+	SessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "id", Val: "app-bar-sign-out"},
 	ProductSel: scraper.ProductPageSelectors{
 		Title: scraper.ElemSel{Tag: "h1", Cls: "titleText"},
 		Price: scraper.ElemSel{Tag: "p", Cls: "priceText"},
