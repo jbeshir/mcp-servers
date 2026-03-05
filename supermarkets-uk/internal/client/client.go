@@ -13,11 +13,13 @@ import (
 
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/auth"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource"
+	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/asda"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/osp"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/sainsburys"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/scraper"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/shopify"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/tesco"
+	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/waitrose"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/wrapper"
 )
 
@@ -54,6 +56,8 @@ func NewClient(cfg Config) *Client {
 
 	sources := []datasource.AuthDatasource{
 		tesco.NewDatasource(browser),
+		asda.NewDatasource(browser),
+		waitrose.NewDatasource(browser),
 		sainsburys.NewDatasource(),
 		osp.NewOcado(),
 		osp.NewMorrisons(),

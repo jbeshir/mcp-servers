@@ -5,20 +5,29 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/chromedp/cdproto/network"
+	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
 )
 
 const browserRenderTimeout = 30 * time.Second
 
 // Browser manages a shared headless Chrome instance for rendering JS-heavy pages.
+// A single browser context is shared across all Fetch calls so that cookies
+// set by one page persist for subsequent requests.
 type Browser struct {
 	allocCtx    context.Context
 	allocCancel context.CancelFunc
+
+	// browserCtx is a shared browser context; new tabs are created within it
+	// so that cookies persist between Fetch calls.
+	browserCtx    context.Context
+	browserCancel context.CancelFunc
 
 	mu      sync.Mutex
 	started bool
@@ -36,19 +45,23 @@ func (b *Browser) start() {
 	}
 	opts := append(
 		chromedp.DefaultExecAllocatorOptions[:],
-		chromedp.Flag("headless", true),
+		chromedp.Flag("headless", "new"),
 		chromedp.Flag("disable-gpu", true),
 		chromedp.Flag("no-sandbox", true),
 		chromedp.Flag("disable-dev-shm-usage", true),
+		chromedp.Flag("enable-automation", false),
+		chromedp.Flag("disable-blink-features", "AutomationControlled"),
 		chromedp.UserAgent(
-			"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "+
+			"Mozilla/5.0 (X11; Linux x86_64) "+
 				"AppleWebKit/537.36 (KHTML, like Gecko) "+
-				"Chrome/120.0.0.0 Safari/537.36",
+				"Chrome/145.0.0.0 Safari/537.36",
 		),
 	)
 	b.allocCtx, b.allocCancel = chromedp.NewExecAllocator(
 		context.Background(), opts...,
 	)
+	// Create a shared browser context so cookies persist across tabs.
+	b.browserCtx, b.browserCancel = chromedp.NewContext(b.allocCtx)
 	b.started = true
 }
 
@@ -64,7 +77,7 @@ func (b *Browser) Fetch(
 	b.start()
 	b.mu.Unlock()
 
-	tabCtx, tabCancel := chromedp.NewContext(b.allocCtx)
+	tabCtx, tabCancel := chromedp.NewContext(b.browserCtx)
 	defer tabCancel()
 
 	renderCtx, renderCancel := context.WithTimeout(
@@ -82,6 +95,15 @@ func (b *Browser) Fetch(
 	}()
 
 	var actions []chromedp.Action
+
+	// Remove navigator.webdriver before any page scripts run.
+	actions = append(actions, chromedp.ActionFunc(func(ctx context.Context) error {
+		_, err := page.AddScriptToEvaluateOnNewDocument(
+			`Object.defineProperty(navigator, 'webdriver', {get: () => undefined})`,
+		).Do(ctx)
+		return err
+	}))
+
 	for _, c := range cookies {
 		actions = append(actions,
 			network.SetCookie(c.Name, c.Value).
@@ -89,15 +111,26 @@ func (b *Browser) Fetch(
 				WithPath(c.Path),
 		)
 	}
+	// Set a same-origin Referer header to match normal browser behaviour.
+	actions = append(actions, chromedp.ActionFunc(func(ctx context.Context) error {
+		u, err := url.Parse(targetURL)
+		if err != nil {
+			return err
+		}
+		referrer := u.Scheme + "://" + u.Host + "/"
+		headers := network.Headers{"Referer": referrer}
+		return network.SetExtraHTTPHeaders(headers).Do(ctx)
+	}))
 	actions = append(actions,
 		chromedp.Navigate(targetURL),
 		chromedp.WaitReady("body", chromedp.ByQuery),
 	)
 
 	if len(waitSelector) > 0 && waitSelector[0] != "" {
-		actions = append(actions,
-			chromedp.WaitVisible(waitSelector[0], chromedp.ByQuery),
-		)
+		sel := waitSelector[0]
+		actions = append(actions, chromedp.ActionFunc(func(ctx context.Context) error {
+			return waitForSelector(ctx, sel)
+		}))
 	} else {
 		actions = append(actions, chromedp.Sleep(2*time.Second))
 	}
@@ -114,11 +147,40 @@ func (b *Browser) Fetch(
 	return io.NopCloser(strings.NewReader(htmlContent)), nil
 }
 
+// waitForSelector polls via JavaScript until the CSS selector matches an
+// element in the DOM. This is more reliable than chromedp.WaitReady for
+// pages that do client-side navigation after the initial load.
+func waitForSelector(ctx context.Context, sel string) error {
+	const interval = 200 * time.Millisecond
+	for {
+		var found bool
+		if err := chromedp.Evaluate(
+			fmt.Sprintf(`document.querySelector(%q) !== null`, sel),
+			&found,
+		).Do(ctx); err != nil {
+			return err
+		}
+		if found {
+			return nil
+		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(interval):
+		}
+	}
+}
+
 // Close shuts down the browser.
 func (b *Browser) Close() {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	if b.started && b.allocCancel != nil {
-		b.allocCancel()
+	if b.started {
+		if b.browserCancel != nil {
+			b.browserCancel()
+		}
+		if b.allocCancel != nil {
+			b.allocCancel()
+		}
 	}
 }

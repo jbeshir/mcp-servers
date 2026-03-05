@@ -24,8 +24,8 @@ type ElemSel struct {
 	Val string // attribute value (optional, empty = presence check)
 }
 
-// matches returns true if the node matches this selector.
-func (s ElemSel) matches(n *html.Node) bool {
+// Matches returns true if the node matches this selector.
+func (s ElemSel) Matches(n *html.Node) bool {
 	if n.Type != html.ElementNode || n.Data != s.Tag {
 		return false
 	}
@@ -37,7 +37,7 @@ func (s ElemSel) matches(n *html.Node) bool {
 			if !hasAttrValue(n, s.Att, s.Val) {
 				return false
 			}
-		} else if getAttr(n, s.Att) == "" {
+		} else if GetAttr(n, s.Att) == "" {
 			return false
 		}
 	}
@@ -121,7 +121,7 @@ func (s *Scraper) CheckSession(ctx context.Context) bool {
 		return false
 	}
 	defer body.Close() //nolint:errcheck // Best-effort close.
-	return htmlHasElement(body, s.cfg.SessionCheckQuery)
+	return HTMLHasElement(body, s.cfg.SessionCheckQuery)
 }
 
 // SearchProducts searches for products matching the query.
@@ -143,7 +143,13 @@ func (s *Scraper) GetProductDetails(ctx context.Context, productID string) (*dat
 	}
 	defer body.Close() //nolint:errcheck // Best-effort close.
 
-	return ParseProductPage(body, s.cfg)
+	p, err := ParseProductPage(body, s.cfg)
+	if err != nil {
+		return nil, err
+	}
+	p.ID = productID
+	p.URL = s.cfg.ProductURL(productID)
+	return p, nil
 }
 
 // BrowseCategories returns the top-level grocery categories.
@@ -219,7 +225,7 @@ func (s *BrowserScraper) CheckSession(ctx context.Context) bool {
 		return false
 	}
 	defer body.Close() //nolint:errcheck // Best-effort close.
-	return htmlHasElement(body, s.cfg.SessionCheckQuery)
+	return HTMLHasElement(body, s.cfg.SessionCheckQuery)
 }
 
 // SearchProducts searches for products matching the query.
@@ -241,7 +247,13 @@ func (s *BrowserScraper) GetProductDetails(ctx context.Context, productID string
 	}
 	defer body.Close() //nolint:errcheck // Best-effort close.
 
-	return ParseProductPage(body, s.cfg)
+	p, err := ParseProductPage(body, s.cfg)
+	if err != nil {
+		return nil, err
+	}
+	p.ID = productID
+	p.URL = s.cfg.ProductURL(productID)
+	return p, nil
 }
 
 // BrowseCategories returns the top-level grocery categories.
@@ -255,6 +267,15 @@ func (s *BrowserScraper) BrowseCategories(ctx context.Context) ([]datasource.Cat
 	return ParseCategories(body, s.cfg)
 }
 
+// FetchPage fetches a URL via the browser with session cookies and returns
+// the rendered HTML. Optional wait selectors are passed through to the browser.
+func (s *BrowserScraper) FetchPage(
+	ctx context.Context, targetURL string, waitSelector ...string,
+) (io.ReadCloser, error) {
+	args := append([]string(nil), waitSelector...)
+	return s.browser.Fetch(ctx, targetURL, s.cookies, args...)
+}
+
 // Shared parsing logic used by both Scraper and BrowserScraper.
 
 // ParseSearchResults parses search result HTML into a list of products.
@@ -265,11 +286,11 @@ func ParseSearchResults(r io.Reader, cfg Config) ([]datasource.Product, error) {
 	}
 
 	var products []datasource.Product
-	walkTree(doc, func(n *html.Node) {
-		if !cfg.Container.matches(n) {
+	WalkTree(doc, func(n *html.Node) {
+		if !cfg.Container.Matches(n) {
 			return
 		}
-		if p, ok := extractProduct(n, cfg.SearchSel, cfg.BaseURL, cfg.ID); ok {
+		if p, ok := ExtractProduct(n, cfg.SearchSel, cfg.BaseURL, cfg.ID); ok {
 			products = append(products, p)
 		}
 	})
@@ -298,7 +319,7 @@ func ParseProductPage(r io.Reader, cfg Config) (*datasource.Product, error) {
 	}
 	matchers := pageMatchers(cfg.ProductSel)
 
-	walkTree(doc, func(n *html.Node) {
+	WalkTree(doc, func(n *html.Node) {
 		if n.Type != html.ElementNode {
 			return
 		}
@@ -316,19 +337,19 @@ func ParseCategories(r io.Reader, cfg Config) ([]datasource.Category, error) {
 	}
 
 	var categories []datasource.Category
-	walkTree(doc, func(n *html.Node) {
-		if !cfg.CategorySel.matches(n) {
+	WalkTree(doc, func(n *html.Node) {
+		if !cfg.CategorySel.Matches(n) {
 			return
 		}
-		catName := textContent(n)
-		href := getAttr(n, "href")
+		catName := TextContent(n)
+		href := GetAttr(n, "href")
 		if catName == "" || href == "" {
 			return
 		}
 		categories = append(categories, datasource.Category{
-			ID:          lastPathSegment(href),
+			ID:          LastPathSegment(href),
 			Name:        catName,
-			URL:         resolveURL(cfg.BaseURL, href),
+			URL:         ResolveURL(cfg.BaseURL, href),
 			Supermarket: cfg.ID,
 		})
 	})
@@ -336,8 +357,8 @@ func ParseCategories(r io.Reader, cfg Config) ([]datasource.Category, error) {
 	return categories, nil
 }
 
-// extractProduct builds a Product from a search result container node.
-func extractProduct(
+// ExtractProduct builds a Product from a search result container node.
+func ExtractProduct(
 	n *html.Node,
 	sel ProductSelectors,
 	baseURL string,
@@ -350,7 +371,7 @@ func extractProduct(
 	}
 	matchers := searchMatchers(sel, baseURL)
 
-	walkTree(n, func(node *html.Node) {
+	WalkTree(n, func(node *html.Node) {
 		if node.Type != html.ElementNode {
 			return
 		}
@@ -363,6 +384,17 @@ func extractProduct(
 	return p, true
 }
 
+// FindElement returns the first element matching sel in the subtree, or nil.
+func FindElement(root *html.Node, sel ElemSel) *html.Node {
+	var found *html.Node
+	WalkTree(root, func(n *html.Node) {
+		if found == nil && sel.Matches(n) {
+			found = n
+		}
+	})
+	return found
+}
+
 // fieldMatcher describes how to match and extract a single product field.
 type fieldMatcher struct {
 	sel   ElemSel
@@ -372,40 +404,40 @@ type fieldMatcher struct {
 func searchMatchers(sel ProductSelectors, baseURL string) []fieldMatcher {
 	m := []fieldMatcher{
 		{sel.Title, func(n *html.Node, p *datasource.Product) {
-			p.Name = textContent(n)
+			p.Name = TextContent(n)
 			if n.Data == "a" {
-				if href := getAttr(n, "href"); href != "" {
-					p.URL = resolveURL(baseURL, href)
-					p.ID = lastPathSegment(href)
+				if href := GetAttr(n, "href"); href != "" {
+					p.URL = ResolveURL(baseURL, href)
+					p.ID = LastPathSegment(href)
 				}
 			}
 		}},
 		{sel.Price, func(n *html.Node, p *datasource.Product) {
-			p.Price = parsePrice(textContent(n))
+			p.Price = ParsePrice(TextContent(n))
 		}},
 		{sel.Unit, func(n *html.Node, p *datasource.Product) {
-			p.PricePerUnit = textContent(n)
+			p.PricePerUnit = CleanPricePerUnit(TextContent(n))
 		}},
 		{sel.Image, func(n *html.Node, p *datasource.Product) {
-			p.ImageURL = getAttr(n, "src")
+			p.ImageURL = GetAttr(n, "src")
 		}},
 	}
 	if sel.Link != (ElemSel{}) {
 		m = append(m, fieldMatcher{sel.Link, func(n *html.Node, p *datasource.Product) {
-			if href := getAttr(n, "href"); href != "" {
-				p.URL = resolveURL(baseURL, href)
-				p.ID = lastPathSegment(href)
+			if href := GetAttr(n, "href"); href != "" {
+				p.URL = ResolveURL(baseURL, href)
+				p.ID = LastPathSegment(href)
 			}
 		}})
 	}
 	if sel.Promo != (ElemSel{}) {
 		m = append(m, fieldMatcher{sel.Promo, func(n *html.Node, p *datasource.Product) {
-			p.Promotion = textContent(n)
+			p.Promotion = TextContent(n)
 		}})
 	}
 	if sel.Weight != (ElemSel{}) {
 		m = append(m, fieldMatcher{sel.Weight, func(n *html.Node, p *datasource.Product) {
-			p.Weight = textContent(n)
+			p.Weight = TextContent(n)
 		}})
 	}
 	return m
@@ -414,26 +446,26 @@ func searchMatchers(sel ProductSelectors, baseURL string) []fieldMatcher {
 func pageMatchers(sel ProductPageSelectors) []fieldMatcher {
 	m := []fieldMatcher{
 		{sel.Title, func(n *html.Node, p *datasource.Product) {
-			p.Name = textContent(n)
+			p.Name = TextContent(n)
 		}},
 		{sel.Price, func(n *html.Node, p *datasource.Product) {
-			p.Price = parsePrice(textContent(n))
+			p.Price = ParsePrice(TextContent(n))
 		}},
 		{sel.Unit, func(n *html.Node, p *datasource.Product) {
-			p.PricePerUnit = textContent(n)
+			p.PricePerUnit = CleanPricePerUnit(TextContent(n))
 		}},
 		{sel.Image, func(n *html.Node, p *datasource.Product) {
-			p.ImageURL = getAttr(n, "src")
+			p.ImageURL = GetAttr(n, "src")
 		}},
 	}
 	if sel.Promo != (ElemSel{}) {
 		m = append(m, fieldMatcher{sel.Promo, func(n *html.Node, p *datasource.Product) {
-			p.Promotion = textContent(n)
+			p.Promotion = TextContent(n)
 		}})
 	}
 	if sel.Weight != (ElemSel{}) {
 		m = append(m, fieldMatcher{sel.Weight, func(n *html.Node, p *datasource.Product) {
-			p.Weight = textContent(n)
+			p.Weight = TextContent(n)
 		}})
 	}
 	return m
@@ -441,50 +473,68 @@ func pageMatchers(sel ProductPageSelectors) []fieldMatcher {
 
 func applyMatchers(node *html.Node, p *datasource.Product, matchers []fieldMatcher) {
 	for _, fm := range matchers {
-		if fm.sel.matches(node) {
+		if fm.sel.Matches(node) {
 			fm.apply(node, p)
 			return
 		}
 	}
 }
 
-// walkTree visits every node in the HTML tree, calling fn for each.
-func walkTree(n *html.Node, fn func(*html.Node)) {
+// WalkTree visits every node in the HTML tree, calling fn for each.
+func WalkTree(n *html.Node, fn func(*html.Node)) {
 	fn(n)
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		walkTree(c, fn)
+		WalkTree(c, fn)
 	}
 }
 
-// parsePrice extracts a float64 price from a string like "£1.50".
-func parsePrice(s string) float64 {
+// CleanPricePerUnit strips screen-reader prefixes like "Price per unit".
+func CleanPricePerUnit(s string) string {
+	s = strings.TrimPrefix(s, "Price per unit")
+	return strings.TrimSpace(s)
+}
+
+// ParsePrice extracts a float64 price from a string like "£1.50".
+// It also handles strings with leading text like "Item price£1.50".
+func ParsePrice(s string) float64 {
 	s = strings.TrimSpace(s)
-	s = strings.TrimPrefix(s, "£")
+	if i := strings.Index(s, "£"); i >= 0 {
+		s = s[i:]
+		s = strings.TrimPrefix(s, "£")
+		s = strings.TrimPrefix(s, "$")
+		s = strings.ReplaceAll(s, ",", "")
+		f, _ := strconv.ParseFloat(s, 64)
+		return f
+	}
 	s = strings.TrimPrefix(s, "$")
 	s = strings.ReplaceAll(s, ",", "")
 	f, _ := strconv.ParseFloat(s, 64)
 	return f
 }
 
-func lastPathSegment(path string) string {
-	parts := strings.Split(path, "/")
+// LastPathSegment extracts the last path segment from a URL or path string.
+func LastPathSegment(rawURL string) string {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return ""
+	}
+	parts := strings.Split(u.Path, "/")
 	if len(parts) > 0 {
 		return parts[len(parts)-1]
 	}
 	return ""
 }
 
-// resolveURL resolves a potentially relative URL against a base URL.
-func resolveURL(baseURL, href string) string {
+// ResolveURL resolves a potentially relative URL against a base URL.
+func ResolveURL(baseURL, href string) string {
 	if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") {
 		return href
 	}
 	return baseURL + href
 }
 
-// HTML utility functions.
-
-func getAttr(n *html.Node, key string) string {
+// GetAttr returns the value of the named attribute on an HTML node.
+func GetAttr(n *html.Node, key string) string {
 	for _, a := range n.Attr {
 		if a.Key == key {
 			return a.Val
@@ -515,9 +565,10 @@ func hasClassContaining(n *html.Node, substr string) bool {
 	return false
 }
 
-func textContent(n *html.Node) string {
+// TextContent returns the concatenated text content of an HTML node tree.
+func TextContent(n *html.Node) string {
 	var sb strings.Builder
-	walkTree(n, func(node *html.Node) {
+	WalkTree(n, func(node *html.Node) {
 		if node.Type == html.TextNode {
 			sb.WriteString(node.Data)
 		}
@@ -525,15 +576,15 @@ func textContent(n *html.Node) string {
 	return strings.TrimSpace(sb.String())
 }
 
-// htmlHasElement parses HTML and returns whether any element matches the selector.
-func htmlHasElement(r io.Reader, sel ElemSel) bool {
+// HTMLHasElement parses HTML and returns whether any element matches the selector.
+func HTMLHasElement(r io.Reader, sel ElemSel) bool {
 	doc, err := html.Parse(r)
 	if err != nil {
 		return false
 	}
 	var found bool
-	walkTree(doc, func(n *html.Node) {
-		if !found && sel.matches(n) {
+	WalkTree(doc, func(n *html.Node) {
+		if !found && sel.Matches(n) {
 			found = true
 		}
 	})
@@ -543,9 +594,9 @@ func htmlHasElement(r io.Reader, sel ElemSel) bool {
 // SetBrowserHeaders sets standard browser-like headers on an HTTP request.
 func SetBrowserHeaders(req *http.Request) {
 	req.Header.Set("User-Agent",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "+
+		"Mozilla/5.0 (X11; Linux x86_64) "+
 			"AppleWebKit/537.36 (KHTML, like Gecko) "+
-			"Chrome/120.0.0.0 Safari/537.36")
+			"Chrome/145.0.0.0 Safari/537.36")
 	req.Header.Set("Accept",
 		"text/html,application/xhtml+xml,"+
 			"application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")

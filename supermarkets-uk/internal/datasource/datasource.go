@@ -18,6 +18,10 @@ const (
 	Ocado SupermarketID = "ocado"
 	// Morrisons is the Morrisons supermarket.
 	Morrisons SupermarketID = "morrisons"
+	// Asda is the Asda supermarket.
+	Asda SupermarketID = "asda"
+	// Waitrose is the Waitrose supermarket.
+	Waitrose SupermarketID = "waitrose"
 	// Hiyou is the HiYoU Asian supermarket.
 	Hiyou SupermarketID = "hiyou"
 	// TukTukMart is the Tuk Tuk Mart Asian supermarket.
@@ -27,7 +31,7 @@ const (
 )
 
 // AllSupermarkets is the list of all supported supermarket IDs.
-var AllSupermarkets = []SupermarketID{Tesco, Sainsburys, Ocado, Morrisons, Hiyou, TukTukMart, Morueats}
+var AllSupermarkets = []SupermarketID{Tesco, Sainsburys, Ocado, Morrisons, Asda, Waitrose, Hiyou, TukTukMart, Morueats}
 
 // Product represents a supermarket product.
 type Product struct {

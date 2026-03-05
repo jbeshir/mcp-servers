@@ -15,18 +15,18 @@ func TestParseOcadoSearchResults(t *testing.T) {
 	}
 
 	p := products[0]
-	assertString(t, "name", p.Name, "Ocado Semi Skimmed Milk 4pt / 2.272L")
-	assertFloat(t, p.Price, 1.55)
+	assertString(t, "name", p.Name, "Cravendale Filtered Fresh Whole Milk Fresher for Longer")
+	assertFloat(t, p.Price, 2.70)
 	assertString(t, "supermarket",
 		string(p.Supermarket), string(datasource.Ocado))
-	assertString(t, "id", p.ID, "42116011")
+	assertString(t, "id", p.ID, "24577011")
 }
 
 func TestParseOcadoProductPage(t *testing.T) {
 	p := parseProductFile(t, "testdata/ocado_product.html", osp.ParseOcadoProductPage)
 
-	assertString(t, "name", p.Name, "Ocado Semi Skimmed Milk 4pt / 2.272L")
-	assertFloat(t, p.Price, 1.55)
+	assertString(t, "name", p.Name, "Cravendale Filtered Fresh Whole Milk Fresher for Longer")
+	assertFloat(t, p.Price, 2.70)
 }
 
 func TestParseOcadoCategories(t *testing.T) {
@@ -36,7 +36,7 @@ func TestParseOcadoCategories(t *testing.T) {
 		t.Fatalf("expected 2 categories, got %d", len(categories))
 	}
 
-	assertString(t, "category 0 name", categories[0].Name, "Fresh Food")
+	assertString(t, "category 0 name", categories[0].Name, "Fresh & Chilled Food")
 	assertString(t, "category 0 supermarket",
 		string(categories[0].Supermarket), string(datasource.Ocado))
 }

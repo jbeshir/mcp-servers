@@ -11,8 +11,8 @@ func TestNewClient(t *testing.T) {
 	c := client.NewClient(client.Config{})
 
 	infos := c.ListSupermarkets()
-	if len(infos) != 7 {
-		t.Fatalf("expected 7 supermarkets, got %d", len(infos))
+	if len(infos) != 9 {
+		t.Fatalf("expected 9 supermarkets, got %d", len(infos))
 	}
 
 	type expectedInfo struct {
@@ -24,6 +24,8 @@ func TestNewClient(t *testing.T) {
 		datasource.Sainsburys: {"Sainsbury's", "One of the UK's largest supermarket chains"},
 		datasource.Ocado:      {"Ocado", "Online-only UK supermarket and grocery delivery service"},
 		datasource.Morrisons:  {"Morrisons", "Major UK supermarket chain"},
+		datasource.Asda:       {"Asda", "One of the UK's largest supermarket chains"},
+		datasource.Waitrose:   {"Waitrose", "Premium UK supermarket chain"},
 		datasource.Hiyou:      {"HiYoU", "Asian supermarket based in Newcastle"},
 		datasource.TukTukMart: {"Tuk Tuk Mart", "Manchester-based Asian supermarket (Hang Won Hong's online store)"},
 		datasource.Morueats:   {"Morueats", "Asian grocery covering Japanese, Chinese, Korean, and Thai products"},

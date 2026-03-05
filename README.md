@@ -38,6 +38,8 @@ Add to your `claude_desktop_config.json`:
         "SAINSBURYS_LOGIN": "true",
         "OCADO_LOGIN": "true",
         "MORRISONS_LOGIN": "true",
+        "ASDA_LOGIN": "true",
+        "WAITROSE_LOGIN": "true",
         "SUPERMARKET_COOKIE_DIR": "/home/you/.supermarket-cookies"
       }
     }
@@ -87,6 +89,8 @@ Search and compare grocery prices across UK supermarkets.
 | Sainsbury's | `sainsburys` | One of the UK's largest supermarket chains | Yes |
 | Ocado | `ocado` | Online-only UK supermarket and grocery delivery service | Yes |
 | Morrisons | `morrisons` | Major UK supermarket chain | Yes |
+| Asda | `asda` | One of the UK's largest supermarket chains | Yes |
+| Waitrose | `waitrose` | Premium UK supermarket chain | Yes |
 | HiYoU | `hiyou` | Asian supermarket based in Newcastle | No |
 | Tuk Tuk Mart | `tuktukmart` | Manchester-based Asian supermarket (Hang Won Hong's online store) | No |
 | Morueats | `morueats` | Asian grocery covering Japanese, Chinese, Korean, and Thai products | No |
@@ -107,7 +111,7 @@ bin/supermarkets-uk-mcp
 
 #### Chrome requirement
 
-Tesco requires JavaScript rendering, so a headless Chromium browser is launched at startup. Chrome, Chromium, or Microsoft Edge must be installed on the system. The Shopify-based stores (HiYoU, Tuk Tuk Mart, Morueats) and Sainsbury's use JSON APIs, and Ocado and Morrisons use server-rendered HTML, so they work without a browser — but the Tesco datasource will fail if no browser is available.
+Tesco, Asda, and Waitrose require JavaScript rendering, so a headless Chromium browser is launched at startup. Chrome, Chromium, or Microsoft Edge must be installed on the system. The Shopify-based stores (HiYoU, Tuk Tuk Mart, Morueats) and Sainsbury's use JSON APIs, and Ocado and Morrisons use server-rendered HTML, so they work without a browser — but the browser-based datasources will fail if no browser is available.
 
 #### Login
 
@@ -121,4 +125,6 @@ To enable login for a supermarket, set `<SUPERMARKET>_LOGIN=true` (e.g. `TESCO_L
 | `SAINSBURYS_LOGIN` | Enable Sainsbury's login |
 | `OCADO_LOGIN` | Enable Ocado login |
 | `MORRISONS_LOGIN` | Enable Morrisons login |
+| `ASDA_LOGIN` | Enable Asda login |
+| `WAITROSE_LOGIN` | Enable Waitrose login |
 | `SUPERMARKET_COOKIE_DIR` | Override cookie storage path (default: OS config dir). Required if your MCP client sandboxes the filesystem. |

@@ -45,6 +45,14 @@ var SupermarketLoginConfigs = map[datasource.SupermarketID]LoginConfig{
 		Domain:       ".morrisons.com",
 		SuccessQuery: `a[data-test="logout-button"]`,
 	},
+	datasource.Asda: {
+		LoginURL: "https://www.asda.com/account/login",
+		Domain:   ".asda.com",
+	},
+	datasource.Waitrose: {
+		LoginURL: "https://www.waitrose.com/ecom/login",
+		Domain:   ".waitrose.com",
+	},
 }
 
 // InteractiveLogin opens a visible browser window to the login page and waits

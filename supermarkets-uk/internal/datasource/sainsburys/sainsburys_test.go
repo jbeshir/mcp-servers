@@ -142,6 +142,61 @@ func TestSearchIntegration(t *testing.T) {
 	assertSearchResults(t, products, "milk")
 }
 
+func TestProductDetailsIntegration(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+	ds := sainsburys.NewDatasource()
+
+	products, err := ds.SearchProducts(context.Background(), "milk")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(products) == 0 {
+		t.Fatal("no search results to look up")
+	}
+
+	p, err := ds.GetProductDetails(context.Background(), products[0].ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.Name == "" {
+		t.Error("empty product name")
+	}
+	if p.Price <= 0 {
+		t.Errorf("expected positive price, got %f", p.Price)
+	}
+	if p.URL == "" {
+		t.Error("empty product URL")
+	}
+}
+
+func TestBrowseCategoriesIntegration(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+	ds := sainsburys.NewDatasource()
+
+	categories, err := ds.BrowseCategories(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(categories) == 0 {
+		t.Fatal("expected categories")
+	}
+	for _, c := range categories {
+		if c.Name == "" {
+			t.Error("empty category name")
+		}
+		if c.Supermarket != datasource.Sainsburys {
+			t.Errorf("supermarket = %q, want %q", c.Supermarket, datasource.Sainsburys)
+		}
+		if c.URL == "" {
+			t.Error("empty category URL")
+		}
+	}
+}
+
 // Test helpers.
 
 func jsonFixtureServer(t *testing.T, fixturePath string) *httptest.Server {

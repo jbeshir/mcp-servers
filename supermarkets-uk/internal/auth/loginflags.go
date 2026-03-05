@@ -14,6 +14,8 @@ var supermarketEnvPrefixes = map[datasource.SupermarketID]string{
 	datasource.Sainsburys: "SAINSBURYS",
 	datasource.Ocado:      "OCADO",
 	datasource.Morrisons:  "MORRISONS",
+	datasource.Asda:       "ASDA",
+	datasource.Waitrose:   "WAITROSE",
 }
 
 // LoadLoginFlags reads per-supermarket login flags from environment variables.

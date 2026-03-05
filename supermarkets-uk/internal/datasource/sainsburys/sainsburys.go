@@ -42,10 +42,16 @@ type searchResponse struct {
 	Products []apiProduct `json:"products"`
 }
 
-type category struct {
-	CategoryID string `json:"category_id"`
-	Name       string `json:"name"`
-	URL        string `json:"url"`
+// categoryTreeResponse is the top-level response from the categories/tree endpoint.
+type categoryTreeResponse struct {
+	Hierarchy categoryNode `json:"category_hierarchy"`
+}
+
+// categoryNode represents a node in the category hierarchy.
+type categoryNode struct {
+	Slug     string         `json:"s"`
+	Name     string         `json:"n"`
+	Children []categoryNode `json:"c"`
 }
 
 // Datasource uses the Sainsbury's JSON API.
@@ -168,17 +174,18 @@ func (s *Datasource) BrowseCategories(
 	}
 	defer body.Close() //nolint:errcheck // Best-effort close.
 
-	var cats []category
-	if err := json.NewDecoder(body).Decode(&cats); err != nil {
+	var resp categoryTreeResponse
+	if err := json.NewDecoder(body).Decode(&resp); err != nil {
 		return nil, fmt.Errorf("sainsburys: decode categories: %w", err)
 	}
 
-	categories := make([]datasource.Category, 0, len(cats))
-	for _, c := range cats {
+	categories := make([]datasource.Category, 0, len(resp.Hierarchy.Children))
+	for _, c := range resp.Hierarchy.Children {
+		slug := c.Slug
 		categories = append(categories, datasource.Category{
-			ID:          c.CategoryID,
+			ID:          scraper.LastPathSegment(slug),
 			Name:        c.Name,
-			URL:         baseURL + c.URL,
+			URL:         baseURL + "/shop/" + slug,
 			Supermarket: datasource.Sainsburys,
 		})
 	}

@@ -1,12 +1,23 @@
-[
-  {
-    "category_id": "12345",
-    "name": "Meat & Fish",
-    "url": "/shop/gb/groceries/meat-fish"
-  },
-  {
-    "category_id": "12346",
-    "name": "Fruit & Veg",
-    "url": "/shop/gb/groceries/fruit-veg"
+{
+  "catalog_id": "10241",
+  "category_hierarchy": {
+    "s": "gb/groceries",
+    "n": "Groceries",
+    "c": [
+      {
+        "s": "gb/groceries/meat-fish",
+        "n": "Meat & Fish",
+        "c": [
+          {
+            "s": "gb/groceries/meat-fish/beef",
+            "n": "Beef"
+          }
+        ]
+      },
+      {
+        "s": "gb/groceries/fruit-veg",
+        "n": "Fruit & Veg"
+      }
+    ]
   }
-]
+}
