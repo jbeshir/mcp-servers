@@ -1,0 +1,10 @@
+{
+  "product_uid": "7878921",
+  "name": "Sainsbury's British Semi Skimmed Milk 2.27L",
+  "full_url": "/shop/gb/groceries/milk/sainsburys-semi-skimmed-milk-227l",
+  "image": "https://assets.sainsburys-groceries.co.uk/milk_large.jpg",
+  "is_available": true,
+  "retail_price": { "price": 1.45 },
+  "unit_price": { "measure": "litre", "price": 0.639 },
+  "promotions": []
+}

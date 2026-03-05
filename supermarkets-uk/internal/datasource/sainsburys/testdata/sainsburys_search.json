@@ -1,0 +1,26 @@
+{
+  "products": [
+    {
+      "product_uid": "7878921",
+      "name": "Sainsbury's British Semi Skimmed Milk 2.27L",
+      "full_url": "/shop/gb/groceries/milk/sainsburys-semi-skimmed-milk-227l",
+      "image": "https://assets.sainsburys-groceries.co.uk/milk.jpg",
+      "is_available": true,
+      "retail_price": { "price": 1.45 },
+      "unit_price": { "measure": "litre", "price": 0.639 },
+      "promotions": []
+    },
+    {
+      "product_uid": "7920105",
+      "name": "Cravendale Filtered Semi Skimmed Milk 2L",
+      "full_url": "/shop/gb/groceries/milk/cravendale-semi-skimmed-milk-2l",
+      "image": "https://assets.sainsburys-groceries.co.uk/cravendale.jpg",
+      "is_available": true,
+      "retail_price": { "price": 1.90 },
+      "unit_price": { "measure": "litre", "price": 0.95 },
+      "promotions": [
+        { "promotion_description": "Nectar Price £1.70" }
+      ]
+    }
+  ]
+}

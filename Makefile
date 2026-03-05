@@ -1,7 +1,7 @@
 # MCP Servers workspace Makefile
 # Validates and builds all MCP server modules in this workspace.
 
-MODULES := workflowy manifold
+MODULES := workflowy manifold supermarkets-uk
 
 .PHONY: setup-tools
 setup-tools:
@@ -45,7 +45,7 @@ fmt:
 # ── Build ─────────────────────────────────────────────────────
 
 .PHONY: build
-build: build-workflowy build-manifold
+build: build-workflowy build-manifold build-supermarkets-uk
 
 .PHONY: build-workflowy
 build-workflowy:
@@ -55,8 +55,12 @@ build-workflowy:
 build-manifold:
 	go build -o bin/manifold-mcp ./manifold/cmd/mcp
 
+.PHONY: build-supermarkets-uk
+build-supermarkets-uk:
+	go build -o bin/supermarkets-uk-mcp ./supermarkets-uk/cmd/mcp
+
 .PHONY: build-all-platforms
-build-all-platforms: build-workflowy-all-platforms build-manifold-all-platforms
+build-all-platforms: build-workflowy-all-platforms build-manifold-all-platforms build-supermarkets-uk-all-platforms
 
 .PHONY: build-workflowy-all-platforms
 build-workflowy-all-platforms:
@@ -71,6 +75,13 @@ build-manifold-all-platforms:
 	GOOS=darwin GOARCH=arm64 go build -o bin/manifold-mcp-darwin-arm64 ./manifold/cmd/mcp
 	GOOS=linux GOARCH=amd64 go build -o bin/manifold-mcp-linux-amd64 ./manifold/cmd/mcp
 	GOOS=windows GOARCH=amd64 go build -o bin/manifold-mcp-windows-amd64.exe ./manifold/cmd/mcp
+
+.PHONY: build-supermarkets-uk-all-platforms
+build-supermarkets-uk-all-platforms:
+	GOOS=darwin GOARCH=amd64 go build -o bin/supermarkets-uk-mcp-darwin-amd64 ./supermarkets-uk/cmd/mcp
+	GOOS=darwin GOARCH=arm64 go build -o bin/supermarkets-uk-mcp-darwin-arm64 ./supermarkets-uk/cmd/mcp
+	GOOS=linux GOARCH=amd64 go build -o bin/supermarkets-uk-mcp-linux-amd64 ./supermarkets-uk/cmd/mcp
+	GOOS=windows GOARCH=amd64 go build -o bin/supermarkets-uk-mcp-windows-amd64.exe ./supermarkets-uk/cmd/mcp
 
 # ── Clean ─────────────────────────────────────────────────────
 
