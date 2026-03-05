@@ -1,0 +1,34 @@
+{
+  "resources": {
+    "results": {
+      "products": [
+        {
+          "available": true,
+          "handle": "golden-bowl-thai-hom-mali-rice-1kg",
+          "id": 7983346319584,
+          "image": "https://cdn.shopify.com/s/files/1/0470/7447/6200/products/8851046921222.jpg?v=1674663665",
+          "price": "2.85",
+          "title": "Golden Bowl Thai Hom Mali Rice 1kg",
+          "type": "Rice",
+          "url": "/products/golden-bowl-thai-hom-mali-rice-1kg?_pos=1&_psq=rice&_ss=e&_v=1.0",
+          "featured_image": {
+            "url": "https://cdn.shopify.com/s/files/1/0470/7447/6200/products/8851046921222.jpg?v=1674663665"
+          }
+        },
+        {
+          "available": false,
+          "handle": "tiger-tiger-mixed-tri-colour-rice-1kg",
+          "id": 15609284297085,
+          "image": "",
+          "price": "3.65",
+          "title": "Tiger Tiger Mixed Tri Colour Rice 1kg",
+          "type": "Rice",
+          "url": "/products/tiger-tiger-mixed-tri-colour-rice-1kg",
+          "featured_image": {
+            "url": "https://cdn.shopify.com/s/files/1/0470/7447/6200/files/5024448571477.jpg?v=1760623316"
+          }
+        }
+      ]
+    }
+  }
+}

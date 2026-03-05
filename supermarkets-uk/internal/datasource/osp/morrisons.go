@@ -12,6 +12,7 @@ const morrisonsBaseURL = "https://groceries.morrisons.com"
 var morrisonsConfig = scraper.Config{
 	ID:          datasource.Morrisons,
 	Name:        "Morrisons",
+	Description: "Major UK supermarket chain",
 	BaseURL:     morrisonsBaseURL,
 	SearchURL:   scraper.QuerySearchURL(morrisonsBaseURL+"/search", "q"),
 	ProductURL:  scraper.ProductURLBuilder(morrisonsBaseURL + "/products/"),

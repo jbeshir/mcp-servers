@@ -26,6 +26,9 @@ func (d *RateLimited) ID() datasource.SupermarketID { return d.inner.ID() }
 // Name returns the human-readable name.
 func (d *RateLimited) Name() string { return d.inner.Name() }
 
+// Description returns a short description of the supermarket.
+func (d *RateLimited) Description() string { return d.inner.Description() }
+
 // SearchProducts waits for the rate limiter then delegates.
 func (d *RateLimited) SearchProducts(ctx context.Context, query string) ([]datasource.Product, error) {
 	if err := d.limiter.Wait(ctx); err != nil {

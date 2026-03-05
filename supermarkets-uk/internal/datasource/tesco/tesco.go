@@ -11,9 +11,10 @@ import (
 const baseURL = "https://www.tesco.com"
 
 var config = scraper.Config{
-	ID:      datasource.Tesco,
-	Name:    "Tesco",
-	BaseURL: baseURL,
+	ID:          datasource.Tesco,
+	Name:        "Tesco",
+	Description: "The UK's largest supermarket chain",
+	BaseURL:     baseURL,
 	SearchURL: scraper.QuerySearchURL(
 		baseURL+"/groceries/en-GB/search", "query",
 	),

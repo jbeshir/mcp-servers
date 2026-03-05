@@ -71,6 +71,11 @@ func (d *LazyAuth) Name() string {
 	return d.inner.Name()
 }
 
+// Description returns a short description of the supermarket.
+func (d *LazyAuth) Description() string {
+	return d.inner.Description()
+}
+
 // SearchProducts triggers login on first call, then delegates.
 func (d *LazyAuth) SearchProducts(
 	ctx context.Context, query string,

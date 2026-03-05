@@ -27,7 +27,14 @@
       "Bash(wc:*)",
       "WebFetch(domain:ocadoosp.zendesk.com)",
       "WebFetch(domain:gist.githubusercontent.com)",
-      "WebFetch(domain:towardsdatascience.com)"
+      "WebFetch(domain:towardsdatascience.com)",
+      "WebFetch(domain:www.hiyou.co.uk)",
+      "WebFetch(domain:hiyou.co)",
+      "WebFetch(domain:www.zing-asia.co.uk)",
+      "WebFetch(domain:www.orientalmart.co.uk)",
+      "WebFetch(domain:tuktukmart.co.uk)",
+      "WebFetch(domain:morueats.com)",
+      "WebFetch(domain:orientalshop.uk)"
     ]
   }
 }

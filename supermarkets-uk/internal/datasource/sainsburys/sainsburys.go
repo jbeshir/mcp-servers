@@ -80,6 +80,9 @@ func (s *Datasource) ID() datasource.SupermarketID { return datasource.Sainsbury
 // Name returns the human-readable name.
 func (s *Datasource) Name() string { return "Sainsbury's" }
 
+// Description returns a short description of the supermarket.
+func (s *Datasource) Description() string { return "One of the UK's largest supermarket chains" }
+
 // CheckSession validates whether cached cookies represent a valid session.
 // It makes a minimal search request because the categories endpoint works
 // without auth, so it can't detect stale cookies that cause 401s on search.

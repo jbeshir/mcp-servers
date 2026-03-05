@@ -13,6 +13,7 @@ const ocadoBaseURL = "https://www.ocado.com"
 var ocadoConfig = scraper.Config{
 	ID:          datasource.Ocado,
 	Name:        "Ocado",
+	Description: "Online-only UK supermarket and grocery delivery service",
 	BaseURL:     ocadoBaseURL,
 	SearchURL:   scraper.QuerySearchURL(ocadoBaseURL+"/search", "q"),
 	ProductURL:  scraper.ProductURLBuilder(ocadoBaseURL + "/products/"),

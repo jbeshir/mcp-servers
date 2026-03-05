@@ -18,10 +18,16 @@ const (
 	Ocado SupermarketID = "ocado"
 	// Morrisons is the Morrisons supermarket.
 	Morrisons SupermarketID = "morrisons"
+	// Hiyou is the HiYoU Asian supermarket.
+	Hiyou SupermarketID = "hiyou"
+	// TukTukMart is the Tuk Tuk Mart Asian supermarket.
+	TukTukMart SupermarketID = "tuktukmart"
+	// Morueats is the Morueats Asian grocery store.
+	Morueats SupermarketID = "morueats"
 )
 
 // AllSupermarkets is the list of all supported supermarket IDs.
-var AllSupermarkets = []SupermarketID{Tesco, Sainsburys, Ocado, Morrisons}
+var AllSupermarkets = []SupermarketID{Tesco, Sainsburys, Ocado, Morrisons, Hiyou, TukTukMart, Morueats}
 
 // Product represents a supermarket product.
 type Product struct {
@@ -58,6 +64,7 @@ type SearchResult struct {
 type Datasource interface {
 	ID() SupermarketID
 	Name() string
+	Description() string
 	SearchProducts(ctx context.Context, query string) ([]Product, error)
 	GetProductDetails(ctx context.Context, productID string) (*Product, error)
 	BrowseCategories(ctx context.Context) ([]Category, error)

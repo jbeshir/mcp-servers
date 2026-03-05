@@ -21,8 +21,8 @@ func (s *Server) registerTools() {
 		),
 		mcp.WithString("supermarkets",
 			mcp.Description(
-				"Comma-separated supermarket IDs to search "+
-					"(tesco, sainsburys, ocado, morrisons). "+
+				"Comma-separated supermarket IDs to search. "+
+					"Use list_supermarkets to see all available IDs. "+
 					"Omit to search all."),
 		),
 	), s.handleSearchProducts)
@@ -41,7 +41,7 @@ func (s *Server) registerTools() {
 		mcp.WithDescription("Browse product categories for a specific supermarket."),
 		mcp.WithString("supermarket",
 			mcp.Required(),
-			mcp.Description("Supermarket ID (tesco, sainsburys, ocado, morrisons)"),
+			mcp.Description("Supermarket ID. Use list_supermarkets to see all available IDs."),
 		),
 	), s.handleBrowseCategories)
 
@@ -49,7 +49,7 @@ func (s *Server) registerTools() {
 		mcp.WithDescription("Get detailed information about a specific product from a supermarket."),
 		mcp.WithString("supermarket",
 			mcp.Required(),
-			mcp.Description("Supermarket ID (tesco, sainsburys, ocado, morrisons)"),
+			mcp.Description("Supermarket ID. Use list_supermarkets to see all available IDs."),
 		),
 		mcp.WithString("product_id",
 			mcp.Required(),

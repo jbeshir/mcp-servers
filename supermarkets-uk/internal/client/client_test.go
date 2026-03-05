@@ -11,25 +11,35 @@ func TestNewClient(t *testing.T) {
 	c := client.NewClient(client.Config{})
 
 	infos := c.ListSupermarkets()
-	if len(infos) != 4 {
-		t.Fatalf("expected 4 supermarkets, got %d", len(infos))
+	if len(infos) != 7 {
+		t.Fatalf("expected 7 supermarkets, got %d", len(infos))
 	}
 
-	expected := map[datasource.SupermarketID]string{
-		datasource.Tesco:      "Tesco",
-		datasource.Sainsburys: "Sainsbury's",
-		datasource.Ocado:      "Ocado",
-		datasource.Morrisons:  "Morrisons",
+	type expectedInfo struct {
+		name        string
+		description string
+	}
+	expected := map[datasource.SupermarketID]expectedInfo{
+		datasource.Tesco:      {"Tesco", "The UK's largest supermarket chain"},
+		datasource.Sainsburys: {"Sainsbury's", "One of the UK's largest supermarket chains"},
+		datasource.Ocado:      {"Ocado", "Online-only UK supermarket and grocery delivery service"},
+		datasource.Morrisons:  {"Morrisons", "Major UK supermarket chain"},
+		datasource.Hiyou:      {"HiYoU", "Asian supermarket based in Newcastle"},
+		datasource.TukTukMart: {"Tuk Tuk Mart", "Manchester-based Asian supermarket (Hang Won Hong's online store)"},
+		datasource.Morueats:   {"Morueats", "Asian grocery covering Japanese, Chinese, Korean, and Thai products"},
 	}
 
 	for _, info := range infos {
-		name, ok := expected[info.ID]
+		exp, ok := expected[info.ID]
 		if !ok {
 			t.Errorf("unexpected supermarket: %s", info.ID)
 			continue
 		}
-		if info.Name != name {
-			t.Errorf("supermarket %s: name = %q, want %q", info.ID, info.Name, name)
+		if info.Name != exp.name {
+			t.Errorf("supermarket %s: name = %q, want %q", info.ID, info.Name, exp.name)
+		}
+		if info.Description != exp.description {
+			t.Errorf("supermarket %s: description = %q, want %q", info.ID, info.Description, exp.description)
 		}
 	}
 }

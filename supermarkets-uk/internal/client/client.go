@@ -16,14 +16,16 @@ import (
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/osp"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/sainsburys"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/scraper"
+	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/shopify"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/tesco"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/wrapper"
 )
 
 // SupermarketInfo describes a supported supermarket for the list tool.
 type SupermarketInfo struct {
-	ID   datasource.SupermarketID `json:"id"`
-	Name string                   `json:"name"`
+	ID          datasource.SupermarketID `json:"id"`
+	Name        string                   `json:"name"`
+	Description string                   `json:"description"`
 }
 
 // Client orchestrates multiple supermarket datasources.
@@ -59,7 +61,7 @@ func NewClient(cfg Config) *Client {
 
 	dsMap := make(
 		map[datasource.SupermarketID]datasource.Datasource,
-		len(sources),
+		len(sources)+3,
 	)
 	for _, ds := range sources {
 		id := ds.ID()
@@ -113,6 +115,18 @@ func NewClient(cfg Config) *Client {
 
 		dsMap[id] = wrapper.NewRateLimited(
 			wrapped, rate.NewLimiter(1, 1),
+		)
+	}
+
+	// Add plain (non-auth) datasources.
+	plainSources := []datasource.Datasource{
+		shopify.NewHiyou(),
+		shopify.NewTukTukMart(),
+		shopify.NewMorueats(),
+	}
+	for _, ds := range plainSources {
+		dsMap[ds.ID()] = wrapper.NewRateLimited(
+			ds, rate.NewLimiter(1, 1),
 		)
 	}
 
@@ -191,8 +205,9 @@ func (c *Client) ListSupermarkets() []SupermarketInfo {
 	for _, id := range datasource.AllSupermarkets {
 		if ds, ok := c.datasources[id]; ok {
 			infos = append(infos, SupermarketInfo{
-				ID:   id,
-				Name: ds.Name(),
+				ID:          id,
+				Name:        ds.Name(),
+				Description: ds.Description(),
 			})
 		}
 	}

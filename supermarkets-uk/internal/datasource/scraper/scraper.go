@@ -48,6 +48,7 @@ func (s ElemSel) matches(n *html.Node) bool {
 type Config struct {
 	ID          datasource.SupermarketID
 	Name        string
+	Description string
 	BaseURL     string
 	SearchURL   func(query string) string
 	ProductURL  func(id string) string
@@ -106,6 +107,9 @@ func (s *Scraper) ID() datasource.SupermarketID { return s.cfg.ID }
 
 // Name returns the human-readable name.
 func (s *Scraper) Name() string { return s.cfg.Name }
+
+// Description returns a short description of the supermarket.
+func (s *Scraper) Description() string { return s.cfg.Description }
 
 // CheckSession validates whether cached cookies represent a valid session.
 func (s *Scraper) CheckSession(ctx context.Context) bool {
@@ -201,6 +205,9 @@ func (s *BrowserScraper) ID() datasource.SupermarketID { return s.cfg.ID }
 
 // Name returns the human-readable name.
 func (s *BrowserScraper) Name() string { return s.cfg.Name }
+
+// Description returns a short description of the supermarket.
+func (s *BrowserScraper) Description() string { return s.cfg.Description }
 
 // CheckSession validates whether cached cookies represent a valid session.
 func (s *BrowserScraper) CheckSession(ctx context.Context) bool {
