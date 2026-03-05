@@ -77,17 +77,43 @@ Get your API key from your Manifold account settings.
 
 ### UK Supermarkets
 
-Search and compare grocery prices across Tesco, Sainsbury's, Ocado, and Morrisons. Uses a headless browser to scrape product data.
+Search and compare grocery prices across UK supermarkets.
 
-Tools: `search_products`, `compare_prices`, `get_product_details`, `browse_categories`, `list_supermarkets`.
+#### Supported supermarkets
+
+| Supermarket | ID | Description | Login |
+|---|---|---|---|
+| Tesco | `tesco` | The UK's largest supermarket chain | Yes |
+| Sainsbury's | `sainsburys` | One of the UK's largest supermarket chains | Yes |
+| Ocado | `ocado` | Online-only UK supermarket and grocery delivery service | Yes |
+| Morrisons | `morrisons` | Major UK supermarket chain | Yes |
+| HiYoU | `hiyou` | Asian supermarket based in Newcastle | No |
+| Tuk Tuk Mart | `tuktukmart` | Manchester-based Asian supermarket (Hang Won Hong's online store) | No |
+| Morueats | `morueats` | Asian grocery covering Japanese, Chinese, Korean, and Thai products | No |
+
+#### Tools
+
+| Tool | Description |
+|---|---|
+| `list_supermarkets` | List all supported supermarkets with their IDs, names, and descriptions |
+| `search_products` | Search for grocery products across one or more supermarkets |
+| `compare_prices` | Compare prices for a product across all supermarkets |
+| `get_product_details` | Get detailed information about a specific product |
+| `browse_categories` | Browse product categories for a specific supermarket |
 
 ```
 bin/supermarkets-uk-mcp
 ```
 
-A headless Chromium browser is used at runtime.
+#### Chrome requirement
 
-**Optional login for location-specific results:** Set `<SUPERMARKET>_LOGIN=true` (e.g. `TESCO_LOGIN=true`) to enable authenticated sessions. On first use of each enabled supermarket, a browser window opens for you to log in manually. Session cookies are cached to disk for subsequent runs.
+Tesco requires JavaScript rendering, so a headless Chromium browser is launched at startup. Chrome, Chromium, or Microsoft Edge must be installed on the system. The Shopify-based stores (HiYoU, Tuk Tuk Mart, Morueats) and Sainsbury's use JSON APIs, and Ocado and Morrisons use server-rendered HTML, so they work without a browser — but the Tesco datasource will fail if no browser is available.
+
+#### Login
+
+Some supermarkets return location-specific results (e.g. local stock and delivery availability) when logged in. Login is optional — all supermarkets work without it, but results may be less accurate.
+
+To enable login for a supermarket, set `<SUPERMARKET>_LOGIN=true` (e.g. `TESCO_LOGIN=true`). Login always requires Chrome, Chromium, or Edge, even for supermarkets that don't otherwise need a browser. On first use of that supermarket, a visible browser window opens for you to complete login manually. Once login succeeds, session cookies are cached to disk and reused on subsequent runs. If cached cookies expire, the server clears them and triggers a fresh login on the next use.
 
 | Variable | Description |
 |---|---|
