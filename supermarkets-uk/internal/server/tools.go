@@ -46,7 +46,10 @@ func (s *Server) registerTools() {
 	), s.handleBrowseCategories)
 
 	s.mcpServer.AddTool(mcp.NewTool("get_product_details",
-		mcp.WithDescription("Get detailed information about a specific product from a supermarket."),
+		mcp.WithDescription(
+			"Get detailed information about a specific product including price, "+
+				"availability, description, ingredients, and nutritional information "+
+				"where available."),
 		mcp.WithString("supermarket",
 			mcp.Required(),
 			mcp.Description("Supermarket ID. Use list_supermarkets to see all available IDs."),

@@ -33,19 +33,30 @@ const (
 // AllSupermarkets is the list of all supported supermarket IDs.
 var AllSupermarkets = []SupermarketID{Tesco, Sainsburys, Ocado, Morrisons, Asda, Waitrose, Hiyou, TukTukMart, Morueats}
 
+// NutritionInfo holds nutritional information for a product.
+type NutritionInfo struct {
+	Per100g     map[string]string `json:"per100g,omitempty"`
+	PerPortion  map[string]string `json:"perPortion,omitempty"`
+	PortionSize string            `json:"portionSize,omitempty"`
+}
+
 // Product represents a supermarket product.
 type Product struct {
-	ID           string        `json:"id"`
-	Supermarket  SupermarketID `json:"supermarket"`
-	Name         string        `json:"name"`
-	Price        float64       `json:"price"`
-	PricePerUnit string        `json:"pricePerUnit"`
-	Currency     string        `json:"currency"`
-	ImageURL     string        `json:"imageURL,omitempty"`
-	URL          string        `json:"url"`
-	Available    bool          `json:"available"`
-	Weight       string        `json:"weight,omitempty"`
-	Promotion    string        `json:"promotion,omitempty"`
+	ID           string         `json:"id"`
+	Supermarket  SupermarketID  `json:"supermarket"`
+	Name         string         `json:"name"`
+	Price        float64        `json:"price"`
+	PricePerUnit string         `json:"pricePerUnit"`
+	Currency     string         `json:"currency"`
+	ImageURL     string         `json:"imageURL,omitempty"`
+	URL          string         `json:"url"`
+	Available    bool           `json:"available"`
+	Weight       string         `json:"weight,omitempty"`
+	Promotion    string         `json:"promotion,omitempty"`
+	Description  string         `json:"description,omitempty"`
+	Ingredients  string         `json:"ingredients,omitempty"`
+	Nutrition    *NutritionInfo `json:"nutrition,omitempty"`
+	DietaryInfo  []string       `json:"dietaryInfo,omitempty"`
 }
 
 // Category represents a product category in a supermarket.

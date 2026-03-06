@@ -6,5 +6,28 @@
   "is_available": true,
   "retail_price": { "price": 1.45 },
   "unit_price": { "measure": "litre", "price": 0.639 },
-  "promotions": []
+  "promotions": [],
+  "description": "Fresh pasteurised semi-skimmed milk from British farms. A versatile everyday milk that is lower in fat than whole milk.",
+  "ingredients": "Semi-Skimmed Milk (100%)",
+  "nutrition": {
+    "per_100g": {
+      "Energy": "200kJ/47kcal",
+      "Fat": "1.8g",
+      "Saturates": "1.1g",
+      "Carbohydrate": "4.8g",
+      "Sugars": "4.8g",
+      "Protein": "3.4g",
+      "Salt": "0.1g"
+    },
+    "per_portion": {
+      "Energy": "400kJ/94kcal",
+      "Fat": "3.6g",
+      "Saturates": "2.2g",
+      "Carbohydrate": "9.6g",
+      "Sugars": "9.6g",
+      "Protein": "6.8g",
+      "Salt": "0.2g"
+    },
+    "portion_size": "200ml"
+  }
 }

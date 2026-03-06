@@ -43,3 +43,7 @@ After automated validation passes, review code for these issues:
    - String comparisons on errors instead of using typed errors and errors.Is or errors.As
 
 All steps must pass before changes can be merged.
+
+## Supermarkets-UK
+
+- Use `go run ./supermarkets-uk/cmd/capture-html` to fetch live supermarket HTML for debugging selectors and test fixture updates (supports `-store`, `-query`, `-url`, `-wait` flags).

@@ -38,6 +38,14 @@ var stores = map[string]storeConfig{
 		searchWaitSel:   `a[href^="/groceries/product/"]`,
 		categoryWaitSel: `a[href^="/groceries/fruit"]`,
 	},
+	"tesco": {
+		searchURL: func(query string) string {
+			return "https://www.tesco.com/groceries/en-GB/search?query=" + url.QueryEscape(query)
+		},
+		categoryURL:     "https://www.tesco.com/groceries/en-GB/search?query=a",
+		searchWaitSel:   `li[data-testid]`,
+		categoryWaitSel: `li[data-testid]`,
+	},
 	"waitrose": {
 		searchURL: func(query string) string {
 			return "https://www.waitrose.com/ecom/shop/search?searchTerm=" + url.QueryEscape(query)
@@ -57,7 +65,7 @@ func main() {
 	flag.Parse()
 
 	if *store == "" {
-		log.Fatal("-store is required (asda or waitrose)")
+		log.Fatal("-store is required (asda, tesco, or waitrose)")
 	}
 	cfg, ok := stores[*store]
 	if !ok {

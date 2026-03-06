@@ -47,6 +47,9 @@ func TestOcadoProductDetailsIntegration(t *testing.T) {
 	assert.NotEmpty(t, p.Name)
 	assert.Positive(t, p.Price)
 	assert.NotEmpty(t, p.URL)
+	assert.NotEmpty(t, p.Description)
+	require.NotNil(t, p.Nutrition, "expected nutrition info")
+	assert.NotEmpty(t, p.Nutrition.Per100g, "expected per-100g nutrition data")
 }
 
 func TestMorrisonsProductDetailsIntegration(t *testing.T) {
@@ -64,6 +67,9 @@ func TestMorrisonsProductDetailsIntegration(t *testing.T) {
 	assert.NotEmpty(t, p.Name)
 	assert.Positive(t, p.Price)
 	assert.NotEmpty(t, p.URL)
+	assert.NotEmpty(t, p.Description)
+	require.NotNil(t, p.Nutrition, "expected nutrition info")
+	assert.NotEmpty(t, p.Nutrition.Per100g, "expected per-100g nutrition data")
 }
 
 func TestOcadoBrowseCategoriesIntegration(t *testing.T) {

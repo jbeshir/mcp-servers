@@ -28,6 +28,11 @@ func TestParseOcadoProductPage(t *testing.T) {
 
 	assert.Equal(t, "Cravendale Filtered Fresh Whole Milk Fresher for Longer", p.Name)
 	assert.Equal(t, 2.70, p.Price)
+	assert.NotEmpty(t, p.Description)
+	assert.Contains(t, p.Ingredients, "Milk")
+	require.NotNil(t, p.Nutrition)
+	assert.NotEmpty(t, p.Nutrition.Per100g["Energy"])
+	assert.NotEmpty(t, p.Nutrition.Per100g["Fat"])
 }
 
 func TestParseOcadoCategories(t *testing.T) {

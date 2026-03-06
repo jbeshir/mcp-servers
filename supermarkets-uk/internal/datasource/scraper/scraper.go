@@ -1,4 +1,4 @@
-// Package scraper provides an HTML scraping framework for supermarket datasources.
+// Package scraper provides HTML parsing utilities for supermarket datasources.
 package scraper
 
 import (
@@ -44,126 +44,43 @@ func (s ElemSel) Matches(n *html.Node) bool {
 	return true
 }
 
-// Config defines all per-supermarket configuration for an HTML scraper.
+// Config defines per-supermarket selectors for HTML scraping.
 type Config struct {
 	ID          datasource.SupermarketID
-	Name        string
-	Description string
 	BaseURL     string
-	SearchURL   func(query string) string
-	ProductURL  func(id string) string
-	CategoryURL string
 	Container   ElemSel
 	SearchSel   ProductSelectors
 	ProductSel  ProductSelectors
 	CategorySel ElemSel
-
-	SessionCheckURL   string  // URL to fetch for session validation
-	SessionCheckQuery ElemSel // element selector that indicates authenticated state
 }
 
 // ProductSelectors configures selectors for parsing search result product nodes.
 type ProductSelectors struct {
-	Title  ElemSel
-	Link   ElemSel // optional: separate element for link href (if zero, title must be <a>)
-	Price  ElemSel
-	Unit   ElemSel
-	Promo  ElemSel
-	Image  ElemSel
-	Weight ElemSel
+	Title       ElemSel
+	Link        ElemSel // optional: separate element for link href (if zero, title must be <a>)
+	Price       ElemSel
+	Unit        ElemSel
+	Promo       ElemSel
+	Image       ElemSel
+	Weight      ElemSel
+	Description ElemSel // product page only
+	Ingredients ElemSel // product page only
 }
 
-// Scraper implements datasource.Datasource by scraping server-rendered HTML via
-// direct HTTP requests. Use this for sites whose SSR response contains product data.
-type Scraper struct {
-	cfg        Config
-	cookies    []*http.Cookie
-	httpClient *http.Client
-}
-
-// NewScraper creates a new HTTP-based HTML scraper datasource.
-func NewScraper(cfg Config) *Scraper {
-	return &Scraper{
-		cfg:        cfg,
-		httpClient: &http.Client{},
-	}
-}
-
-// SetCookies sets session cookies to inject into every HTTP request.
-func (s *Scraper) SetCookies(cookies []*http.Cookie) { s.cookies = cookies }
-
-// ID returns the supermarket identifier.
-func (s *Scraper) ID() datasource.SupermarketID { return s.cfg.ID }
-
-// Name returns the human-readable name.
-func (s *Scraper) Name() string { return s.cfg.Name }
-
-// Description returns a short description of the supermarket.
-func (s *Scraper) Description() string { return s.cfg.Description }
-
-// CheckSession validates whether cached cookies represent a valid session.
-func (s *Scraper) CheckSession(ctx context.Context) bool {
-	if len(s.cookies) == 0 || s.cfg.SessionCheckURL == "" {
-		return true
-	}
-	body, err := s.fetch(ctx, s.cfg.SessionCheckURL)
-	if err != nil {
-		return false
-	}
-	defer body.Close() //nolint:errcheck // Best-effort close.
-	return HTMLHasElement(body, s.cfg.SessionCheckQuery)
-}
-
-// SearchProducts searches for products matching the query.
-func (s *Scraper) SearchProducts(ctx context.Context, query string) ([]datasource.Product, error) {
-	body, err := s.fetch(ctx, s.cfg.SearchURL(query))
-	if err != nil {
-		return nil, fmt.Errorf("%s search fetch: %w", s.cfg.ID, err)
-	}
-	defer body.Close() //nolint:errcheck // Best-effort close.
-
-	return ParseSearchResults(body, s.cfg)
-}
-
-// GetProductDetails fetches details for a specific product.
-func (s *Scraper) GetProductDetails(ctx context.Context, productID string) (*datasource.Product, error) {
-	body, err := s.fetch(ctx, s.cfg.ProductURL(productID))
-	if err != nil {
-		return nil, fmt.Errorf("%s product fetch: %w", s.cfg.ID, err)
-	}
-	defer body.Close() //nolint:errcheck // Best-effort close.
-
-	p, err := ParseProductPage(body, s.cfg)
-	if err != nil {
-		return nil, err
-	}
-	p.ID = productID
-	p.URL = s.cfg.ProductURL(productID)
-	return p, nil
-}
-
-// BrowseCategories returns the top-level grocery categories.
-func (s *Scraper) BrowseCategories(ctx context.Context) ([]datasource.Category, error) {
-	body, err := s.fetch(ctx, s.cfg.CategoryURL)
-	if err != nil {
-		return nil, fmt.Errorf("%s categories fetch: %w", s.cfg.ID, err)
-	}
-	defer body.Close() //nolint:errcheck // Best-effort close.
-
-	return ParseCategories(body, s.cfg)
-}
-
-func (s *Scraper) fetch(ctx context.Context, targetURL string) (io.ReadCloser, error) {
+// FetchHTML fetches a URL with browser-like headers and optional cookies,
+// returning the response body. The caller must close the returned reader.
+func FetchHTML(ctx context.Context, targetURL string, cookies []*http.Cookie,
+	client *http.Client) (io.ReadCloser, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, targetURL, nil)
 	if err != nil {
 		return nil, err
 	}
 	SetBrowserHeaders(req)
-	for _, c := range s.cookies {
+	for _, c := range cookies {
 		req.AddCookie(c)
 	}
 
-	resp, err := s.httpClient.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -173,100 +90,6 @@ func (s *Scraper) fetch(ctx context.Context, targetURL string) (io.ReadCloser, e
 	}
 	return resp.Body, nil
 }
-
-// BrowserScraper implements datasource.Datasource by scraping HTML pages
-// rendered in a headless browser. Use this for sites that require JavaScript
-// to populate product data.
-type BrowserScraper struct {
-	cfg          Config
-	browser      *Browser
-	cookies      []*http.Cookie
-	waitSelector string // CSS selector to wait for before capturing HTML
-}
-
-// NewBrowserScraper creates a new browser-based HTML scraper datasource.
-func NewBrowserScraper(cfg Config, browser *Browser, waitSelector string) *BrowserScraper {
-	return &BrowserScraper{
-		cfg:          cfg,
-		browser:      browser,
-		waitSelector: waitSelector,
-	}
-}
-
-// SetCookies sets session cookies to inject into every browser page load.
-func (s *BrowserScraper) SetCookies(cookies []*http.Cookie) { s.cookies = cookies }
-
-// ID returns the supermarket identifier.
-func (s *BrowserScraper) ID() datasource.SupermarketID { return s.cfg.ID }
-
-// Name returns the human-readable name.
-func (s *BrowserScraper) Name() string { return s.cfg.Name }
-
-// Description returns a short description of the supermarket.
-func (s *BrowserScraper) Description() string { return s.cfg.Description }
-
-// CheckSession validates whether cached cookies represent a valid session.
-func (s *BrowserScraper) CheckSession(ctx context.Context) bool {
-	if len(s.cookies) == 0 || s.cfg.SessionCheckURL == "" {
-		return true
-	}
-	body, err := s.browser.Fetch(ctx, s.cfg.SessionCheckURL, s.cookies)
-	if err != nil {
-		return false
-	}
-	defer body.Close() //nolint:errcheck // Best-effort close.
-	return HTMLHasElement(body, s.cfg.SessionCheckQuery)
-}
-
-// SearchProducts searches for products matching the query.
-func (s *BrowserScraper) SearchProducts(ctx context.Context, query string) ([]datasource.Product, error) {
-	body, err := s.browser.Fetch(ctx, s.cfg.SearchURL(query), s.cookies, s.waitSelector)
-	if err != nil {
-		return nil, fmt.Errorf("%s search fetch: %w", s.cfg.ID, err)
-	}
-	defer body.Close() //nolint:errcheck // Best-effort close.
-
-	return ParseSearchResults(body, s.cfg)
-}
-
-// GetProductDetails fetches details for a specific product.
-func (s *BrowserScraper) GetProductDetails(ctx context.Context, productID string) (*datasource.Product, error) {
-	body, err := s.browser.Fetch(ctx, s.cfg.ProductURL(productID), s.cookies, s.waitSelector)
-	if err != nil {
-		return nil, fmt.Errorf("%s product fetch: %w", s.cfg.ID, err)
-	}
-	defer body.Close() //nolint:errcheck // Best-effort close.
-
-	p, err := ParseProductPage(body, s.cfg)
-	if err != nil {
-		return nil, err
-	}
-	p.ID = productID
-	p.URL = s.cfg.ProductURL(productID)
-	return p, nil
-}
-
-// BrowseCategories returns the top-level grocery categories.
-func (s *BrowserScraper) BrowseCategories(ctx context.Context) ([]datasource.Category, error) {
-	body, err := s.browser.Fetch(ctx, s.cfg.CategoryURL, s.cookies, s.waitSelector)
-	if err != nil {
-		return nil, fmt.Errorf("%s categories fetch: %w", s.cfg.ID, err)
-	}
-	defer body.Close() //nolint:errcheck // Best-effort close.
-
-	return ParseCategories(body, s.cfg)
-}
-
-// FetchPage fetches a URL via the browser with session cookies and returns
-// the rendered HTML. Optional wait selectors are passed through to the browser.
-func (s *BrowserScraper) FetchPage(
-	ctx context.Context, targetURL string, waitSelector ...string,
-) (io.ReadCloser, error) {
-	args := append([]string(nil), waitSelector...)
-	return s.browser.Fetch(ctx, targetURL, s.cookies, args...)
-}
-
-// Shared parsing logic used by both Scraper and BrowserScraper.
 
 // ParseSearchResults parses search result HTML into a list of products.
 func ParseSearchResults(r io.Reader, cfg Config) ([]datasource.Product, error) {
@@ -295,19 +118,15 @@ func ParseSearchResults(r io.Reader, cfg Config) ([]datasource.Product, error) {
 	return products, nil
 }
 
-// ParseProductPage parses a product detail page into a Product.
-func ParseProductPage(r io.Reader, cfg Config) (*datasource.Product, error) {
-	doc, err := html.Parse(r)
-	if err != nil {
-		return nil, fmt.Errorf("%s: parse product HTML: %w", cfg.ID, err)
-	}
-
+// ParseProductFields extracts product fields from a parsed HTML document.
+// The caller retains the doc for post-processing (e.g. nutrition extraction).
+func ParseProductFields(doc *html.Node, sel ProductSelectors, id datasource.SupermarketID) *datasource.Product {
 	p := &datasource.Product{
-		Supermarket: cfg.ID,
+		Supermarket: id,
 		Currency:    "GBP",
 		Available:   true,
 	}
-	matchers := pageMatchers(cfg.ProductSel)
+	matchers := pageMatchers(sel)
 
 	WalkTree(doc, func(n *html.Node) {
 		if n.Type != html.ElementNode {
@@ -316,7 +135,7 @@ func ParseProductPage(r io.Reader, cfg Config) (*datasource.Product, error) {
 		applyMatchers(n, p, matchers)
 	})
 
-	return p, nil
+	return p
 }
 
 // ParseCategories parses a categories page into a list of categories.
@@ -456,6 +275,16 @@ func pageMatchers(sel ProductSelectors) []fieldMatcher {
 	if sel.Weight != (ElemSel{}) {
 		m = append(m, fieldMatcher{sel.Weight, func(n *html.Node, p *datasource.Product) {
 			p.Weight = TextContent(n)
+		}})
+	}
+	if sel.Description != (ElemSel{}) {
+		m = append(m, fieldMatcher{sel.Description, func(n *html.Node, p *datasource.Product) {
+			p.Description = TextContent(n)
+		}})
+	}
+	if sel.Ingredients != (ElemSel{}) {
+		m = append(m, fieldMatcher{sel.Ingredients, func(n *html.Node, p *datasource.Product) {
+			p.Ingredients = TextContent(n)
 		}})
 	}
 	return m
@@ -605,4 +434,72 @@ func ProductURLBuilder(base string) func(string) string {
 	return func(id string) string {
 		return base + url.PathEscape(id)
 	}
+}
+
+// nutritionHeaderRows are first-cell values that indicate a header row
+// rather than a nutrient data row.
+var nutritionHeaderRows = map[string]bool{
+	"typical values":     true,
+	"nutrient":           true,
+	"nutritional values": true,
+	"per":                true,
+}
+
+// ParseNutritionTable extracts nutrition data from an HTML <table> node.
+// It expects rows where the first cell is the nutrient name, the second is
+// per-100g value, and an optional third is per-portion value.
+func ParseNutritionTable(tableNode *html.Node) *datasource.NutritionInfo {
+	if tableNode == nil {
+		return nil
+	}
+
+	info := &datasource.NutritionInfo{
+		Per100g: make(map[string]string),
+	}
+
+	WalkTree(tableNode, func(n *html.Node) {
+		if n.Type != html.ElementNode || n.Data != "tr" {
+			return
+		}
+		cells := extractCells(n)
+		if len(cells) < 2 || cells[0] == "" {
+			return
+		}
+		if nutritionHeaderRows[strings.ToLower(cells[0])] {
+			return
+		}
+		info.Per100g[cells[0]] = cells[1]
+		if len(cells) >= 3 && cells[2] != "" {
+			if info.PerPortion == nil {
+				info.PerPortion = make(map[string]string)
+			}
+			info.PerPortion[cells[0]] = cells[2]
+		}
+	})
+
+	if len(info.Per100g) == 0 {
+		return nil
+	}
+	return info
+}
+
+// extractCells returns trimmed text content of <td> and <th> children of a <tr>.
+func extractCells(tr *html.Node) []string {
+	var cells []string
+	for c := tr.FirstChild; c != nil; c = c.NextSibling {
+		if c.Type == html.ElementNode && (c.Data == "td" || c.Data == "th") {
+			cells = append(cells, strings.TrimSpace(TextContent(c)))
+		}
+	}
+	return cells
+}
+
+// FindNutritionTable locates the first <table> matching sel in the document,
+// or if sel is zero-valued, the first <table> element.
+func FindNutritionTable(doc *html.Node, sel ElemSel) *html.Node {
+	target := sel
+	if target == (ElemSel{}) {
+		target = ElemSel{Tag: "table"}
+	}
+	return FindElement(doc, target)
 }

@@ -29,6 +29,8 @@ func TestParseAlgoliaResults(t *testing.T) {
 	assert.NotEmpty(t, p.ImageURL)
 	assert.Contains(t, p.URL, "/groceries/product/")
 	assert.NotEmpty(t, p.PricePerUnit)
+	assert.NotEmpty(t, p.DietaryInfo, "expected dietary info from NUTRITIONAL_INFO flags")
+	assert.Contains(t, p.DietaryInfo, "Vegetarian")
 }
 
 func TestParseCategories(t *testing.T) {
@@ -50,6 +52,11 @@ func TestParseProductPage(t *testing.T) {
 	assert.NotEmpty(t, p.PricePerUnit)
 	assert.Equal(t, "4 pint", p.Weight)
 	assert.NotEmpty(t, p.ImageURL)
+	assert.NotEmpty(t, p.Description)
+	assert.Contains(t, p.Ingredients, "Milk")
+	require.NotNil(t, p.Nutrition)
+	assert.NotEmpty(t, p.Nutrition.Per100g["Energy"])
+	assert.NotEmpty(t, p.Nutrition.Per100g["Fat"])
 }
 
 func TestSearchIntegration(t *testing.T) {
@@ -81,6 +88,9 @@ func TestProductDetailsIntegration(t *testing.T) {
 	assert.NotEmpty(t, p.Name)
 	assert.Positive(t, p.Price)
 	assert.NotEmpty(t, p.URL)
+	assert.NotEmpty(t, p.Description)
+	require.NotNil(t, p.Nutrition, "expected nutrition info")
+	assert.NotEmpty(t, p.Nutrition.Per100g, "expected per-100g nutrition data")
 }
 
 func TestBrowseCategoriesIntegration(t *testing.T) {

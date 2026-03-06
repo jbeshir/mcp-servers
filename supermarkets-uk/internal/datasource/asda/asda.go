@@ -13,6 +13,8 @@ import (
 	"net/url"
 	"strings"
 
+	"golang.org/x/net/html"
+
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/scraper"
 )
@@ -28,17 +30,16 @@ const (
 	imageURLBase = "https://asdagroceries.scene7.com/is/image/asdagroceries/"
 )
 
-// browserConfig retains browser-based settings for categories and product pages.
-var browserConfig = scraper.Config{
+var (
+	productURL        = scraper.ProductURLBuilder(baseURL + "/groceries/product/")
+	sessionCheckURL   = baseURL + "/"
+	sessionCheckQuery = scraper.ElemSel{Tag: "button", Att: "data-locator", Val: "btn-sign-off"}
+	nutritionTableSel = scraper.ElemSel{Tag: "table", Att: "data-testid", Val: "nutrition-table"}
+)
+
+var selectors = scraper.Config{
 	ID:          datasource.Asda,
-	Name:        "Asda",
-	Description: "One of the UK's largest supermarket chains",
 	BaseURL:     baseURL,
-	SearchURL: func(query string) string {
-		return baseURL + "/groceries/search/" + url.PathEscape(query)
-	},
-	ProductURL:  scraper.ProductURLBuilder(baseURL + "/groceries/product/"),
-	CategoryURL: baseURL + "/groceries",
 	Container:   scraper.ElemSel{Tag: "div", Att: "data-locator", Val: "single_product_wrapper"},
 	CategorySel: scraper.ElemSel{Tag: "a", Att: "data-group", Val: "true"},
 	SearchSel: scraper.ProductSelectors{
@@ -49,25 +50,26 @@ var browserConfig = scraper.Config{
 		Image:  scraper.ElemSel{Tag: "img", Att: "data-locator", Val: "img-product-image"},
 		Weight: scraper.ElemSel{Tag: "p", Att: "data-locator", Val: "txt-product-weight"},
 	},
-	SessionCheckURL:   baseURL + "/",
-	SessionCheckQuery: scraper.ElemSel{Tag: "button", Att: "data-locator", Val: "btn-sign-off"},
 	ProductSel: scraper.ProductSelectors{
-		Title:  scraper.ElemSel{Tag: "h1", Att: "data-testid", Val: "txt-pdp-product-name"},
-		Price:  scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "txt-pdp-product-price"},
-		Unit:   scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "txt-pdp-product-price-per-kg"},
-		Image:  scraper.ElemSel{Tag: "img", Att: "data-testid", Val: "img"},
-		Weight: scraper.ElemSel{Tag: "p", Att: "data-testid", Val: "txt-pdp-weight-size"},
+		Title:       scraper.ElemSel{Tag: "h1", Att: "data-testid", Val: "txt-pdp-product-name"},
+		Price:       scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "txt-pdp-product-price"},
+		Unit:        scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "txt-pdp-product-price-per-kg"},
+		Image:       scraper.ElemSel{Tag: "img", Att: "data-testid", Val: "img"},
+		Weight:      scraper.ElemSel{Tag: "p", Att: "data-testid", Val: "txt-pdp-weight-size"},
+		Description: scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "product-description"},
+		Ingredients: scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "product-ingredients"},
 	},
 }
 
 // algoliaHit represents a single product hit from the Algolia search response.
 type algoliaHit struct {
-	ID       string                  `json:"ID"`
-	ObjectID string                  `json:"objectID"`
-	Name     string                  `json:"NAME"`
-	ImageID  string                  `json:"IMAGE_ID"`
-	PackSize string                  `json:"PACK_SIZE"`
-	Prices   map[string]algoliaPrice `json:"PRICES"`
+	ID              string                  `json:"ID"`
+	ObjectID        string                  `json:"objectID"`
+	Name            string                  `json:"NAME"`
+	ImageID         string                  `json:"IMAGE_ID"`
+	PackSize        string                  `json:"PACK_SIZE"`
+	Prices          map[string]algoliaPrice `json:"PRICES"`
+	NutritionalInfo map[string]int          `json:"NUTRITIONAL_INFO"`
 }
 
 // algoliaPrice holds pricing for a region.
@@ -102,25 +104,25 @@ func NewDatasource(browser *scraper.Browser) *Datasource {
 func (d *Datasource) SetCookies(cookies []*http.Cookie) { d.cookies = cookies }
 
 // ID returns the supermarket identifier.
-func (d *Datasource) ID() datasource.SupermarketID { return browserConfig.ID }
+func (d *Datasource) ID() datasource.SupermarketID { return datasource.Asda }
 
 // Name returns the human-readable name.
-func (d *Datasource) Name() string { return browserConfig.Name }
+func (d *Datasource) Name() string { return "Asda" }
 
 // Description returns a short description of the supermarket.
-func (d *Datasource) Description() string { return browserConfig.Description }
+func (d *Datasource) Description() string { return "One of the UK's largest supermarket chains" }
 
 // CheckSession validates whether cached cookies represent a valid session.
 func (d *Datasource) CheckSession(ctx context.Context) bool {
-	if len(d.cookies) == 0 || browserConfig.SessionCheckURL == "" {
+	if len(d.cookies) == 0 {
 		return true
 	}
-	body, err := d.browser.Fetch(ctx, browserConfig.SessionCheckURL, d.cookies)
+	body, err := d.browser.Fetch(ctx, sessionCheckURL, d.cookies)
 	if err != nil {
 		return false
 	}
 	defer body.Close() //nolint:errcheck // Best-effort close.
-	return scraper.HTMLHasElement(body, browserConfig.SessionCheckQuery)
+	return scraper.HTMLHasElement(body, sessionCheckQuery)
 }
 
 // SearchProducts searches for products via the Algolia API.
@@ -156,25 +158,29 @@ func (d *Datasource) SearchProducts(ctx context.Context, query string) ([]dataso
 // GetProductDetails fetches product details via the browser.
 func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*datasource.Product, error) {
 	waitSel := `[data-testid="txt-pdp-product-name"]`
-	body, err := d.browser.Fetch(ctx, browserConfig.ProductURL(productID), d.cookies, waitSel)
+	body, err := d.browser.Fetch(ctx, productURL(productID), d.cookies, waitSel)
 	if err != nil {
 		return nil, fmt.Errorf("asda product fetch: %w", err)
 	}
 	defer body.Close() //nolint:errcheck // Best-effort close.
 
-	p, err := scraper.ParseProductPage(body, browserConfig)
+	doc, err := html.Parse(body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("asda: parse product HTML: %w", err)
 	}
+
+	p := scraper.ParseProductFields(doc, selectors.ProductSel, datasource.Asda)
+	table := scraper.FindNutritionTable(doc, nutritionTableSel)
+	p.Nutrition = scraper.ParseNutritionTable(table)
 	p.ID = productID
-	p.URL = browserConfig.ProductURL(productID)
+	p.URL = productURL(productID)
 	return p, nil
 }
 
 // BrowseCategories returns the top-level grocery categories via the browser.
 func (d *Datasource) BrowseCategories(ctx context.Context) ([]datasource.Category, error) {
 	waitSel := `[data-group="true"]`
-	body, err := d.browser.Fetch(ctx, browserConfig.CategoryURL, d.cookies, waitSel)
+	body, err := d.browser.Fetch(ctx, baseURL+"/groceries", d.cookies, waitSel)
 	if err != nil {
 		return nil, fmt.Errorf("asda categories fetch: %w", err)
 	}
@@ -199,12 +205,39 @@ func ParseAlgoliaResults(r io.Reader) ([]datasource.Product, error) {
 
 // ParseProductPage parses an Asda product detail page.
 func ParseProductPage(r io.Reader) (*datasource.Product, error) {
-	return scraper.ParseProductPage(r, browserConfig)
+	doc, err := html.Parse(r)
+	if err != nil {
+		return nil, fmt.Errorf("asda: parse product HTML: %w", err)
+	}
+	p := scraper.ParseProductFields(doc, selectors.ProductSel, datasource.Asda)
+	table := scraper.FindNutritionTable(doc, nutritionTableSel)
+	p.Nutrition = scraper.ParseNutritionTable(table)
+	return p, nil
 }
 
 // ParseCategories parses an Asda categories page.
 func ParseCategories(r io.Reader) ([]datasource.Category, error) {
-	return scraper.ParseCategories(r, browserConfig)
+	return scraper.ParseCategories(r, selectors)
+}
+
+// dietaryFlags maps NUTRITIONAL_INFO keys to human-readable dietary labels.
+var dietaryFlags = []struct {
+	key   string
+	label string
+}{
+	{"Vegetarian", "Vegetarian"},
+	{"Vegan", "Vegan"},
+	{"Halal", "Halal"},
+	{"Kosher", "Kosher"},
+	{"NoGluten", "Gluten-free"},
+	{"NoMilk", "Dairy-free"},
+	{"NoEgg", "Egg-free"},
+	{"NoNuts", "Nut-free"},
+	{"NoPeanuts", "Peanut-free"},
+	{"HighFibre", "High fibre"},
+	{"LowFat", "Low fat"},
+	{"LowSugar", "Low sugar"},
+	{"LowSalt", "Low salt"},
 }
 
 func convertHit(hit algoliaHit) datasource.Product {
@@ -232,6 +265,14 @@ func convertHit(hit algoliaHit) datasource.Product {
 		}
 		if price.Offer != "" && !strings.EqualFold(price.Offer, "none") {
 			p.Promotion = price.Offer
+		}
+	}
+
+	if len(hit.NutritionalInfo) > 0 {
+		for _, df := range dietaryFlags {
+			if hit.NutritionalInfo[df.key] == 1 {
+				p.DietaryInfo = append(p.DietaryInfo, df.label)
+			}
 		}
 	}
 

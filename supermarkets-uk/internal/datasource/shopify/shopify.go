@@ -10,7 +10,10 @@ import (
 	"strconv"
 	"strings"
 
+	"golang.org/x/net/html"
+
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource"
+	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/scraper"
 )
 
 // Config holds the per-store settings for a Shopify datasource.
@@ -191,7 +194,7 @@ func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*
 		imageURL = p.Images[0].Src
 	}
 
-	return &datasource.Product{
+	result := &datasource.Product{
 		ID:          p.Handle,
 		Supermarket: d.cfg.ID,
 		Name:        p.Title,
@@ -201,7 +204,21 @@ func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*
 		URL:         d.cfg.BaseURL + "/products/" + p.Handle,
 		Available:   true,
 		Weight:      weight,
-	}, nil
+	}
+	if p.BodyHTML != "" {
+		result.Description = stripHTML(p.BodyHTML)
+	}
+
+	return result, nil
+}
+
+// stripHTML parses an HTML fragment and returns its text content.
+func stripHTML(s string) string {
+	doc, err := html.Parse(strings.NewReader(s))
+	if err != nil {
+		return s
+	}
+	return scraper.TextContent(doc)
 }
 
 // collectionsResponse is the top-level Shopify collections response.

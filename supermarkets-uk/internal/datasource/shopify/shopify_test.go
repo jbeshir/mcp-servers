@@ -61,6 +61,8 @@ func TestGetProductDetails(t *testing.T) {
 	assert.Equal(t, "1kg", p.Weight)
 	assert.Equal(t, "golden-bowl-thai-hom-mali-rice-1kg", p.ID)
 	assert.NotEmpty(t, p.ImageURL)
+	assert.NotEmpty(t, p.Description)
+	assert.Contains(t, p.Description, "Thai Hom Mali")
 }
 
 func TestBrowseCategories(t *testing.T) {

@@ -19,6 +19,24 @@ const (
 	apiBase = baseURL + "/groceries-api/gol-services"
 )
 
+// stringOrArray handles JSON fields that may be a string or an array of strings.
+type stringOrArray string
+
+func (s *stringOrArray) UnmarshalJSON(data []byte) error {
+	var str string
+	if err := json.Unmarshal(data, &str); err == nil {
+		*s = stringOrArray(str)
+		return nil
+	}
+	var arr []string
+	if err := json.Unmarshal(data, &arr); err == nil {
+		*s = stringOrArray(strings.Join(arr, "\n"))
+		return nil
+	}
+	*s = ""
+	return nil
+}
+
 // apiProduct is the JSON structure returned by the Sainsbury's API.
 type apiProduct struct {
 	ProductUID  string `json:"product_uid"`
@@ -36,6 +54,13 @@ type apiProduct struct {
 	Promotions []struct {
 		PromotionDescription string `json:"promotion_description"`
 	} `json:"promotions"`
+	Description stringOrArray `json:"description"`
+	Ingredients stringOrArray `json:"ingredients"`
+	Nutrition   *struct {
+		Per100g     map[string]string `json:"per_100g"`
+		PerPortion  map[string]string `json:"per_portion"`
+		PortionSize string            `json:"portion_size"`
+	} `json:"nutrition"`
 }
 
 type searchResponse struct {
@@ -230,6 +255,8 @@ func convertProduct(ap apiProduct) datasource.Product {
 		Currency:    "GBP",
 		Available:   ap.IsAvailable,
 		ImageURL:    ap.ImageURL,
+		Description: string(ap.Description),
+		Ingredients: string(ap.Ingredients),
 	}
 	if ap.FullURL != "" {
 		p.URL = baseURL + ap.FullURL
@@ -246,6 +273,13 @@ func convertProduct(ap apiProduct) datasource.Product {
 			}
 		}
 		p.Promotion = strings.Join(promos, "; ")
+	}
+	if ap.Nutrition != nil && len(ap.Nutrition.Per100g) > 0 {
+		p.Nutrition = &datasource.NutritionInfo{
+			Per100g:     ap.Nutrition.Per100g,
+			PerPortion:  ap.Nutrition.PerPortion,
+			PortionSize: ap.Nutrition.PortionSize,
+		}
 	}
 	return p
 }

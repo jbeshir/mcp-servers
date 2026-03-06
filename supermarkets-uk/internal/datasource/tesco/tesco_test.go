@@ -39,6 +39,12 @@ func TestParseProductPage(t *testing.T) {
 	assert.Equal(t, "Tesco British Semi Skimmed Milk 2.272L, 4 Pints", p.Name)
 	assert.Equal(t, 1.65, p.Price)
 	assert.Equal(t, "£0.73/litre", p.PricePerUnit)
+	assert.NotEmpty(t, p.Description)
+	assert.Contains(t, p.Ingredients, "Milk")
+	require.NotNil(t, p.Nutrition)
+	assert.NotEmpty(t, p.Nutrition.Per100g["Energy"])
+	assert.NotEmpty(t, p.Nutrition.Per100g["Fat"])
+	assert.NotEmpty(t, p.Nutrition.PerPortion["Energy"])
 }
 
 func TestParseCategories(t *testing.T) {
@@ -77,6 +83,10 @@ func TestProductDetailsIntegration(t *testing.T) {
 	assert.NotEmpty(t, p.Name)
 	assert.Positive(t, p.Price)
 	assert.NotEmpty(t, p.URL)
+	assert.NotEmpty(t, p.Description)
+	assert.NotEmpty(t, p.Ingredients)
+	require.NotNil(t, p.Nutrition, "expected nutrition info")
+	assert.NotEmpty(t, p.Nutrition.Per100g, "expected per-100g nutrition data")
 }
 
 func TestBrowseCategoriesIntegration(t *testing.T) {

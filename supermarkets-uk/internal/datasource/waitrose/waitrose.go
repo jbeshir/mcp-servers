@@ -24,18 +24,23 @@ const categoryHrefPrefix = "/ecom/shop/browse/groceries/"
 // waitSelector is the CSS selector to wait for before capturing search HTML.
 const waitSelector = `article[data-testid="product-pod"]`
 
-var config = scraper.Config{
-	ID:          datasource.Waitrose,
-	Name:        "Waitrose",
-	Description: "Premium UK supermarket chain",
-	BaseURL:     baseURL,
-	SearchURL: scraper.QuerySearchURL(
-		baseURL+"/ecom/shop/search", "searchTerm",
-	),
-	ProductURL: func(id string) string {
+var (
+	searchURL = scraper.QuerySearchURL(baseURL+"/ecom/shop/search", "searchTerm")
+
+	productURLFn = func(id string) string {
 		return baseURL + "/ecom/products/" + id
-	},
-	CategoryURL: baseURL + "/ecom/shop/browse",
+	}
+
+	categoryURL           = baseURL + "/ecom/shop/browse"
+	sessionCheckURL       = baseURL + "/"
+	sessionCheckQuery     = scraper.ElemSel{Tag: "a", Att: "data-test", Val: "signOut"}
+	nutritionContainerSel = scraper.ElemSel{Tag: "div", Cls: "ProductNutrientsTable_nutrition"}
+	nutritionTableSel     = scraper.ElemSel{Tag: "table"}
+)
+
+var selectors = scraper.Config{
+	ID:          datasource.Waitrose,
+	BaseURL:     baseURL,
 	Container:   scraper.ElemSel{Tag: "article", Att: "data-testid", Val: "product-pod"},
 	CategorySel: scraper.ElemSel{Tag: "a", Att: "data-testid", Val: "browse-category-link"},
 	SearchSel: scraper.ProductSelectors{
@@ -47,8 +52,6 @@ var config = scraper.Config{
 		Image:  scraper.ElemSel{Tag: "img"},
 		Weight: scraper.ElemSel{Tag: "span", Att: "data-testid", Val: "product-size"},
 	},
-	SessionCheckURL:   baseURL + "/",
-	SessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "signOut"},
 	ProductSel: scraper.ProductSelectors{
 		Title: scraper.ElemSel{Tag: "span", Att: "data-testid", Val: "product-name"},
 		Price: scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-pod-price"},
@@ -56,38 +59,46 @@ var config = scraper.Config{
 	},
 }
 
-// Datasource wraps a BrowserScraper with Waitrose-specific overrides
-// for search (pence price parsing), product details, and categories.
+// Datasource implements datasource.AuthDatasource for Waitrose using a headless browser.
 type Datasource struct {
-	inner *scraper.BrowserScraper
+	browser *scraper.Browser
+	cookies []*http.Cookie
 }
 
 // NewDatasource creates a new Waitrose datasource.
 // Waitrose requires a headless browser for JavaScript rendering.
 func NewDatasource(browser *scraper.Browser) *Datasource {
-	return &Datasource{
-		inner: scraper.NewBrowserScraper(config, browser, waitSelector),
-	}
+	return &Datasource{browser: browser}
 }
 
 // SetCookies sets session cookies.
-func (d *Datasource) SetCookies(cookies []*http.Cookie) { d.inner.SetCookies(cookies) }
+func (d *Datasource) SetCookies(cookies []*http.Cookie) { d.cookies = cookies }
 
 // ID returns the supermarket identifier.
-func (d *Datasource) ID() datasource.SupermarketID { return d.inner.ID() }
+func (d *Datasource) ID() datasource.SupermarketID { return datasource.Waitrose }
 
 // Name returns the human-readable name.
-func (d *Datasource) Name() string { return d.inner.Name() }
+func (d *Datasource) Name() string { return "Waitrose" }
 
 // Description returns a short description.
-func (d *Datasource) Description() string { return d.inner.Description() }
+func (d *Datasource) Description() string { return "Premium UK supermarket chain" }
 
 // CheckSession validates the session.
-func (d *Datasource) CheckSession(ctx context.Context) bool { return d.inner.CheckSession(ctx) }
+func (d *Datasource) CheckSession(ctx context.Context) bool {
+	if len(d.cookies) == 0 {
+		return true
+	}
+	body, err := d.browser.Fetch(ctx, sessionCheckURL, d.cookies)
+	if err != nil {
+		return false
+	}
+	defer body.Close() //nolint:errcheck // Best-effort close.
+	return scraper.HTMLHasElement(body, sessionCheckQuery)
+}
 
 // SearchProducts searches for products with Waitrose-specific price parsing.
 func (d *Datasource) SearchProducts(ctx context.Context, query string) ([]datasource.Product, error) {
-	body, err := d.inner.FetchPage(ctx, config.SearchURL(query), waitSelector)
+	body, err := d.browser.Fetch(ctx, searchURL(query), d.cookies, waitSelector)
 	if err != nil {
 		return nil, fmt.Errorf("waitrose search fetch: %w", err)
 	}
@@ -103,24 +114,27 @@ func (d *Datasource) SearchProducts(ctx context.Context, query string) ([]dataso
 
 // GetProductDetails fetches product details.
 func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*datasource.Product, error) {
-	body, err := d.inner.FetchPage(ctx, config.ProductURL(productID), `h1`)
+	body, err := d.browser.Fetch(ctx, productURLFn(productID), d.cookies, `h1`)
 	if err != nil {
 		return nil, fmt.Errorf("waitrose product fetch: %w", err)
 	}
 	defer body.Close() //nolint:errcheck // Best-effort close.
 
-	p, err := scraper.ParseProductPage(body, config)
+	doc, err := html.Parse(body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("waitrose: parse product HTML: %w", err)
 	}
+
+	p := scraper.ParseProductFields(doc, selectors.ProductSel, datasource.Waitrose)
+	extractWaitroseProductDetails(doc, p)
 	p.ID = productID
-	p.URL = config.ProductURL(productID)
+	p.URL = productURLFn(productID)
 	return p, nil
 }
 
 // BrowseCategories returns top-level grocery categories using custom parsing.
 func (d *Datasource) BrowseCategories(ctx context.Context) ([]datasource.Category, error) {
-	body, err := d.inner.FetchPage(ctx, config.CategoryURL)
+	body, err := d.browser.Fetch(ctx, categoryURL, d.cookies)
 	if err != nil {
 		return nil, fmt.Errorf("waitrose categories fetch: %w", err)
 	}
@@ -142,7 +156,36 @@ func ParseSearchResults(r io.Reader) ([]datasource.Product, error) {
 
 // ParseProductPage parses a Waitrose product detail page.
 func ParseProductPage(r io.Reader) (*datasource.Product, error) {
-	return scraper.ParseProductPage(r, config)
+	doc, err := html.Parse(r)
+	if err != nil {
+		return nil, fmt.Errorf("waitrose: parse product HTML: %w", err)
+	}
+	p := scraper.ParseProductFields(doc, selectors.ProductSel, datasource.Waitrose)
+	extractWaitroseProductDetails(doc, p)
+	return p, nil
+}
+
+// descriptionSel matches the <section id="summary"> element that contains
+// the product description on Waitrose product pages.
+var descriptionSel = scraper.ElemSel{Tag: "section", Att: "id", Val: "summary"}
+
+// ingredientsTextSel matches the <div> containing ingredient text.
+var ingredientsTextSel = scraper.ElemSel{Tag: "div", Cls: "Ingredient_ingredientsText"}
+
+// extractWaitroseProductDetails extracts description, ingredients, and nutrition
+// from a parsed Waitrose product page.
+func extractWaitroseProductDetails(doc *html.Node, p *datasource.Product) {
+	if el := scraper.FindElement(doc, descriptionSel); el != nil {
+		p.Description = scraper.TextContent(el)
+	}
+	if el := scraper.FindElement(doc, ingredientsTextSel); el != nil {
+		p.Ingredients = scraper.TextContent(el)
+	}
+	container := scraper.FindElement(doc, nutritionContainerSel)
+	if container != nil {
+		table := scraper.FindElement(container, nutritionTableSel)
+		p.Nutrition = scraper.ParseNutritionTable(table)
+	}
 }
 
 // parseProducts extracts products from a parsed HTML document, applying
@@ -150,10 +193,10 @@ func ParseProductPage(r io.Reader) (*datasource.Product, error) {
 func parseProducts(doc *html.Node) ([]datasource.Product, error) {
 	var products []datasource.Product
 	scraper.WalkTree(doc, func(n *html.Node) {
-		if !config.Container.Matches(n) {
+		if !selectors.Container.Matches(n) {
 			return
 		}
-		p, ok := scraper.ExtractProduct(n, config.SearchSel, config.BaseURL, config.ID)
+		p, ok := scraper.ExtractProduct(n, selectors.SearchSel, selectors.BaseURL, selectors.ID)
 		if !ok {
 			return
 		}
@@ -166,7 +209,7 @@ func parseProducts(doc *html.Node) ([]datasource.Product, error) {
 		}
 
 		// Override price with Waitrose-aware parsing that handles pence.
-		if elem := scraper.FindElement(n, config.SearchSel.Price); elem != nil {
+		if elem := scraper.FindElement(n, selectors.SearchSel.Price); elem != nil {
 			p.Price = parseWaitrosePrice(scraper.TextContent(elem))
 		}
 
