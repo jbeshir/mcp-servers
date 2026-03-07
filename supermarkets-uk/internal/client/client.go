@@ -224,6 +224,49 @@ func (c *Client) ListSupermarkets() []SupermarketInfo {
 	return infos
 }
 
+// GetOrderHistory retrieves order history for a supermarket.
+// Returns ErrOrderHistoryNotSupported if the store does not support it.
+func (c *Client) GetOrderHistory(
+	ctx context.Context,
+	id datasource.SupermarketID,
+	page int,
+) (*datasource.OrderHistoryResult, error) {
+	ds, ok := c.datasources[id]
+	if !ok {
+		return nil, fmt.Errorf("unknown supermarket: %s", id)
+	}
+	return ds.GetOrderHistory(ctx, page)
+}
+
+// GetBasket retrieves the current basket for a supermarket.
+// Returns ErrBasketNotSupported if the store does not support it.
+func (c *Client) GetBasket(
+	ctx context.Context,
+	id datasource.SupermarketID,
+) (*datasource.Basket, error) {
+	ds, ok := c.datasources[id]
+	if !ok {
+		return nil, fmt.Errorf("unknown supermarket: %s", id)
+	}
+	return ds.GetBasket(ctx)
+}
+
+// UpdateBasketItem adds, updates, or removes a product in the basket.
+// Set quantity to 0 to remove.
+// Returns ErrBasketNotSupported if the store does not support it.
+func (c *Client) UpdateBasketItem(
+	ctx context.Context,
+	id datasource.SupermarketID,
+	productID string,
+	quantity int,
+) (*datasource.Basket, error) {
+	ds, ok := c.datasources[id]
+	if !ok {
+		return nil, fmt.Errorf("unknown supermarket: %s", id)
+	}
+	return ds.UpdateBasketItem(ctx, productID, quantity)
+}
+
 // ParseSupermarketIDs parses a comma-separated list of supermarket IDs.
 func ParseSupermarketIDs(s string) []datasource.SupermarketID {
 	if s == "" {

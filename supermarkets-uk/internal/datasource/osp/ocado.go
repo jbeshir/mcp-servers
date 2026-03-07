@@ -29,6 +29,8 @@ type ospConfig struct {
 
 // ospDatasource implements datasource.AuthDatasource for an OSP-based supermarket.
 type ospDatasource struct {
+	datasource.NoOrderHistory
+	datasource.NoBasket
 	cfg        ospConfig
 	cookies    []*http.Cookie
 	httpClient *http.Client

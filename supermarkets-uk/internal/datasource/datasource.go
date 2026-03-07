@@ -3,6 +3,7 @@ package datasource
 
 import (
 	"context"
+	"errors"
 	"net/http"
 )
 
@@ -76,6 +77,9 @@ type SearchResult struct {
 }
 
 // Datasource provides access to a supermarket's product data.
+// All datasources must implement the full interface. Datasources that do
+// not support order history or basket management should embed NoOrderHistory
+// and/or NoBasket to provide default "not supported" implementations.
 type Datasource interface {
 	ID() SupermarketID
 	Name() string
@@ -83,6 +87,9 @@ type Datasource interface {
 	SearchProducts(ctx context.Context, query string) ([]Product, error)
 	GetProductDetails(ctx context.Context, productID string) (*Product, error)
 	BrowseCategories(ctx context.Context) ([]Category, error)
+	GetOrderHistory(ctx context.Context, page int) (*OrderHistoryResult, error)
+	GetBasket(ctx context.Context) (*Basket, error)
+	UpdateBasketItem(ctx context.Context, productID string, quantity int) (*Basket, error)
 }
 
 // AuthDatasource is a Datasource that supports session cookie injection
@@ -91,4 +98,83 @@ type AuthDatasource interface {
 	Datasource
 	SetCookies(cookies []*http.Cookie)
 	CheckSession(ctx context.Context) bool
+}
+
+// OrderItem represents a single item in an order.
+type OrderItem struct {
+	ProductID string `json:"productId"`
+	Name      string `json:"name"`
+	Quantity  int    `json:"quantity"`
+	ImageURL  string `json:"imageURL,omitempty"`
+}
+
+// Order represents a past grocery order.
+type Order struct {
+	ID             string        `json:"id"`
+	Supermarket    SupermarketID `json:"supermarket"`
+	Status         string        `json:"status"`
+	Date           string        `json:"date"`
+	DeliverySlot   string        `json:"deliverySlot,omitempty"`
+	ShoppingMethod string        `json:"shoppingMethod,omitempty"`
+	TotalPrice     float64       `json:"totalPrice"`
+	TotalItems     int           `json:"totalItems"`
+	Currency       string        `json:"currency"`
+	Items          []OrderItem   `json:"items"`
+}
+
+// OrderHistoryResult holds order history results and pagination info.
+type OrderHistoryResult struct {
+	Supermarket SupermarketID `json:"supermarket"`
+	Orders      []Order       `json:"orders"`
+	Total       *int          `json:"total,omitempty"`
+	Page        int           `json:"page"`
+	PageSize    int           `json:"pageSize"`
+	Error       string        `json:"error,omitempty"`
+}
+
+// ErrOrderHistoryNotSupported is returned by datasources that do not support order history.
+var ErrOrderHistoryNotSupported = errors.New("order history is not supported for this supermarket")
+
+// NoOrderHistory can be embedded by datasources that do not support order history.
+type NoOrderHistory struct{}
+
+// GetOrderHistory returns ErrOrderHistoryNotSupported.
+func (NoOrderHistory) GetOrderHistory(context.Context, int) (*OrderHistoryResult, error) {
+	return nil, ErrOrderHistoryNotSupported
+}
+
+// BasketItem represents an item in the shopping basket.
+type BasketItem struct {
+	ProductID string  `json:"productId"`
+	Name      string  `json:"name"`
+	Quantity  int     `json:"quantity"`
+	Cost      float64 `json:"cost"`
+	Price     float64 `json:"price"`
+	ImageURL  string  `json:"imageURL,omitempty"`
+	Promotion string  `json:"promotion,omitempty"`
+}
+
+// Basket represents the current shopping basket.
+type Basket struct {
+	Supermarket SupermarketID `json:"supermarket"`
+	Items       []BasketItem  `json:"items"`
+	TotalPrice  float64       `json:"totalPrice"`
+	TotalItems  int           `json:"totalItems"`
+	Currency    string        `json:"currency"`
+}
+
+// ErrBasketNotSupported is returned by datasources that do not support basket management.
+var ErrBasketNotSupported = errors.New("basket management is not supported for this supermarket")
+
+// NoBasket can be embedded by datasources that do not support basket management.
+type NoBasket struct{}
+
+// GetBasket returns ErrBasketNotSupported.
+func (NoBasket) GetBasket(context.Context) (*Basket, error) {
+	return nil, ErrBasketNotSupported
+}
+
+// UpdateBasketItem returns ErrBasketNotSupported.
+func (NoBasket) UpdateBasketItem(context.Context, string, int) (*Basket, error) {
+	return nil, ErrBasketNotSupported
 }

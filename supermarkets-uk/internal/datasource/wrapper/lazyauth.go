@@ -99,3 +99,27 @@ func (d *LazyAuth) BrowseCategories(
 	d.resolve(ctx)
 	return d.inner.BrowseCategories(ctx)
 }
+
+// GetOrderHistory triggers login on first call, then delegates.
+func (d *LazyAuth) GetOrderHistory(
+	ctx context.Context, page int,
+) (*datasource.OrderHistoryResult, error) {
+	d.resolve(ctx)
+	return d.inner.GetOrderHistory(ctx, page)
+}
+
+// GetBasket triggers login on first call, then delegates.
+func (d *LazyAuth) GetBasket(
+	ctx context.Context,
+) (*datasource.Basket, error) {
+	d.resolve(ctx)
+	return d.inner.GetBasket(ctx)
+}
+
+// UpdateBasketItem triggers login on first call, then delegates.
+func (d *LazyAuth) UpdateBasketItem(
+	ctx context.Context, productID string, quantity int,
+) (*datasource.Basket, error) {
+	d.resolve(ctx)
+	return d.inner.UpdateBasketItem(ctx, productID, quantity)
+}

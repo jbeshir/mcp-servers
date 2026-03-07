@@ -52,3 +52,33 @@ func (d *RateLimited) BrowseCategories(ctx context.Context) ([]datasource.Catego
 	}
 	return d.inner.BrowseCategories(ctx)
 }
+
+// GetOrderHistory waits for the rate limiter then delegates.
+func (d *RateLimited) GetOrderHistory(
+	ctx context.Context, page int,
+) (*datasource.OrderHistoryResult, error) {
+	if err := d.limiter.Wait(ctx); err != nil {
+		return nil, err
+	}
+	return d.inner.GetOrderHistory(ctx, page)
+}
+
+// GetBasket waits for the rate limiter then delegates.
+func (d *RateLimited) GetBasket(
+	ctx context.Context,
+) (*datasource.Basket, error) {
+	if err := d.limiter.Wait(ctx); err != nil {
+		return nil, err
+	}
+	return d.inner.GetBasket(ctx)
+}
+
+// UpdateBasketItem waits for the rate limiter then delegates.
+func (d *RateLimited) UpdateBasketItem(
+	ctx context.Context, productID string, quantity int,
+) (*datasource.Basket, error) {
+	if err := d.limiter.Wait(ctx); err != nil {
+		return nil, err
+	}
+	return d.inner.UpdateBasketItem(ctx, productID, quantity)
+}

@@ -26,6 +26,8 @@ type Config struct {
 
 // Datasource implements datasource.Datasource for Shopify stores.
 type Datasource struct {
+	datasource.NoOrderHistory
+	datasource.NoBasket
 	cfg        Config
 	httpClient *http.Client
 }

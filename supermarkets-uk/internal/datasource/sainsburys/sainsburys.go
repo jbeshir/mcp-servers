@@ -81,6 +81,8 @@ type categoryNode struct {
 
 // Datasource uses the Sainsbury's JSON API.
 type Datasource struct {
+	datasource.NoOrderHistory
+	datasource.NoBasket
 	cookies    []*http.Cookie
 	httpClient *http.Client
 	apiBase    string

@@ -60,6 +60,65 @@ func (s *Server) registerTools() {
 		),
 	), s.handleGetProductDetails)
 
+	s.mcpServer.AddTool(mcp.NewTool("get_order_history",
+		mcp.WithDescription(
+			"Get past grocery order history. Supported supermarkets: tesco. "+
+				"Requires a logged-in session. "+
+				"Returns orders with items, totals, delivery slots, and status."),
+		mcp.WithString("supermarket",
+			mcp.Required(),
+			mcp.Description("Supermarket ID — must be 'tesco'."),
+		),
+		mcp.WithNumber("page",
+			mcp.Description("Page number for pagination (default 1, 10 orders per page)."),
+		),
+	), s.handleGetOrderHistory)
+
+	s.mcpServer.AddTool(mcp.NewTool("get_basket",
+		mcp.WithDescription(
+			"Get the current shopping basket contents. Supported supermarkets: tesco. "+
+				"Requires a logged-in session. "+
+				"Returns items with quantities, prices, and totals."),
+		mcp.WithString("supermarket",
+			mcp.Required(),
+			mcp.Description("Supermarket ID — must be 'tesco'."),
+		),
+	), s.handleGetBasket)
+
+	s.mcpServer.AddTool(mcp.NewTool("add_to_basket",
+		mcp.WithDescription(
+			"Add a product to the shopping basket or update its quantity. "+
+				"Supported supermarkets: tesco. "+
+				"Use product IDs from search results. "+
+				"Requires a logged-in session."),
+		mcp.WithString("supermarket",
+			mcp.Required(),
+			mcp.Description("Supermarket ID — must be 'tesco'."),
+		),
+		mcp.WithString("product_id",
+			mcp.Required(),
+			mcp.Description("Product ID from search results"),
+		),
+		mcp.WithNumber("quantity",
+			mcp.Description("Quantity to set (default 1). This is an absolute value, not relative."),
+		),
+	), s.handleAddToBasket)
+
+	s.mcpServer.AddTool(mcp.NewTool("remove_from_basket",
+		mcp.WithDescription(
+			"Remove a product from the shopping basket. "+
+				"Supported supermarkets: tesco. "+
+				"Requires a logged-in session."),
+		mcp.WithString("supermarket",
+			mcp.Required(),
+			mcp.Description("Supermarket ID — must be 'tesco'."),
+		),
+		mcp.WithString("product_id",
+			mcp.Required(),
+			mcp.Description("Product ID to remove"),
+		),
+	), s.handleRemoveFromBasket)
+
 	s.mcpServer.AddTool(mcp.NewTool("list_supermarkets",
 		mcp.WithDescription("List all supported UK supermarkets with their IDs and status."),
 	), s.handleListSupermarkets)
@@ -149,6 +208,112 @@ func (s *Server) handleGetProductDetails(
 	}
 
 	return formatProduct(product)
+}
+
+func (s *Server) handleGetOrderHistory(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	args := request.Params.Arguments
+
+	supermarketID, ok := args["supermarket"].(string)
+	if !ok || supermarketID == "" {
+		return mcp.NewToolResultError("supermarket is required"), nil
+	}
+
+	page := 1
+	if v, ok := args["page"].(float64); ok && v > 0 {
+		page = int(v)
+	}
+
+	sid := datasource.SupermarketID(supermarketID)
+	result, err := s.client.GetOrderHistory(ctx, sid, page)
+	if err != nil {
+		return mcp.NewToolResultError(
+			fmt.Sprintf("failed to get order history: %v", err),
+		), nil
+	}
+
+	return formatOrderHistory(result)
+}
+
+func (s *Server) handleGetBasket(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	supermarketID, ok := request.Params.Arguments["supermarket"].(string)
+	if !ok || supermarketID == "" {
+		return mcp.NewToolResultError("supermarket is required"), nil
+	}
+
+	sid := datasource.SupermarketID(supermarketID)
+	basket, err := s.client.GetBasket(ctx, sid)
+	if err != nil {
+		return mcp.NewToolResultError(
+			fmt.Sprintf("failed to get basket: %v", err),
+		), nil
+	}
+
+	return formatBasket(basket)
+}
+
+func (s *Server) handleAddToBasket(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	args := request.Params.Arguments
+
+	supermarketID, ok := args["supermarket"].(string)
+	if !ok || supermarketID == "" {
+		return mcp.NewToolResultError("supermarket is required"), nil
+	}
+
+	productID, ok := args["product_id"].(string)
+	if !ok || productID == "" {
+		return mcp.NewToolResultError("product_id is required"), nil
+	}
+
+	quantity := 1
+	if v, ok := args["quantity"].(float64); ok && v > 0 {
+		quantity = int(v)
+	}
+
+	sid := datasource.SupermarketID(supermarketID)
+	basket, err := s.client.UpdateBasketItem(ctx, sid, productID, quantity)
+	if err != nil {
+		return mcp.NewToolResultError(
+			fmt.Sprintf("failed to add to basket: %v", err),
+		), nil
+	}
+
+	return formatBasket(basket)
+}
+
+func (s *Server) handleRemoveFromBasket(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	args := request.Params.Arguments
+
+	supermarketID, ok := args["supermarket"].(string)
+	if !ok || supermarketID == "" {
+		return mcp.NewToolResultError("supermarket is required"), nil
+	}
+
+	productID, ok := args["product_id"].(string)
+	if !ok || productID == "" {
+		return mcp.NewToolResultError("product_id is required"), nil
+	}
+
+	sid := datasource.SupermarketID(supermarketID)
+	basket, err := s.client.UpdateBasketItem(ctx, sid, productID, 0)
+	if err != nil {
+		return mcp.NewToolResultError(
+			fmt.Sprintf("failed to remove from basket: %v", err),
+		), nil
+	}
+
+	return formatBasket(basket)
 }
 
 func (s *Server) handleListSupermarkets(

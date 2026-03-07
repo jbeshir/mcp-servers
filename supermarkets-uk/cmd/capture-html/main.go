@@ -14,11 +14,14 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/auth"
+	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/scraper"
 )
 
@@ -57,26 +60,39 @@ var stores = map[string]storeConfig{
 }
 
 func main() {
-	store := flag.String("store", "", "supermarket to capture (asda, waitrose)")
+	storeName := flag.String("store", "", "supermarket to capture (asda, tesco, waitrose)")
 	query := flag.String("query", "milk", "search query")
 	rawURL := flag.String("url", "", "fetch a specific URL instead of search/category pages")
 	wait := flag.String("wait", "", "CSS selector to wait for before capturing (for -url mode)")
 	outDir := flag.String("out", "", "output directory (default: internal/datasource/<store>/testdata)")
 	flag.Parse()
 
-	if *store == "" {
+	if *storeName == "" {
 		log.Fatal("-store is required (asda, tesco, or waitrose)")
 	}
-	cfg, ok := stores[*store]
+	cfg, ok := stores[*storeName]
 	if !ok {
-		log.Fatalf("unknown store: %s", *store)
+		log.Fatalf("unknown store: %s", *storeName)
 	}
 
 	if *outDir == "" {
-		*outDir = filepath.Join("internal", "datasource", *store, "testdata")
+		*outDir = filepath.Join("internal", "datasource", *storeName, "testdata")
 	}
 	if err := os.MkdirAll(*outDir, 0o750); err != nil {
 		log.Fatalf("create output dir: %v", err)
+	}
+
+	// Load cookies from the cookie store for the given store.
+	var cookies []*http.Cookie
+	cookieDir, err := auth.DefaultCookieDir()
+	if err == nil {
+		store, err := auth.NewCookieStore(cookieDir)
+		if err == nil {
+			cookies, _ = store.Load(datasource.SupermarketID(*storeName))
+			if len(cookies) > 0 {
+				log.Printf("Loaded %d cached cookies for %s", len(cookies), *storeName)
+			}
+		}
 	}
 
 	browser := scraper.NewBrowser()
@@ -87,27 +103,30 @@ func main() {
 
 	if *rawURL != "" {
 		outFile := filepath.Join(*outDir, "page.html")
-		fetch(ctx, browser, *rawURL, outFile, *wait)
+		fetchWithCookies(ctx, browser, *rawURL, outFile, *wait, cookies)
 		return
 	}
 
 	// Fetch search results page.
-	searchFile := filepath.Join(*outDir, *store+"_search.html")
-	fetch(ctx, browser, cfg.searchURL(*query), searchFile, cfg.searchWaitSel)
+	searchFile := filepath.Join(*outDir, *storeName+"_search.html")
+	fetchWithCookies(ctx, browser, cfg.searchURL(*query), searchFile, cfg.searchWaitSel, cookies)
 
 	// Fetch category page.
-	catFile := filepath.Join(*outDir, *store+"_categories.html")
-	fetch(ctx, browser, cfg.categoryURL, catFile, cfg.categoryWaitSel)
+	catFile := filepath.Join(*outDir, *storeName+"_categories.html")
+	fetchWithCookies(ctx, browser, cfg.categoryURL, catFile, cfg.categoryWaitSel, cookies)
 
 	fmt.Println("\nDone. Inspect the saved HTML to find CSS selectors for product containers, titles, prices, etc.")
 }
 
-func fetch(ctx context.Context, browser *scraper.Browser, targetURL, outFile, waitSel string) {
+func fetchWithCookies(
+	ctx context.Context, browser *scraper.Browser,
+	targetURL, outFile, waitSel string, cookies []*http.Cookie,
+) {
 	fmt.Printf("Fetching %s ...\n", targetURL)
 	if waitSel != "" {
 		fmt.Printf("  waiting for: %s\n", waitSel)
 	}
-	rc, err := browser.Fetch(ctx, targetURL, nil, waitSel)
+	rc, err := browser.Fetch(ctx, targetURL, cookies, waitSel)
 	if err != nil {
 		log.Printf("ERROR fetching %s: %v", targetURL, err)
 		return

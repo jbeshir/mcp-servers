@@ -87,6 +87,8 @@ type algoliaResponse struct {
 // Datasource uses the Algolia API for search and a headless browser
 // for categories and product detail pages.
 type Datasource struct {
+	datasource.NoOrderHistory
+	datasource.NoBasket
 	browser    *scraper.Browser
 	cookies    []*http.Cookie
 	httpClient *http.Client

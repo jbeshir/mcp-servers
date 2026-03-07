@@ -1,0 +1,96 @@
+<html>
+<head><title>Basket - Tesco Groceries</title></head>
+<body>
+<div data-testid="product-list-item">item1</div>
+<div data-testid="product-list-item">item2</div>
+<script>
+{
+  "mfe-orchestrator": {
+    "props": {
+      "apolloCache": {
+        "ROOT_QUERY": {
+          "__typename": "Query",
+          "basket": {"__ref": "BasketType:trn:tesco:order:v3:r2:uuid:test-basket-id"},
+          "basket({})": {"__ref": "BasketType:trn:tesco:order:v3:r2:uuid:test-basket-id"}
+        },
+        "BasketType:trn:tesco:order:v3:r2:uuid:test-basket-id": {
+          "__typename": "BasketType",
+          "id": "trn:tesco:order:v3:r2:uuid:test-basket-id",
+          "orderId": "trn:tesco:order:v3:r2:uuid:test-basket-id",
+          "totalPrice": 12.50,
+          "guidePrice": 12.50,
+          "splitView": [
+            {"__ref": "GHSBasketSummary:trn:tesco:order:v3:r2:uuid:test-basket-id"}
+          ],
+          "items": [
+            {"__ref": "BasketItemType:item-1:pcs"},
+            {"__ref": "BasketItemType:item-2:pcs"}
+          ]
+        },
+        "GHSBasketSummary:trn:tesco:order:v3:r2:uuid:test-basket-id": {
+          "__typename": "GHSBasketSummary",
+          "id": "trn:tesco:order:v3:r2:uuid:test-basket-id",
+          "totalPrice": 12.50,
+          "guidePrice": 12.50,
+          "totalItems": 5,
+          "items": [
+            {"__ref": "BasketItemType:item-1:pcs"},
+            {"__ref": "BasketItemType:item-2:pcs"}
+          ]
+        },
+        "BasketItemType:item-1:pcs": {
+          "__typename": "BasketItemType",
+          "id": "item-1:pcs",
+          "quantity": 2,
+          "cost": 3.30,
+          "unit": "pcs",
+          "product": {"__ref": "ProductType:111111"}
+        },
+        "BasketItemType:item-2:pcs": {
+          "__typename": "BasketItemType",
+          "id": "item-2:pcs",
+          "quantity": 3,
+          "cost": 9.20,
+          "unit": "pcs",
+          "product": {"__ref": "ProductType:222222"}
+        },
+        "ProductType:111111": {
+          "__typename": "ProductType",
+          "id": "111111",
+          "title": "Semi Skimmed Milk 2L",
+          "defaultImageUrl": "https://img.tesco.com/111111.jpg",
+          "price": {
+            "__typename": "PriceType",
+            "actual": 1.65,
+            "unitPrice": 0.73,
+            "unitOfMeasure": "litre"
+          },
+          "promotions": [
+            {"__ref": "PromotionType:promo-1"}
+          ]
+        },
+        "ProductType:222222": {
+          "__typename": "ProductType",
+          "id": "222222",
+          "title": "Wholemeal Bread 800g",
+          "defaultImageUrl": "https://img.tesco.com/222222.jpg",
+          "price": {
+            "__typename": "PriceType",
+            "actual": 1.10,
+            "unitPrice": 1.38,
+            "unitOfMeasure": "kg"
+          },
+          "promotions": []
+        },
+        "PromotionType:promo-1": {
+          "__typename": "PromotionType",
+          "id": "promo-1",
+          "description": "Clubcard Price"
+        }
+      }
+    }
+  }
+}
+</script>
+</body>
+</html>

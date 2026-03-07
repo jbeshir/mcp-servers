@@ -1,0 +1,73 @@
+<html><head><title>My orders - Tesco Groceries</title></head><body>
+<script>{"mfe-orchestrator":{"props":{"apolloCache":{
+  "ROOT_QUERY":{
+    "__typename":"Query",
+    "orderSearch({\"count\":10,\"orderContexts\":[{\"statuses\":[\"Previous\"],\"type\":\"GROCERY\"},{\"statuses\":[\"Previous\"],\"type\":\"MARKETPLACE\"},{\"statuses\":[\"Previous\"],\"type\":\"FNF\"}],\"page\":1})":{
+      "__typename":"OrderSearchInterface",
+      "orders":[
+        {"__ref":"PreviousOrderType:trn:tesco:order:v3:r2:uuid:aaaa-1111"},
+        {"__ref":"CancelledOrderType:trn:tesco:order:v3:r2:uuid:bbbb-2222"}
+      ],
+      "info":{"__typename":"PageInformationInterface","total":25,"page":1,"count":10,"pageSize":10,"offset":0}
+    }
+  },
+  "PreviousOrderType:trn:tesco:order:v3:r2:uuid:aaaa-1111":{
+    "__typename":"PreviousOrderType",
+    "totalPrice":85.50,
+    "address":{"__typename":"AddressType","name":"Home","city":"London","addressLine1":"123 Test St","postcode":"SW1A 1AA"},
+    "localisation":{"__typename":"LocalisationType","currency":{"__typename":"CurrencyType","iso":"GBP"}},
+    "id":"trn:tesco:order:v3:r2:uuid:aaaa-1111",
+    "items":[
+      {"__ref":"OrderItemType:{\"id\":\"item-001:pcs\"}"},
+      {"__ref":"OrderItemType:{\"id\":\"item-002:pcs\"}"},
+      {"__ref":"OrderItemType:{\"id\":\"item-003:pcs\"}"}
+    ],
+    "orderNo":"1234-5678-90",
+    "paymentMode":"PaymentOnline",
+    "shoppingMethod":"delivery",
+    "slot":{"__ref":"SlotType:9999999"},
+    "status":"Delivered",
+    "totalItems":5,
+    "splitView":[{"__typename":"GHSOrderSummary","guidePrice":85.50,"totalPrice":85.50,"totalItems":5}]
+  },
+  "CancelledOrderType:trn:tesco:order:v3:r2:uuid:bbbb-2222":{
+    "__typename":"CancelledOrderType",
+    "totalPrice":42.00,
+    "address":{"__typename":"AddressType","name":"Work","city":"London","addressLine1":"456 Office Rd","postcode":"EC1A 1BB"},
+    "localisation":{"__typename":"LocalisationType","currency":{"__typename":"CurrencyType","iso":"GBP"}},
+    "id":"trn:tesco:order:v3:r2:uuid:bbbb-2222",
+    "items":[
+      {"__ref":"OrderItemType:{\"id\":\"item-004:pcs\"}"}
+    ],
+    "orderNo":"9876-5432-10",
+    "paymentMode":"PaymentOnline",
+    "shoppingMethod":"collection",
+    "slot":{"__ref":"SlotType:8888888"},
+    "status":"Cancelled",
+    "totalItems":2,
+    "splitView":[]
+  },
+  "SlotType:9999999":{"__typename":"SlotType","id":"9999999","charge":0,"start":"2026-03-01T15:00:00Z","end":"2026-03-01T16:00:00Z"},
+  "SlotType:8888888":{"__typename":"SlotType","id":"8888888","charge":3.99,"start":"2026-02-25T10:00:00Z","end":"2026-02-25T11:00:00Z"},
+  "OrderItemType:{\"id\":\"item-001:pcs\"}":{
+    "__typename":"OrderItemType","id":"item-001:pcs","unit":"pcs","weight":0,"quantity":2,
+    "product":{"__ref":"ProductType:111111"}
+  },
+  "OrderItemType:{\"id\":\"item-002:pcs\"}":{
+    "__typename":"OrderItemType","id":"item-002:pcs","unit":"pcs","weight":0,"quantity":1,
+    "product":{"__ref":"ProductType:222222"}
+  },
+  "OrderItemType:{\"id\":\"item-003:pcs\"}":{
+    "__typename":"OrderItemType","id":"item-003:pcs","unit":"pcs","weight":0,"quantity":4,
+    "product":{"__ref":"ProductType:333333"}
+  },
+  "OrderItemType:{\"id\":\"item-004:pcs\"}":{
+    "__typename":"OrderItemType","id":"item-004:pcs","unit":"pcs","weight":0,"quantity":1,
+    "product":{"__ref":"ProductType:444444"}
+  },
+  "ProductType:111111":{"__typename":"ProductType","id":"111111","title":"Semi Skimmed Milk 2L","defaultImageUrl":"https://example.com/milk.jpg","productType":"SingleProduct","restrictions":[],"seller":null},
+  "ProductType:222222":{"__typename":"ProductType","id":"222222","title":"Wholemeal Bread 800g","defaultImageUrl":"https://example.com/bread.jpg","productType":"SingleProduct","restrictions":[],"seller":null},
+  "ProductType:333333":{"__typename":"ProductType","id":"333333","title":"Free Range Eggs 6 Pack","defaultImageUrl":"https://example.com/eggs.jpg","productType":"SingleProduct","restrictions":[],"seller":null},
+  "ProductType:444444":{"__typename":"ProductType","id":"444444","title":"Cheddar Cheese 400g","defaultImageUrl":"https://example.com/cheese.jpg","productType":"SingleProduct","restrictions":[],"seller":null}
+}}}}</script>
+</body></html>

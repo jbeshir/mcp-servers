@@ -163,6 +163,10 @@ claude mcp add supermarkets-uk /path/to/supermarkets-uk-mcp
 | `compare_prices` | Compare prices for a product across all supermarkets |
 | `get_product_details` | Get detailed product info (price, description, ingredients, nutrition) |
 | `browse_categories` | Browse product categories for a supermarket |
+| `get_order_history` | Get past order history (Tesco only, requires login) |
+| `get_basket` | Get current shopping basket contents (Tesco only, requires login) |
+| `add_to_basket` | Add a product to the basket or update its quantity (Tesco only, requires login) |
+| `remove_from_basket` | Remove a product from the basket (Tesco only, requires login) |
 
 ## Supported supermarkets
 

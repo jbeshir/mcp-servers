@@ -73,78 +73,12 @@ func (b *Browser) start() {
 func (b *Browser) Fetch(
 	ctx context.Context, targetURL string, cookies []*http.Cookie, waitSelector ...string,
 ) (io.ReadCloser, error) {
-	b.mu.Lock()
-	b.start()
-	b.mu.Unlock()
-
-	tabCtx, tabCancel := chromedp.NewContext(b.browserCtx)
-	defer tabCancel()
-
-	renderCtx, renderCancel := context.WithTimeout(
-		tabCtx, browserRenderTimeout,
-	)
-	defer renderCancel()
-
-	// Also respect the caller's context for cancellation.
-	go func() {
-		select {
-		case <-ctx.Done():
-			renderCancel()
-		case <-renderCtx.Done():
-		}
-	}()
-
-	var actions []chromedp.Action
-
-	// Remove navigator.webdriver before any page scripts run.
-	actions = append(actions, chromedp.ActionFunc(func(ctx context.Context) error {
-		_, err := page.AddScriptToEvaluateOnNewDocument(
-			`Object.defineProperty(navigator, 'webdriver', {get: () => undefined})`,
-		).Do(ctx)
-		return err
-	}))
-
-	for _, c := range cookies {
-		actions = append(actions,
-			network.SetCookie(c.Name, c.Value).
-				WithDomain(c.Domain).
-				WithPath(c.Path),
-		)
+	sel := ""
+	if len(waitSelector) > 0 {
+		sel = waitSelector[0]
 	}
-	// Set a same-origin Referer header to match normal browser behaviour.
-	actions = append(actions, chromedp.ActionFunc(func(ctx context.Context) error {
-		u, err := url.Parse(targetURL)
-		if err != nil {
-			return err
-		}
-		referrer := u.Scheme + "://" + u.Host + "/"
-		headers := network.Headers{"Referer": referrer}
-		return network.SetExtraHTTPHeaders(headers).Do(ctx)
-	}))
-	actions = append(actions,
-		chromedp.Navigate(targetURL),
-		chromedp.WaitReady("body", chromedp.ByQuery),
-	)
-
-	if len(waitSelector) > 0 && waitSelector[0] != "" {
-		sel := waitSelector[0]
-		actions = append(actions, chromedp.ActionFunc(func(ctx context.Context) error {
-			return waitForSelector(ctx, sel)
-		}))
-	} else {
-		actions = append(actions, chromedp.Sleep(2*time.Second))
-	}
-
-	var htmlContent string
-	actions = append(actions,
-		chromedp.OuterHTML("html", &htmlContent, chromedp.ByQuery),
-	)
-
-	if err := chromedp.Run(renderCtx, actions...); err != nil {
-		return nil, fmt.Errorf("browser render %s: %w", targetURL, err)
-	}
-
-	return io.NopCloser(strings.NewReader(htmlContent)), nil
+	body, _, err := b.FetchAndReadCookie(ctx, targetURL, cookies, "", sel)
+	return body, err
 }
 
 // waitForSelector polls via JavaScript until the CSS selector matches an
@@ -169,6 +103,104 @@ func waitForSelector(ctx context.Context, sel string) error {
 		case <-time.After(interval):
 		}
 	}
+}
+
+// FetchAndReadCookie navigates to the given URL, waits for the page to
+// render, and returns both the HTML and the value of a specific cookie.
+// This is useful when the browser's JavaScript refreshes tokens that
+// are needed for subsequent API calls.
+func (b *Browser) FetchAndReadCookie(
+	ctx context.Context,
+	targetURL string,
+	cookies []*http.Cookie,
+	cookieName string,
+	waitSelector string,
+) (io.ReadCloser, string, error) {
+	b.mu.Lock()
+	b.start()
+	b.mu.Unlock()
+
+	tabCtx, tabCancel := chromedp.NewContext(b.browserCtx)
+	defer tabCancel()
+
+	renderCtx, renderCancel := context.WithTimeout(
+		tabCtx, browserRenderTimeout,
+	)
+	defer renderCancel()
+
+	go func() {
+		select {
+		case <-ctx.Done():
+			renderCancel()
+		case <-renderCtx.Done():
+		}
+	}()
+
+	var actions []chromedp.Action
+	actions = append(actions, chromedp.ActionFunc(func(ctx context.Context) error {
+		_, err := page.AddScriptToEvaluateOnNewDocument(
+			`Object.defineProperty(navigator, 'webdriver', {get: () => undefined})`,
+		).Do(ctx)
+		return err
+	}))
+	for _, c := range cookies {
+		actions = append(actions,
+			network.SetCookie(c.Name, c.Value).
+				WithDomain(c.Domain).
+				WithPath(c.Path),
+		)
+	}
+	actions = append(actions, chromedp.ActionFunc(func(ctx context.Context) error {
+		u, err := url.Parse(targetURL)
+		if err != nil {
+			return err
+		}
+		referrer := u.Scheme + "://" + u.Host + "/"
+		headers := network.Headers{"Referer": referrer}
+		return network.SetExtraHTTPHeaders(headers).Do(ctx)
+	}))
+	actions = append(actions,
+		chromedp.Navigate(targetURL),
+		chromedp.WaitReady("body", chromedp.ByQuery),
+	)
+	if waitSelector != "" {
+		actions = append(actions, chromedp.ActionFunc(func(ctx context.Context) error {
+			return waitForSelector(ctx, waitSelector)
+		}))
+	} else {
+		actions = append(actions, chromedp.Sleep(2*time.Second))
+	}
+
+	var htmlContent string
+	var cookieValue string
+	actions = append(actions,
+		chromedp.OuterHTML("html", &htmlContent, chromedp.ByQuery),
+	)
+	// Read cookies from the browser after the page has rendered
+	// (and potentially refreshed tokens).
+	if cookieName != "" {
+		actions = append(actions, chromedp.ActionFunc(func(ctx context.Context) error {
+			cookies, err := network.GetCookies().Do(ctx)
+			if err != nil {
+				return err
+			}
+			for _, c := range cookies {
+				if c.Name == cookieName {
+					cookieValue = c.Value
+					return nil
+				}
+			}
+			return nil
+		}))
+	}
+
+	if err := chromedp.Run(renderCtx, actions...); err != nil {
+		return nil, "", fmt.Errorf(
+			"browser render %s: %w", targetURL, err,
+		)
+	}
+
+	return io.NopCloser(strings.NewReader(htmlContent)), cookieValue, nil
 }
 
 // Close shuts down the browser.

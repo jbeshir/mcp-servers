@@ -93,6 +93,47 @@ func formatProduct(product *datasource.Product) (*mcp.CallToolResult, error) {
 	return mcp.NewToolResultText(string(data)), nil
 }
 
+func formatOrderHistory(result *datasource.OrderHistoryResult) (*mcp.CallToolResult, error) {
+	data, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		return mcp.NewToolResultError(
+			fmt.Sprintf("failed to format order history: %v", err),
+		), nil
+	}
+	var msg string
+	if result.Total != nil {
+		msg = fmt.Sprintf(
+			"Order history for %s (page %d, %d of %d total orders):\n\n%s",
+			result.Supermarket, result.Page,
+			len(result.Orders), *result.Total,
+			string(data),
+		)
+	} else {
+		msg = fmt.Sprintf(
+			"Order history for %s (page %d, %d orders):\n\n%s",
+			result.Supermarket, result.Page,
+			len(result.Orders),
+			string(data),
+		)
+	}
+	return mcp.NewToolResultText(msg), nil
+}
+
+func formatBasket(basket *datasource.Basket) (*mcp.CallToolResult, error) {
+	data, err := json.MarshalIndent(basket, "", "  ")
+	if err != nil {
+		return mcp.NewToolResultError(
+			fmt.Sprintf("failed to format basket: %v", err),
+		), nil
+	}
+	msg := fmt.Sprintf(
+		"Basket for %s (%d items, total £%.2f):\n\n%s",
+		basket.Supermarket, basket.TotalItems, basket.TotalPrice,
+		string(data),
+	)
+	return mcp.NewToolResultText(msg), nil
+}
+
 func formatSupermarkets(infos []client.SupermarketInfo) (*mcp.CallToolResult, error) {
 	data, err := json.MarshalIndent(infos, "", "  ")
 	if err != nil {
