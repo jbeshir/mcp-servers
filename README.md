@@ -227,3 +227,76 @@ Example with login enabled:
   }
 }
 ```
+
+---
+
+# Amazon
+
+Search for products and get detailed product information from Amazon. Supports multiple regional Amazon sites.
+
+**Binary:** `amazon-mcp`
+
+> **Note:** This server scrapes Amazon, which actively blocks automated access. Expect occasional failures — Amazon may present CAPTCHAs, block requests, or return incomplete pages. Results vary by session.
+
+## Requirements
+
+- **Chrome, Chromium, or Microsoft Edge** — all pages are rendered via a headless browser.
+
+## Configuration
+
+| Variable | Required | Description |
+|---|---|---|
+| `AMAZON_REGION` | No | Default Amazon region (default: `us`). Can be overridden per request. See supported regions below. |
+
+### Supported regions
+
+| Region | Domain | Currency |
+|---|---|---|
+| `ae` | amazon.ae | AED |
+| `au` | amazon.com.au | AUD |
+| `be` | amazon.com.be | EUR |
+| `br` | amazon.com.br | BRL |
+| `ca` | amazon.ca | CAD |
+| `de` | amazon.de | EUR |
+| `eg` | amazon.eg | EGP |
+| `es` | amazon.es | EUR |
+| `fr` | amazon.fr | EUR |
+| `ie` | amazon.co.uk | GBP |
+| `in` | amazon.in | INR |
+| `it` | amazon.it | EUR |
+| `jp` | amazon.co.jp | JPY |
+| `mx` | amazon.com.mx | MXN |
+| `nl` | amazon.nl | EUR |
+| `pl` | amazon.pl | PLN |
+| `sa` | amazon.sa | SAR |
+| `se` | amazon.se | SEK |
+| `sg` | amazon.sg | SGD |
+| `tr` | amazon.com.tr | TRY |
+| `uk` | amazon.co.uk | GBP |
+| `us` (default) | amazon.com | USD |
+
+### Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "amazon": {
+      "command": "/path/to/amazon-mcp"
+    }
+  }
+}
+```
+
+### Claude Code
+
+```
+claude mcp add amazon /path/to/amazon-mcp
+```
+
+## Tools
+
+| Tool | Description |
+|---|---|
+| `list_regions` | List all supported Amazon regions with IDs, names, and currencies |
+| `search_products` | Search for products on Amazon by keyword (optional `region` parameter) |
+| `get_product_details` | Get detailed product info by ASIN (optional `region` parameter) |

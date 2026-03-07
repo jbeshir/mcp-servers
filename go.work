@@ -3,3 +3,4 @@ go 1.24.2
 use ./workflowy
 use ./manifold
 use ./supermarkets-uk
+use ./amazon

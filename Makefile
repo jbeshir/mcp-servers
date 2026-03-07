@@ -1,7 +1,7 @@
 # MCP Servers workspace Makefile
 # Validates and builds all MCP server modules in this workspace.
 
-MODULES := workflowy manifold supermarkets-uk
+MODULES := workflowy manifold supermarkets-uk amazon
 
 .PHONY: setup-tools
 setup-tools:
@@ -45,7 +45,7 @@ fmt:
 # ── Build ─────────────────────────────────────────────────────
 
 .PHONY: build
-build: build-workflowy build-manifold build-supermarkets-uk
+build: build-workflowy build-manifold build-supermarkets-uk build-amazon
 
 .PHONY: build-workflowy
 build-workflowy:
@@ -59,8 +59,12 @@ build-manifold:
 build-supermarkets-uk:
 	go build -o bin/supermarkets-uk-mcp ./supermarkets-uk/cmd/mcp
 
+.PHONY: build-amazon
+build-amazon:
+	go build -o bin/amazon-mcp ./amazon/cmd/mcp
+
 .PHONY: build-all-platforms
-build-all-platforms: build-workflowy-all-platforms build-manifold-all-platforms build-supermarkets-uk-all-platforms
+build-all-platforms: build-workflowy-all-platforms build-manifold-all-platforms build-supermarkets-uk-all-platforms build-amazon-all-platforms
 
 .PHONY: build-workflowy-all-platforms
 build-workflowy-all-platforms:
@@ -82,6 +86,13 @@ build-supermarkets-uk-all-platforms:
 	GOOS=darwin GOARCH=arm64 go build -o bin/supermarkets-uk-mcp-darwin-arm64 ./supermarkets-uk/cmd/mcp
 	GOOS=linux GOARCH=amd64 go build -o bin/supermarkets-uk-mcp-linux-amd64 ./supermarkets-uk/cmd/mcp
 	GOOS=windows GOARCH=amd64 go build -o bin/supermarkets-uk-mcp-windows-amd64.exe ./supermarkets-uk/cmd/mcp
+
+.PHONY: build-amazon-all-platforms
+build-amazon-all-platforms:
+	GOOS=darwin GOARCH=amd64 go build -o bin/amazon-mcp-darwin-amd64 ./amazon/cmd/mcp
+	GOOS=darwin GOARCH=arm64 go build -o bin/amazon-mcp-darwin-arm64 ./amazon/cmd/mcp
+	GOOS=linux GOARCH=amd64 go build -o bin/amazon-mcp-linux-amd64 ./amazon/cmd/mcp
+	GOOS=windows GOARCH=amd64 go build -o bin/amazon-mcp-windows-amd64.exe ./amazon/cmd/mcp
 
 # ── Clean ─────────────────────────────────────────────────────
 
