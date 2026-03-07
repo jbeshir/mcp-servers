@@ -2,6 +2,7 @@ package scraper
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -63,6 +64,59 @@ func TestParseProductPage(t *testing.T) {
 
 	assert.Contains(t, p.Description, "Premium noise cancelling headphones")
 	assert.Equal(t, "In stock.", p.Availability)
+}
+
+func TestParseProductPageVariants(t *testing.T) {
+	const page = `<html><body>
+	<span id="productTitle">Test Product</span>
+	<script type="a-state" data-a-state='{"key":"desktop-twister-sort-filter-data"}'>
+	{"sortedDimValuesForAllDims":{
+		"size_name":[
+			{"dimensionValueDisplayText":"64 GB","dimensionValueState":"SELECTED","defaultAsin":"B001"},
+			{"dimensionValueDisplayText":"256 GB","dimensionValueState":"AVAILABLE","defaultAsin":"B002"}
+		],
+		"color_name":[
+			{"dimensionValueDisplayText":"Pink","dimensionValueState":"SELECTED","defaultAsin":"B001"},
+			{"dimensionValueDisplayText":"Blue","dimensionValueState":"AVAILABLE","defaultAsin":"B003"},
+			{"dimensionValueDisplayText":"Purple","dimensionValueState":"UNAVAILABLE","defaultAsin":"B004"}
+		],
+		"configuration":[
+			{"dimensionValueDisplayText":"Without AppleCare+","dimensionValueState":"SELECTED","defaultAsin":"B001"}
+		]
+	}}
+	</script>
+	</body></html>`
+
+	p, err := ParseProductPage(strings.NewReader(page), "B001", ukRegion)
+	require.NoError(t, err)
+
+	// "configuration" has only 1 option, so it should be excluded.
+	require.Len(t, p.Variants, 2)
+
+	// Sorted alphabetically: color, size.
+	assert.Equal(t, "Color", p.Variants[0].Dimension)
+	assert.Equal(t, "Pink", p.Variants[0].Selected)
+	require.Len(t, p.Variants[0].Options, 3)
+	assert.Equal(t, "Pink", p.Variants[0].Options[0].Value)
+	assert.Equal(t, "SELECTED", p.Variants[0].Options[0].State)
+	assert.Equal(t, "Blue", p.Variants[0].Options[1].Value)
+	assert.Equal(t, "B003", p.Variants[0].Options[1].ASIN)
+	assert.Equal(t, "AVAILABLE", p.Variants[0].Options[1].State)
+	assert.Equal(t, "UNAVAILABLE", p.Variants[0].Options[2].State)
+
+	assert.Equal(t, "Size", p.Variants[1].Dimension)
+	assert.Equal(t, "64 GB", p.Variants[1].Selected)
+	require.Len(t, p.Variants[1].Options, 2)
+}
+
+func TestParseProductPageNoVariants(t *testing.T) {
+	f, err := os.Open("testdata/amazon_product.html")
+	require.NoError(t, err)
+	defer f.Close() //nolint:errcheck
+
+	p, err := ParseProductPage(f, "B09CDRVQZC", ukRegion)
+	require.NoError(t, err)
+	assert.Empty(t, p.Variants)
 }
 
 func TestParsePrice(t *testing.T) {

@@ -3,9 +3,11 @@ package scraper
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -49,19 +51,34 @@ var Regions = map[string]Region{
 
 // Product represents an Amazon product.
 type Product struct {
-	ASIN         string   `json:"asin"`
-	Name         string   `json:"name"`
-	Price        float64  `json:"price,omitempty"`
-	Currency     string   `json:"currency"`
-	URL          string   `json:"url"`
-	ImageURL     string   `json:"imageURL,omitempty"`
-	Rating       string   `json:"rating,omitempty"`
-	ReviewCount  string   `json:"reviewCount,omitempty"`
-	IsPrime      bool     `json:"isPrime,omitempty"`
-	Brand        string   `json:"brand,omitempty"`
-	Features     []string `json:"features,omitempty"`
-	Description  string   `json:"description,omitempty"`
-	Availability string   `json:"availability,omitempty"`
+	ASIN         string    `json:"asin"`
+	Name         string    `json:"name"`
+	Price        float64   `json:"price,omitempty"`
+	Currency     string    `json:"currency"`
+	URL          string    `json:"url"`
+	ImageURL     string    `json:"imageURL,omitempty"`
+	Rating       string    `json:"rating,omitempty"`
+	ReviewCount  string    `json:"reviewCount,omitempty"`
+	IsPrime      bool      `json:"isPrime,omitempty"`
+	Brand        string    `json:"brand,omitempty"`
+	Features     []string  `json:"features,omitempty"`
+	Description  string    `json:"description,omitempty"`
+	Availability string    `json:"availability,omitempty"`
+	Variants     []Variant `json:"variants,omitempty"`
+}
+
+// Variant represents a product variation dimension (e.g. size, color).
+type Variant struct {
+	Dimension string          `json:"dimension"`
+	Selected  string          `json:"selected"`
+	Options   []VariantOption `json:"options"`
+}
+
+// VariantOption represents a single option within a variant dimension.
+type VariantOption struct {
+	Value string `json:"value"`
+	ASIN  string `json:"asin,omitempty"`
+	State string `json:"state"` // "SELECTED", "AVAILABLE", "UNAVAILABLE"
 }
 
 // Datasource provides access to Amazon product data via a headless browser.
@@ -179,6 +196,7 @@ func extractProductFields(doc *html.Node, p *Product) {
 	}
 
 	p.ImageURL = extractProductImage(doc)
+	p.Variants = extractVariants(doc)
 }
 
 func extractProductPrice(doc *html.Node) float64 {
@@ -225,6 +243,92 @@ func extractProductImage(doc *html.Node) string {
 		return getAttr(el, "src")
 	}
 	return ""
+}
+
+// extractVariants parses the "twister" JSON embedded in the product page
+// to extract variant dimensions (size, color, style, etc.) and their options.
+func extractVariants(doc *html.Node) []Variant {
+	twisterJSON := findTwisterJSON(doc)
+	if twisterJSON == "" {
+		return nil
+	}
+
+	var data struct {
+		SortedDimValues map[string][]struct {
+			DimensionValueDisplayText string `json:"dimensionValueDisplayText"`
+			DimensionValueState       string `json:"dimensionValueState"`
+			DefaultAsin               string `json:"defaultAsin"`
+		} `json:"sortedDimValuesForAllDims"`
+	}
+	if err := json.Unmarshal([]byte(twisterJSON), &data); err != nil {
+		return nil
+	}
+
+	// Sort dimension names for deterministic output.
+	var dimNames []string
+	for name := range data.SortedDimValues {
+		dimNames = append(dimNames, name)
+	}
+	sort.Strings(dimNames)
+
+	var variants []Variant
+	for _, dimName := range dimNames {
+		values := data.SortedDimValues[dimName]
+		if len(values) <= 1 {
+			continue // Skip dimensions with only one option (no real choice).
+		}
+
+		v := Variant{
+			Dimension: formatDimensionName(dimName),
+		}
+		for _, val := range values {
+			opt := VariantOption{
+				Value: val.DimensionValueDisplayText,
+				ASIN:  val.DefaultAsin,
+				State: val.DimensionValueState,
+			}
+			if opt.State == "SELECTED" {
+				v.Selected = opt.Value
+			}
+			v.Options = append(v.Options, opt)
+		}
+		variants = append(variants, v)
+	}
+	return variants
+}
+
+// findTwisterJSON locates the <script type="a-state"> tag that contains
+// the twister variant data and returns its text content.
+func findTwisterJSON(doc *html.Node) string {
+	var result string
+	walkTree(doc, func(n *html.Node) {
+		if result != "" {
+			return
+		}
+		if n.Type != html.ElementNode || n.Data != "script" {
+			return
+		}
+		if getAttr(n, "type") != "a-state" {
+			return
+		}
+		if !strings.Contains(getAttr(n, "data-a-state"), "desktop-twister-sort-filter-data") {
+			return
+		}
+		if n.FirstChild != nil && n.FirstChild.Type == html.TextNode {
+			result = n.FirstChild.Data
+		}
+	})
+	return result
+}
+
+// formatDimensionName converts a twister dimension key like "size_name"
+// or "color_name" into a display name like "Size" or "Color".
+func formatDimensionName(key string) string {
+	key = strings.TrimSuffix(key, "_name")
+	if key == "" {
+		return key
+	}
+	return strings.ToUpper(key[:1]) + key[1:]
 }
 
 func isSearchResult(n *html.Node) bool {
