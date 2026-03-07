@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+  pull_request:
 
 jobs:
   lint:
@@ -20,7 +21,7 @@ jobs:
         uses: golangci/golangci-lint-action@v8
         with:
           version: v2.8.0
-          args: --config .golangci.yml ./workflowy/... ./manifold/...
+          args: --config .golangci.yml ./workflowy/... ./manifold/... ./supermarkets-uk/... ./amazon/...
 
   test:
     name: Test

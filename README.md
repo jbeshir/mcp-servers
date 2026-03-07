@@ -216,9 +216,9 @@ Not all supermarkets provide the same level of detail:
 
 ## Login
 
-Login is optional. Some supermarkets return location-specific results (e.g. local stock and delivery availability) when logged in, but all work without it.
+Login is optional and requires running the server locally (it is not available via Smithery, since login requires a visible browser window for manual interaction). Some supermarkets return location-specific results (e.g. local stock and delivery availability) when logged in, and login is required for order history and basket features. All other features work without it.
 
-To enable login, set `<SUPERMARKET>_LOGIN=true` for each supermarket you want to log in to. On first use, a visible browser window opens for you to complete login manually. Session cookies are cached to disk and reused on subsequent runs. If cookies expire, the server clears them and triggers a fresh login.
+To enable login, [install the binary locally](#installation) and set `<SUPERMARKET>_LOGIN=true` for each supermarket you want to log in to. On first use, a visible browser window opens for you to complete login manually. Session cookies are cached to disk and reused on subsequent runs. If cookies expire, the server clears them and triggers a fresh login.
 
 **Be aware:** Login requires the server to be able to find and launch Chrome, Chromium, or Edge — including for supermarkets that don't otherwise need a browser. Supermarket sessions tend to expire frequently, so you should expect to be prompted to log in again regularly.
 

@@ -1,0 +1,13 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties: {}
+  commandFunction:
+    |-
+    (config) => ({
+      command: '/app/supermarkets-uk-mcp'
+    })
+build:
+  dockerfile: Dockerfile
+  dockerBuildPath: "."

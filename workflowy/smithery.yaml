@@ -1,0 +1,27 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required:
+      - WORKFLOWY_API_TOKEN
+    properties:
+      WORKFLOWY_API_TOKEN:
+        type: string
+        title: API Token
+        description: Workflowy API token from workflowy.com/api-key
+      WORKFLOWY_API_URL:
+        type: string
+        title: API URL
+        description: Custom API URL (default https://workflowy.com)
+  commandFunction:
+    |-
+    (config) => ({
+      command: '/app/workflowy-mcp',
+      env: {
+        WORKFLOWY_API_TOKEN: config.WORKFLOWY_API_TOKEN,
+        ...(config.WORKFLOWY_API_URL ? { WORKFLOWY_API_URL: config.WORKFLOWY_API_URL } : {})
+      }
+    })
+build:
+  dockerfile: Dockerfile
+  dockerBuildPath: "."
