@@ -10,7 +10,7 @@ startCommand:
   commandFunction:
     |-
     (config) => ({
-      command: '/app/amazon-mcp',
+      command: '/app/amazon-products-mcp',
       env: {
         ...(config.AMAZON_REGION ? { AMAZON_REGION: config.AMAZON_REGION } : {})
       }

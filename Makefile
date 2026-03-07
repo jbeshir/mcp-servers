@@ -1,7 +1,7 @@
 # MCP Servers workspace Makefile
 # Validates and builds all MCP server modules in this workspace.
 
-MODULES := workflowy manifold supermarkets-uk amazon
+MODULES := workflowy manifold supermarkets-uk amazon-products
 
 .PHONY: setup-tools
 setup-tools:
@@ -45,7 +45,7 @@ fmt:
 # ── Build ─────────────────────────────────────────────────────
 
 .PHONY: build
-build: build-workflowy build-manifold build-supermarkets-uk build-amazon
+build: build-workflowy build-manifold build-supermarkets-uk build-amazon-products
 
 .PHONY: build-workflowy
 build-workflowy:
@@ -59,12 +59,12 @@ build-manifold:
 build-supermarkets-uk:
 	go build -o bin/supermarkets-uk-mcp ./supermarkets-uk/cmd/supermarkets-uk-mcp
 
-.PHONY: build-amazon
-build-amazon:
-	go build -o bin/amazon-mcp ./amazon/cmd/amazon-mcp
+.PHONY: build-amazon-products
+build-amazon-products:
+	go build -o bin/amazon-products-mcp ./amazon-products/cmd/amazon-products-mcp
 
 .PHONY: build-all-platforms
-build-all-platforms: build-workflowy-all-platforms build-manifold-all-platforms build-supermarkets-uk-all-platforms build-amazon-all-platforms
+build-all-platforms: build-workflowy-all-platforms build-manifold-all-platforms build-supermarkets-uk-all-platforms build-amazon-products-all-platforms
 
 .PHONY: build-workflowy-all-platforms
 build-workflowy-all-platforms:
@@ -87,12 +87,12 @@ build-supermarkets-uk-all-platforms:
 	GOOS=linux GOARCH=amd64 go build -o bin/supermarkets-uk-mcp-linux-amd64 ./supermarkets-uk/cmd/supermarkets-uk-mcp
 	GOOS=windows GOARCH=amd64 go build -o bin/supermarkets-uk-mcp-windows-amd64.exe ./supermarkets-uk/cmd/supermarkets-uk-mcp
 
-.PHONY: build-amazon-all-platforms
-build-amazon-all-platforms:
-	GOOS=darwin GOARCH=amd64 go build -o bin/amazon-mcp-darwin-amd64 ./amazon/cmd/amazon-mcp
-	GOOS=darwin GOARCH=arm64 go build -o bin/amazon-mcp-darwin-arm64 ./amazon/cmd/amazon-mcp
-	GOOS=linux GOARCH=amd64 go build -o bin/amazon-mcp-linux-amd64 ./amazon/cmd/amazon-mcp
-	GOOS=windows GOARCH=amd64 go build -o bin/amazon-mcp-windows-amd64.exe ./amazon/cmd/amazon-mcp
+.PHONY: build-amazon-products-all-platforms
+build-amazon-products-all-platforms:
+	GOOS=darwin GOARCH=amd64 go build -o bin/amazon-products-mcp-darwin-amd64 ./amazon-products/cmd/amazon-products-mcp
+	GOOS=darwin GOARCH=arm64 go build -o bin/amazon-products-mcp-darwin-arm64 ./amazon-products/cmd/amazon-products-mcp
+	GOOS=linux GOARCH=amd64 go build -o bin/amazon-products-mcp-linux-amd64 ./amazon-products/cmd/amazon-products-mcp
+	GOOS=windows GOARCH=amd64 go build -o bin/amazon-products-mcp-windows-amd64.exe ./amazon-products/cmd/amazon-products-mcp
 
 # ── Clean ─────────────────────────────────────────────────────
 

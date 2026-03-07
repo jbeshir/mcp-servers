@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/jbeshir/mcp-servers/amazon/internal/scraper"
+	"github.com/jbeshir/mcp-servers/amazon-products/internal/scraper"
 )
 
 func TestSearchByRegionIntegration(t *testing.T) {

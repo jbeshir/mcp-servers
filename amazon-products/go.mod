@@ -1,4 +1,4 @@
-module github.com/jbeshir/mcp-servers/amazon
+module github.com/jbeshir/mcp-servers/amazon-products
 
 go 1.24.2
 

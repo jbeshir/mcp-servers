@@ -38,5 +38,5 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: bin/${{ steps.meta.outputs.module }}-mcp-*
+          files: bin/*
           generate_release_notes: true

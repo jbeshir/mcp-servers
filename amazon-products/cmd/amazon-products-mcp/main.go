@@ -7,8 +7,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/jbeshir/mcp-servers/amazon/internal/scraper"
-	"github.com/jbeshir/mcp-servers/amazon/internal/server"
+	"github.com/jbeshir/mcp-servers/amazon-products/internal/scraper"
+	"github.com/jbeshir/mcp-servers/amazon-products/internal/server"
 )
 
 func main() {

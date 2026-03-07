@@ -16,7 +16,7 @@ Requires Go 1.24+.
 go install github.com/jbeshir/mcp-servers/workflowy/cmd/workflowy-mcp@latest
 go install github.com/jbeshir/mcp-servers/manifold/cmd/manifold-mcp@latest
 go install github.com/jbeshir/mcp-servers/supermarkets-uk/cmd/supermarkets-uk-mcp@latest
-go install github.com/jbeshir/mcp-servers/amazon/cmd/amazon-mcp@latest
+go install github.com/jbeshir/mcp-servers/amazon-products/cmd/amazon-products-mcp@latest
 ```
 
 ### Build from source
@@ -251,11 +251,11 @@ Example with login enabled:
 
 ---
 
-# Amazon
+# Amazon Products
 
 Search for products and get detailed product information from Amazon. Supports multiple regional Amazon sites.
 
-**Binary:** `amazon-mcp`
+**Binary:** `amazon-products-mcp`
 
 > **Note:** This server scrapes Amazon, which actively blocks automated access. Expect occasional failures — Amazon may present CAPTCHAs, block requests, or return incomplete pages. Results vary by session.
 
@@ -302,7 +302,7 @@ Search for products and get detailed product information from Amazon. Supports m
 {
   "mcpServers": {
     "amazon": {
-      "command": "/path/to/amazon-mcp"
+      "command": "/path/to/amazon-products-mcp"
     }
   }
 }
@@ -311,7 +311,7 @@ Search for products and get detailed product information from Amazon. Supports m
 ### Claude Code
 
 ```
-claude mcp add amazon /path/to/amazon-mcp
+claude mcp add amazon-products /path/to/amazon-products-mcp
 ```
 
 ## Tools

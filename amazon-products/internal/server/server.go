@@ -12,7 +12,7 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 
-	"github.com/jbeshir/mcp-servers/amazon/internal/scraper"
+	"github.com/jbeshir/mcp-servers/amazon-products/internal/scraper"
 )
 
 // Server is the MCP server for Amazon product search.

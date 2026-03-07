@@ -3,9 +3,9 @@
 //
 // Usage:
 //
-//	go run ./amazon/cmd/capture-html -query "tungsten cube"
-//	go run ./amazon/cmd/capture-html -query "tungsten cube" -region de
-//	go run ./amazon/cmd/capture-html -url "https://www.amazon.com/dp/B00XZBIJLS" -wait "#productTitle"
+//	go run ./amazon-products/cmd/capture-html -query "tungsten cube"
+//	go run ./amazon-products/cmd/capture-html -query "tungsten cube" -region de
+//	go run ./amazon-products/cmd/capture-html -url "https://www.amazon.com/dp/B00XZBIJLS" -wait "#productTitle"
 package main
 
 import (
@@ -18,7 +18,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/jbeshir/mcp-servers/amazon/internal/scraper"
+	"github.com/jbeshir/mcp-servers/amazon-products/internal/scraper"
 )
 
 func main() {
