@@ -2,9 +2,26 @@
 
 A collection of [Model Context Protocol](https://modelcontextprotocol.io/) servers written in Go. Each server communicates over stdio and can be used with any MCP-compatible client such as Claude Desktop or Claude Code.
 
-Pre-built binaries for macOS (Intel & Apple Silicon), Linux, and Windows are available from [Releases](https://github.com/jbeshir/mcp-servers/releases).
+## Installation
 
-To build all servers from source: `make build` (binaries are written to `bin/`). Requires Go 1.24+.
+### Pre-built binaries
+
+Download from [Releases](https://github.com/jbeshir/mcp-servers/releases) — available for macOS (Intel & Apple Silicon), Linux, and Windows.
+
+### Install from source
+
+Requires Go 1.24+.
+
+```
+go install github.com/jbeshir/mcp-servers/workflowy/cmd/workflowy-mcp@latest
+go install github.com/jbeshir/mcp-servers/manifold/cmd/manifold-mcp@latest
+go install github.com/jbeshir/mcp-servers/supermarkets-uk/cmd/supermarkets-uk-mcp@latest
+go install github.com/jbeshir/mcp-servers/amazon/cmd/amazon-mcp@latest
+```
+
+### Build from source
+
+Clone the repo and run `make build` — binaries are written to `bin/`.
 
 ---
 
