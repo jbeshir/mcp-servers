@@ -26,37 +26,38 @@ func NewClient(baseURL, apiKey string) *Client {
 	}
 }
 
-func (c *Client) doRequest(ctx context.Context, method, path string, body io.Reader) (*http.Response, error) {
-	reqURL := c.baseURL + path
-	req, err := http.NewRequestWithContext(ctx, method, reqURL, body)
+// do executes an HTTP request and decodes the JSON response into result.
+func (c *Client) do(ctx context.Context, method, path string, body io.Reader, result any) error {
+	req, err := http.NewRequestWithContext(ctx, method, c.baseURL+path, body)
 	if err != nil {
-		return nil, fmt.Errorf("creating request: %w", err)
+		return fmt.Errorf("creating request: %w", err)
 	}
 	req.Header.Set("Authorization", "Key "+c.apiKey)
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
-	return c.httpClient.Do(req)
-}
-
-func (c *Client) doRequestJSON(ctx context.Context, path string, payload any) (*http.Response, error) {
-	data, err := json.Marshal(payload)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("marshaling request body: %w", err)
+		return err
 	}
-	return c.doRequest(ctx, http.MethodPost, path, bytes.NewReader(data))
-}
-
-func handleResponse(resp *http.Response, result any) error {
 	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
+		respBody, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(respBody))
 	}
 	if result != nil {
 		return json.NewDecoder(resp.Body).Decode(result)
 	}
 	return nil
+}
+
+// doJSON marshals payload as JSON and executes the request.
+func (c *Client) doJSON(ctx context.Context, path string, payload, result any) error {
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("marshaling request body: %w", err)
+	}
+	return c.do(ctx, http.MethodPost, path, bytes.NewReader(data), result)
 }
 
 // SearchMarkets searches for markets using query parameters.
@@ -65,12 +66,8 @@ func (c *Client) SearchMarkets(ctx context.Context, params url.Values) ([]LiteMa
 	if len(params) > 0 {
 		path += "?" + params.Encode()
 	}
-	resp, err := c.doRequest(ctx, http.MethodGet, path, nil)
-	if err != nil {
-		return nil, err
-	}
 	var markets []LiteMarket
-	if err := handleResponse(resp, &markets); err != nil {
+	if err := c.do(ctx, http.MethodGet, path, nil, &markets); err != nil {
 		return nil, fmt.Errorf("searching markets: %w", err)
 	}
 	return markets, nil
@@ -78,12 +75,8 @@ func (c *Client) SearchMarkets(ctx context.Context, params url.Values) ([]LiteMa
 
 // GetMarket retrieves full details for a specific market.
 func (c *Client) GetMarket(ctx context.Context, marketID string) (*FullMarket, error) {
-	resp, err := c.doRequest(ctx, http.MethodGet, "/v0/market/"+marketID, nil)
-	if err != nil {
-		return nil, err
-	}
 	var market FullMarket
-	if err := handleResponse(resp, &market); err != nil {
+	if err := c.do(ctx, http.MethodGet, "/v0/market/"+marketID, nil, &market); err != nil {
 		return nil, fmt.Errorf("getting market %s: %w", marketID, err)
 	}
 	return &market, nil
@@ -91,12 +84,8 @@ func (c *Client) GetMarket(ctx context.Context, marketID string) (*FullMarket, e
 
 // GetUser retrieves a user profile by username.
 func (c *Client) GetUser(ctx context.Context, username string) (*User, error) {
-	resp, err := c.doRequest(ctx, http.MethodGet, "/v0/user/"+username, nil)
-	if err != nil {
-		return nil, err
-	}
 	var user User
-	if err := handleResponse(resp, &user); err != nil {
+	if err := c.do(ctx, http.MethodGet, "/v0/user/"+username, nil, &user); err != nil {
 		return nil, fmt.Errorf("getting user %s: %w", username, err)
 	}
 	return &user, nil
@@ -104,12 +93,8 @@ func (c *Client) GetUser(ctx context.Context, username string) (*User, error) {
 
 // GetMe retrieves the authenticated user's profile.
 func (c *Client) GetMe(ctx context.Context) (*User, error) {
-	resp, err := c.doRequest(ctx, http.MethodGet, "/v0/me", nil)
-	if err != nil {
-		return nil, err
-	}
 	var user User
-	if err := handleResponse(resp, &user); err != nil {
+	if err := c.do(ctx, http.MethodGet, "/v0/me", nil, &user); err != nil {
 		return nil, fmt.Errorf("getting authenticated user: %w", err)
 	}
 	return &user, nil
@@ -121,12 +106,8 @@ func (c *Client) ListBets(ctx context.Context, params url.Values) ([]Bet, error)
 	if len(params) > 0 {
 		path += "?" + params.Encode()
 	}
-	resp, err := c.doRequest(ctx, http.MethodGet, path, nil)
-	if err != nil {
-		return nil, err
-	}
 	var bets []Bet
-	if err := handleResponse(resp, &bets); err != nil {
+	if err := c.do(ctx, http.MethodGet, path, nil, &bets); err != nil {
 		return nil, fmt.Errorf("listing bets: %w", err)
 	}
 	return bets, nil
@@ -138,12 +119,8 @@ func (c *Client) GetComments(ctx context.Context, params url.Values) ([]Comment,
 	if len(params) > 0 {
 		path += "?" + params.Encode()
 	}
-	resp, err := c.doRequest(ctx, http.MethodGet, path, nil)
-	if err != nil {
-		return nil, err
-	}
 	var comments []Comment
-	if err := handleResponse(resp, &comments); err != nil {
+	if err := c.do(ctx, http.MethodGet, path, nil, &comments); err != nil {
 		return nil, fmt.Errorf("getting comments: %w", err)
 	}
 	return comments, nil
@@ -155,12 +132,8 @@ func (c *Client) GetPositions(ctx context.Context, marketID string, params url.V
 	if len(params) > 0 {
 		path += "?" + params.Encode()
 	}
-	resp, err := c.doRequest(ctx, http.MethodGet, path, nil)
-	if err != nil {
-		return nil, err
-	}
 	var positions []ContractMetric
-	if err := handleResponse(resp, &positions); err != nil {
+	if err := c.do(ctx, http.MethodGet, path, nil, &positions); err != nil {
 		return nil, fmt.Errorf("getting positions for market %s: %w", marketID, err)
 	}
 	return positions, nil
@@ -168,12 +141,8 @@ func (c *Client) GetPositions(ctx context.Context, marketID string, params url.V
 
 // PlaceBet places a bet on a market.
 func (c *Client) PlaceBet(ctx context.Context, req PlaceBetRequest) (*Bet, error) {
-	resp, err := c.doRequestJSON(ctx, "/v0/bet", req)
-	if err != nil {
-		return nil, err
-	}
 	var bet Bet
-	if err := handleResponse(resp, &bet); err != nil {
+	if err := c.doJSON(ctx, "/v0/bet", req, &bet); err != nil {
 		return nil, fmt.Errorf("placing bet: %w", err)
 	}
 	return &bet, nil
@@ -181,12 +150,8 @@ func (c *Client) PlaceBet(ctx context.Context, req PlaceBetRequest) (*Bet, error
 
 // SellShares sells shares in a market.
 func (c *Client) SellShares(ctx context.Context, marketID string, req SellSharesRequest) (*Bet, error) {
-	resp, err := c.doRequestJSON(ctx, "/v0/market/"+marketID+"/sell", req)
-	if err != nil {
-		return nil, err
-	}
 	var bet Bet
-	if err := handleResponse(resp, &bet); err != nil {
+	if err := c.doJSON(ctx, "/v0/market/"+marketID+"/sell", req, &bet); err != nil {
 		return nil, fmt.Errorf("selling shares in market %s: %w", marketID, err)
 	}
 	return &bet, nil
@@ -194,11 +159,7 @@ func (c *Client) SellShares(ctx context.Context, marketID string, req SellShares
 
 // CancelBet cancels a limit order.
 func (c *Client) CancelBet(ctx context.Context, betID string) error {
-	resp, err := c.doRequest(ctx, http.MethodPost, "/v0/bet/cancel/"+betID, nil)
-	if err != nil {
-		return err
-	}
-	if err := handleResponse(resp, nil); err != nil {
+	if err := c.do(ctx, http.MethodPost, "/v0/bet/cancel/"+betID, nil, nil); err != nil {
 		return fmt.Errorf("canceling bet %s: %w", betID, err)
 	}
 	return nil
@@ -206,12 +167,8 @@ func (c *Client) CancelBet(ctx context.Context, betID string) error {
 
 // CreateMarket creates a new market.
 func (c *Client) CreateMarket(ctx context.Context, req CreateMarketRequest) (*LiteMarket, error) {
-	resp, err := c.doRequestJSON(ctx, "/v0/market", req)
-	if err != nil {
-		return nil, err
-	}
 	var market LiteMarket
-	if err := handleResponse(resp, &market); err != nil {
+	if err := c.doJSON(ctx, "/v0/market", req, &market); err != nil {
 		return nil, fmt.Errorf("creating market: %w", err)
 	}
 	return &market, nil
@@ -219,11 +176,7 @@ func (c *Client) CreateMarket(ctx context.Context, req CreateMarketRequest) (*Li
 
 // ResolveMarket resolves a market.
 func (c *Client) ResolveMarket(ctx context.Context, marketID string, req ResolveMarketRequest) error {
-	resp, err := c.doRequestJSON(ctx, "/v0/market/"+marketID+"/resolve", req)
-	if err != nil {
-		return err
-	}
-	if err := handleResponse(resp, nil); err != nil {
+	if err := c.doJSON(ctx, "/v0/market/"+marketID+"/resolve", req, nil); err != nil {
 		return fmt.Errorf("resolving market %s: %w", marketID, err)
 	}
 	return nil
@@ -231,11 +184,7 @@ func (c *Client) ResolveMarket(ctx context.Context, marketID string, req Resolve
 
 // CloseMarket closes a market.
 func (c *Client) CloseMarket(ctx context.Context, marketID string, req CloseMarketRequest) error {
-	resp, err := c.doRequestJSON(ctx, "/v0/market/"+marketID+"/close", req)
-	if err != nil {
-		return err
-	}
-	if err := handleResponse(resp, nil); err != nil {
+	if err := c.doJSON(ctx, "/v0/market/"+marketID+"/close", req, nil); err != nil {
 		return fmt.Errorf("closing market %s: %w", marketID, err)
 	}
 	return nil
@@ -243,12 +192,8 @@ func (c *Client) CloseMarket(ctx context.Context, marketID string, req CloseMark
 
 // AddComment adds a comment to a market.
 func (c *Client) AddComment(ctx context.Context, req AddCommentRequest) (*Comment, error) {
-	resp, err := c.doRequestJSON(ctx, "/v0/comment", req)
-	if err != nil {
-		return nil, err
-	}
 	var comment Comment
-	if err := handleResponse(resp, &comment); err != nil {
+	if err := c.doJSON(ctx, "/v0/comment", req, &comment); err != nil {
 		return nil, fmt.Errorf("adding comment: %w", err)
 	}
 	return &comment, nil
@@ -256,11 +201,7 @@ func (c *Client) AddComment(ctx context.Context, req AddCommentRequest) (*Commen
 
 // AddLiquidity adds liquidity to a market.
 func (c *Client) AddLiquidity(ctx context.Context, marketID string, req AddLiquidityRequest) error {
-	resp, err := c.doRequestJSON(ctx, "/v0/market/"+marketID+"/add-liquidity", req)
-	if err != nil {
-		return err
-	}
-	if err := handleResponse(resp, nil); err != nil {
+	if err := c.doJSON(ctx, "/v0/market/"+marketID+"/add-liquidity", req, nil); err != nil {
 		return fmt.Errorf("adding liquidity to market %s: %w", marketID, err)
 	}
 	return nil
@@ -268,11 +209,7 @@ func (c *Client) AddLiquidity(ctx context.Context, marketID string, req AddLiqui
 
 // SendMana sends mana to users.
 func (c *Client) SendMana(ctx context.Context, req SendManaRequest) error {
-	resp, err := c.doRequestJSON(ctx, "/v0/managram", req)
-	if err != nil {
-		return err
-	}
-	if err := handleResponse(resp, nil); err != nil {
+	if err := c.doJSON(ctx, "/v0/managram", req, nil); err != nil {
 		return fmt.Errorf("sending mana: %w", err)
 	}
 	return nil

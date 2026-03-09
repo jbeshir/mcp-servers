@@ -27,9 +27,17 @@ Clone the repo and run `make build` — binaries are written to `bin/`.
 
 # Workflowy
 
-Search, read, create, and organize [Workflowy](https://workflowy.com) nodes.
+Full read/write access to [Workflowy](https://workflowy.com) — search, create, organize, and complete nodes.
 
 **Binary:** `workflowy-mcp`
+
+**Features:**
+
+- **Search with breadcrumb paths** — results include the full ancestor path, so you can see where nodes sit in the hierarchy
+- **Hierarchical completion filtering** — understands that completing a parent implicitly completes its children
+- **Smart caching** — caches exports to respect Workflowy's rate limits, invalidates automatically on writes
+- **Layout modes** — bullets, todos, headings (h1–h3), code blocks, and quote blocks
+- **System targets** — work with home, inbox, and user shortcuts by name instead of IDs
 
 ## Requirements
 

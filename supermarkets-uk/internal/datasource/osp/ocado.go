@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 
 	"golang.org/x/net/html"
 
@@ -18,19 +19,20 @@ type ospConfig struct {
 	id                datasource.SupermarketID
 	name              string
 	description       string
-	searchURL         func(query string) string
-	productURL        func(id string) string
-	categoryURL       string
+	baseURL           string
 	selectors         scraper.Config
-	sessionCheckURL   string
 	sessionCheckQuery scraper.ElemSel
 	nutritionTableSel scraper.ElemSel
 }
 
-// ospDatasource implements datasource.AuthDatasource for an OSP-based supermarket.
+// Config holds optional overrides for an OSP datasource.
+// Zero values use the built-in defaults.
+type Config struct {
+	BaseURL string
+}
+
+// ospDatasource implements datasource.AuthProductSource for an OSP-based supermarket.
 type ospDatasource struct {
-	datasource.NoOrderHistory
-	datasource.NoBasket
 	cfg        ospConfig
 	cookies    []*http.Cookie
 	httpClient *http.Client
@@ -45,7 +47,7 @@ func (d *ospDatasource) CheckSession(ctx context.Context) bool {
 	if len(d.cookies) == 0 {
 		return true
 	}
-	body, err := scraper.FetchHTML(ctx, d.cfg.sessionCheckURL, d.cookies, d.httpClient)
+	body, err := scraper.FetchHTML(ctx, d.cfg.baseURL+"/", d.cookies, d.httpClient)
 	if err != nil {
 		return false
 	}
@@ -54,7 +56,8 @@ func (d *ospDatasource) CheckSession(ctx context.Context) bool {
 }
 
 func (d *ospDatasource) SearchProducts(ctx context.Context, query string) ([]datasource.Product, error) {
-	body, err := scraper.FetchHTML(ctx, d.cfg.searchURL(query), d.cookies, d.httpClient)
+	searchURL := d.cfg.baseURL + "/search?" + url.Values{"q": {query}}.Encode()
+	body, err := scraper.FetchHTML(ctx, searchURL, d.cookies, d.httpClient)
 	if err != nil {
 		return nil, fmt.Errorf("%s search fetch: %w", d.cfg.id, err)
 	}
@@ -63,7 +66,8 @@ func (d *ospDatasource) SearchProducts(ctx context.Context, query string) ([]dat
 }
 
 func (d *ospDatasource) GetProductDetails(ctx context.Context, productID string) (*datasource.Product, error) {
-	body, err := scraper.FetchHTML(ctx, d.cfg.productURL(productID), d.cookies, d.httpClient)
+	productURL := d.cfg.baseURL + "/products/" + url.PathEscape(productID)
+	body, err := scraper.FetchHTML(ctx, productURL, d.cookies, d.httpClient)
 	if err != nil {
 		return nil, fmt.Errorf("%s product fetch: %w", d.cfg.id, err)
 	}
@@ -74,12 +78,12 @@ func (d *ospDatasource) GetProductDetails(ctx context.Context, productID string)
 		return nil, err
 	}
 	p.ID = productID
-	p.URL = d.cfg.productURL(productID)
+	p.URL = productURL
 	return p, nil
 }
 
 func (d *ospDatasource) BrowseCategories(ctx context.Context) ([]datasource.Category, error) {
-	body, err := scraper.FetchHTML(ctx, d.cfg.categoryURL, d.cookies, d.httpClient)
+	body, err := scraper.FetchHTML(ctx, d.cfg.baseURL+"/categories", d.cookies, d.httpClient)
 	if err != nil {
 		return nil, fmt.Errorf("%s categories fetch: %w", d.cfg.id, err)
 	}
@@ -139,9 +143,7 @@ var ocadoCfg = ospConfig{
 	id:          datasource.Ocado,
 	name:        "Ocado",
 	description: "Online-only UK supermarket and grocery delivery service",
-	searchURL:   scraper.QuerySearchURL(ocadoBaseURL+"/search", "q"),
-	productURL:  scraper.ProductURLBuilder(ocadoBaseURL + "/products/"),
-	categoryURL: ocadoBaseURL + "/categories",
+	baseURL:     ocadoBaseURL,
 	selectors: scraper.Config{
 		ID:          datasource.Ocado,
 		BaseURL:     ocadoBaseURL,
@@ -161,17 +163,21 @@ var ocadoCfg = ospConfig{
 			Promo: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "offer-card-promotion"},
 		},
 	},
-	sessionCheckURL:   ocadoBaseURL + "/",
 	sessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "logout-button"},
 	nutritionTableSel: scraper.ElemSel{Tag: "table", Cls: "nutrition"},
 }
 
 // NewOcado creates a new Ocado datasource.
 // Ocado SSR HTML contains product data, so no browser is needed.
-func NewOcado() datasource.AuthDatasource {
+func NewOcado(cfg Config, httpClient *http.Client) datasource.AuthProductSource {
+	resolved := ocadoCfg
+	if cfg.BaseURL != "" {
+		resolved.baseURL = cfg.BaseURL
+		resolved.selectors.BaseURL = cfg.BaseURL
+	}
 	return &ospDatasource{
-		cfg:        ocadoCfg,
-		httpClient: &http.Client{},
+		cfg:        resolved,
+		httpClient: httpClient,
 	}
 }
 

@@ -79,28 +79,28 @@ type categoryNode struct {
 	Children []categoryNode `json:"c"`
 }
 
+// Config holds optional overrides for a Sainsbury's datasource.
+// Zero values use the built-in defaults.
+type Config struct {
+	BaseURL string
+}
+
 // Datasource uses the Sainsbury's JSON API.
 type Datasource struct {
-	datasource.NoOrderHistory
-	datasource.NoBasket
 	cookies    []*http.Cookie
 	httpClient *http.Client
 	apiBase    string
 }
 
 // NewDatasource creates a new Sainsbury's API datasource.
-func NewDatasource() *Datasource {
-	return &Datasource{
-		httpClient: &http.Client{},
-		apiBase:    apiBase,
+func NewDatasource(cfg Config, httpClient *http.Client) *Datasource {
+	base := apiBase
+	if cfg.BaseURL != "" {
+		base = cfg.BaseURL
 	}
-}
-
-// NewDatasourceWithURL creates a Sainsbury's datasource pointing at a custom URL (for testing).
-func NewDatasourceWithURL(baseURL string) *Datasource {
 	return &Datasource{
-		httpClient: &http.Client{},
-		apiBase:    baseURL,
+		httpClient: httpClient,
+		apiBase:    base,
 	}
 }
 

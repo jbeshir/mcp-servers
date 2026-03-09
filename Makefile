@@ -94,6 +94,32 @@ build-amazon-products-all-platforms:
 	GOOS=linux GOARCH=amd64 go build -o bin/amazon-products-mcp-linux-amd64 ./amazon-products/cmd/amazon-products-mcp
 	GOOS=windows GOARCH=amd64 go build -o bin/amazon-products-mcp-windows-amd64.exe ./amazon-products/cmd/amazon-products-mcp
 
+# ── MCPB Bundles ─────────────────────────────────────────────
+
+# Build multi-platform .mcpb bundles for all servers.
+# Each bundle is a zip containing manifest.json and binaries for all platforms.
+# Usage: make mcpb
+
+SERVERS := workflowy:workflowy-mcp manifold:manifold-mcp supermarkets-uk:supermarkets-uk-mcp amazon-products:amazon-products-mcp
+
+.PHONY: mcpb
+mcpb: build-all-platforms
+	@mkdir -p bin/mcpb
+	@for entry in $(SERVERS); do \
+		mod=$${entry%%:*}; \
+		binary=$${entry#*:}; \
+		bundle="bin/mcpb/$${binary}.mcpb"; \
+		echo "==> Packaging $$bundle"; \
+		tmpdir=$$(mktemp -d); \
+		mkdir -p "$$tmpdir/server"; \
+		cp "$$mod/manifest.json" "$$tmpdir/manifest.json"; \
+		cp "bin/$${binary}-darwin-arm64" "$$tmpdir/server/$${binary}-darwin-arm64"; \
+		cp "bin/$${binary}-linux-amd64" "$$tmpdir/server/$${binary}-linux-amd64"; \
+		cp "bin/$${binary}-windows-amd64.exe" "$$tmpdir/server/$${binary}-windows-amd64.exe"; \
+		(cd "$$tmpdir" && zip -q -r - .) > "$$bundle"; \
+		rm -rf "$$tmpdir"; \
+	done
+
 # ── Clean ─────────────────────────────────────────────────────
 
 .PHONY: clean

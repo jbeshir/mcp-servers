@@ -18,7 +18,7 @@ func TestParseOcadoSearchResults(t *testing.T) {
 
 	p := products[0]
 	assert.Equal(t, "Cravendale Filtered Fresh Whole Milk Fresher for Longer", p.Name)
-	assert.Equal(t, 2.70, p.Price)
+	assert.InDelta(t, 2.70, p.Price, 0.001)
 	assert.Equal(t, datasource.Ocado, p.Supermarket)
 	assert.Equal(t, "24577011", p.ID)
 }
@@ -27,7 +27,7 @@ func TestParseOcadoProductPage(t *testing.T) {
 	p := testutil.ParseProductFile(t, "testdata/ocado_product.html", osp.ParseOcadoProductPage)
 
 	assert.Equal(t, "Cravendale Filtered Fresh Whole Milk Fresher for Longer", p.Name)
-	assert.Equal(t, 2.70, p.Price)
+	assert.InDelta(t, 2.70, p.Price, 0.001)
 	assert.NotEmpty(t, p.Description)
 	assert.Contains(t, p.Ingredients, "Milk")
 	require.NotNil(t, p.Nutrition)

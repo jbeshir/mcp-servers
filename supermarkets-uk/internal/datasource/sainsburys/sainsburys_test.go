@@ -1,7 +1,6 @@
 package sainsburys_test
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -25,15 +24,15 @@ func TestSearchProducts(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	ds := sainsburys.NewDatasourceWithURL(srv.URL)
+	ds := sainsburys.NewDatasource(sainsburys.Config{BaseURL: srv.URL}, srv.Client())
 
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	require.Len(t, products, 2)
 
 	p := products[0]
 	assert.Equal(t, "Sainsbury's British Semi Skimmed Milk 2.27L", p.Name)
-	assert.Equal(t, 1.45, p.Price)
+	assert.InDelta(t, 1.45, p.Price, 0.001)
 	assert.Equal(t, datasource.Sainsburys, p.Supermarket)
 	assert.Equal(t, "7878921", p.ID)
 	assert.Equal(t, "Nectar Price £1.70", products[1].Promotion)
@@ -49,12 +48,12 @@ func TestGetProductDetails(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	ds := sainsburys.NewDatasourceWithURL(srv.URL)
-	p, err := ds.GetProductDetails(context.Background(), "7878921")
+	ds := sainsburys.NewDatasource(sainsburys.Config{BaseURL: srv.URL}, srv.Client())
+	p, err := ds.GetProductDetails(t.Context(), "7878921")
 	require.NoError(t, err)
 
 	assert.Equal(t, "Sainsbury's British Semi Skimmed Milk 2.27L", p.Name)
-	assert.Equal(t, 1.45, p.Price)
+	assert.InDelta(t, 1.45, p.Price, 0.001)
 	assert.NotEmpty(t, p.Description)
 	assert.Contains(t, p.Ingredients, "Milk")
 	require.NotNil(t, p.Nutrition)
@@ -66,9 +65,9 @@ func TestGetProductDetails(t *testing.T) {
 
 func TestBrowseCategories(t *testing.T) {
 	srv := testutil.JSONFixtureServer(t, "testdata/sainsburys_categories.json")
-	ds := sainsburys.NewDatasourceWithURL(srv.URL)
+	ds := sainsburys.NewDatasource(sainsburys.Config{BaseURL: srv.URL}, srv.Client())
 
-	categories, err := ds.BrowseCategories(context.Background())
+	categories, err := ds.BrowseCategories(t.Context())
 	require.NoError(t, err)
 	require.Len(t, categories, 2)
 	assert.Equal(t, "Meat & Fish", categories[0].Name)
@@ -81,9 +80,9 @@ func TestHTTPErrorPropagates(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	ds := sainsburys.NewDatasourceWithURL(srv.URL)
+	ds := sainsburys.NewDatasource(sainsburys.Config{BaseURL: srv.URL}, srv.Client())
 
-	_, err := ds.SearchProducts(context.Background(), "milk")
+	_, err := ds.SearchProducts(t.Context(), "milk")
 	assert.Error(t, err)
 }
 
@@ -105,10 +104,10 @@ func TestCookiesAndWCAuthTokenSent(t *testing.T) {
 		{Name: "session_id", Value: "abc123"},
 		{Name: "WC_AUTHENTICATION_12345", Value: "my-auth-token"},
 	}
-	ds := sainsburys.NewDatasourceWithURL(srv.URL)
+	ds := sainsburys.NewDatasource(sainsburys.Config{BaseURL: srv.URL}, srv.Client())
 	ds.SetCookies(cookies)
 
-	_, err = ds.SearchProducts(context.Background(), "milk")
+	_, err = ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 
 	assert.Contains(t, gotCookies, "session_id=abc123")
@@ -120,8 +119,8 @@ func TestSearchIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	ds := sainsburys.NewDatasource()
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	ds := sainsburys.NewDatasource(sainsburys.Config{}, &http.Client{})
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	testutil.AssertSearchResults(t, products, "milk")
 }
@@ -130,13 +129,13 @@ func TestProductDetailsIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	ds := sainsburys.NewDatasource()
+	ds := sainsburys.NewDatasource(sainsburys.Config{}, &http.Client{})
 
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	require.NotEmpty(t, products, "no search results to look up")
 
-	p, err := ds.GetProductDetails(context.Background(), products[0].ID)
+	p, err := ds.GetProductDetails(t.Context(), products[0].ID)
 	require.NoError(t, err)
 	assert.NotEmpty(t, p.Name)
 	assert.Positive(t, p.Price)
@@ -150,9 +149,9 @@ func TestBrowseCategoriesIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	ds := sainsburys.NewDatasource()
+	ds := sainsburys.NewDatasource(sainsburys.Config{}, &http.Client{})
 
-	categories, err := ds.BrowseCategories(context.Background())
+	categories, err := ds.BrowseCategories(t.Context())
 	require.NoError(t, err)
 	require.NotEmpty(t, categories)
 	for _, c := range categories {

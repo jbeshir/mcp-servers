@@ -46,23 +46,6 @@ func TestNewClient(t *testing.T) {
 	}
 }
 
-func TestGetDatasource(t *testing.T) {
-	c := client.NewClient(client.Config{})
-
-	ds, ok := c.GetDatasource(datasource.Tesco)
-	if !ok {
-		t.Fatal("expected to find Tesco datasource")
-	}
-	if ds.ID() != datasource.Tesco {
-		t.Errorf("id = %q, want tesco", ds.ID())
-	}
-
-	_, ok = c.GetDatasource("nonexistent")
-	if ok {
-		t.Error("expected nonexistent datasource to not be found")
-	}
-}
-
 func TestParseSupermarketIDs(t *testing.T) {
 	tests := []struct {
 		input    string

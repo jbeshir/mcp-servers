@@ -1,7 +1,6 @@
 package shopify_test
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -25,15 +24,15 @@ func testConfig(baseURL string) shopify.Config {
 
 func TestSearchProducts(t *testing.T) {
 	srv := testutil.JSONFixtureServer(t, "testdata/search.json")
-	ds := shopify.NewDatasourceWithClient(testConfig(srv.URL), srv.Client())
+	ds := shopify.NewDatasource(testConfig(srv.URL), srv.Client())
 
-	products, err := ds.SearchProducts(context.Background(), "rice")
+	products, err := ds.SearchProducts(t.Context(), "rice")
 	require.NoError(t, err)
 	require.Len(t, products, 2)
 
 	p := products[0]
 	assert.Equal(t, "Golden Bowl Thai Hom Mali Rice 1kg", p.Name)
-	assert.Equal(t, 2.85, p.Price)
+	assert.InDelta(t, 2.85, p.Price, 0.001)
 	assert.Equal(t, "golden-bowl-thai-hom-mali-rice-1kg", p.ID)
 	assert.Equal(t, datasource.Hiyou, p.Supermarket)
 	assert.Equal(t, "GBP", p.Currency)
@@ -49,15 +48,15 @@ func TestSearchProducts(t *testing.T) {
 
 func TestGetProductDetails(t *testing.T) {
 	srv := testutil.JSONFixtureServer(t, "testdata/product.json")
-	ds := shopify.NewDatasourceWithClient(testConfig(srv.URL), srv.Client())
+	ds := shopify.NewDatasource(testConfig(srv.URL), srv.Client())
 
 	p, err := ds.GetProductDetails(
-		context.Background(), "golden-bowl-thai-hom-mali-rice-1kg",
+		t.Context(), "golden-bowl-thai-hom-mali-rice-1kg",
 	)
 	require.NoError(t, err)
 
 	assert.Equal(t, "Golden Bowl Thai Hom Mali Rice 1kg", p.Name)
-	assert.Equal(t, 2.85, p.Price)
+	assert.InDelta(t, 2.85, p.Price, 0.001)
 	assert.Equal(t, "1kg", p.Weight)
 	assert.Equal(t, "golden-bowl-thai-hom-mali-rice-1kg", p.ID)
 	assert.NotEmpty(t, p.ImageURL)
@@ -67,9 +66,9 @@ func TestGetProductDetails(t *testing.T) {
 
 func TestBrowseCategories(t *testing.T) {
 	srv := testutil.JSONFixtureServer(t, "testdata/collections.json")
-	ds := shopify.NewDatasourceWithClient(testConfig(srv.URL), srv.Client())
+	ds := shopify.NewDatasource(testConfig(srv.URL), srv.Client())
 
-	categories, err := ds.BrowseCategories(context.Background())
+	categories, err := ds.BrowseCategories(t.Context())
 	require.NoError(t, err)
 	require.Len(t, categories, 2)
 
@@ -86,8 +85,8 @@ func TestHTTPErrorPropagates(t *testing.T) {
 	)
 	defer srv.Close()
 
-	ds := shopify.NewDatasourceWithClient(testConfig(srv.URL), srv.Client())
+	ds := shopify.NewDatasource(testConfig(srv.URL), srv.Client())
 
-	_, err := ds.SearchProducts(context.Background(), "rice")
+	_, err := ds.SearchProducts(t.Context(), "rice")
 	assert.Error(t, err)
 }

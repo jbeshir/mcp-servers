@@ -49,16 +49,17 @@ var selectors = scraper.Config{
 	},
 }
 
-// Datasource implements datasource.AuthDatasource for Tesco using a headless browser.
+// Datasource implements datasource.AuthProductSource for Tesco using a headless browser.
 type Datasource struct {
-	browser *scraper.Browser
-	cookies []*http.Cookie
+	browser    *scraper.Browser
+	httpClient *http.Client
+	cookies    []*http.Cookie
 }
 
 // NewDatasource creates a new Tesco datasource.
 // Tesco requires a headless browser for JavaScript rendering.
-func NewDatasource(browser *scraper.Browser) *Datasource {
-	return &Datasource{browser: browser}
+func NewDatasource(browser *scraper.Browser, httpClient *http.Client) *Datasource {
+	return &Datasource{browser: browser, httpClient: httpClient}
 }
 
 // SetCookies sets session cookies.

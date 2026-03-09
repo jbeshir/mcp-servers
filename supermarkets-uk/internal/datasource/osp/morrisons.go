@@ -14,9 +14,7 @@ var morrisonsCfg = ospConfig{
 	id:          datasource.Morrisons,
 	name:        "Morrisons",
 	description: "Major UK supermarket chain",
-	searchURL:   scraper.QuerySearchURL(morrisonsBaseURL+"/search", "q"),
-	productURL:  scraper.ProductURLBuilder(morrisonsBaseURL + "/products/"),
-	categoryURL: morrisonsBaseURL + "/categories",
+	baseURL:     morrisonsBaseURL,
 	selectors: scraper.Config{
 		ID:          datasource.Morrisons,
 		BaseURL:     morrisonsBaseURL,
@@ -37,17 +35,21 @@ var morrisonsCfg = ospConfig{
 			Promo: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "offer-card-promotion"},
 		},
 	},
-	sessionCheckURL:   morrisonsBaseURL + "/",
 	sessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "logout-button"},
 	nutritionTableSel: scraper.ElemSel{Tag: "table", Cls: "nutrition"},
 }
 
 // NewMorrisons creates a new Morrisons datasource.
 // Morrisons SSR HTML contains product data, so no browser is needed.
-func NewMorrisons() datasource.AuthDatasource {
+func NewMorrisons(cfg Config, httpClient *http.Client) datasource.AuthProductSource {
+	resolved := morrisonsCfg
+	if cfg.BaseURL != "" {
+		resolved.baseURL = cfg.BaseURL
+		resolved.selectors.BaseURL = cfg.BaseURL
+	}
 	return &ospDatasource{
-		cfg:        morrisonsCfg,
-		httpClient: &http.Client{},
+		cfg:        resolved,
+		httpClient: httpClient,
 	}
 }
 

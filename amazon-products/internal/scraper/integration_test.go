@@ -1,7 +1,6 @@
 package scraper_test
 
 import (
-	"context"
 	"sort"
 	"testing"
 
@@ -32,7 +31,7 @@ func TestSearchByRegionIntegration(t *testing.T) {
 			ds := scraper.NewDatasource(browser, region)
 
 			// "Samsung" is a universal brand name that returns results on every Amazon site.
-			products, err := ds.SearchProducts(context.Background(), "Samsung")
+			products, err := ds.SearchProducts(t.Context(), "Samsung")
 			require.NoError(t, err)
 			require.NotEmpty(t, products, "expected search results for region %s", id)
 
@@ -75,7 +74,7 @@ func TestProductDetailsByRegionIntegration(t *testing.T) {
 		t.Run(id, func(t *testing.T) {
 			ds := scraper.NewDatasource(browser, region)
 
-			products, err := ds.SearchProducts(context.Background(), "Samsung")
+			products, err := ds.SearchProducts(t.Context(), "Samsung")
 			require.NoError(t, err)
 			require.NotEmpty(t, products, "no search results to look up")
 
@@ -89,7 +88,7 @@ func TestProductDetailsByRegionIntegration(t *testing.T) {
 				limit = len(candidates)
 			}
 			for j := range limit {
-				p, err = ds.GetProductDetails(context.Background(), candidates[j].ASIN)
+				p, err = ds.GetProductDetails(t.Context(), candidates[j].ASIN)
 				require.NoError(t, err)
 				if p.Price > 0 {
 					break

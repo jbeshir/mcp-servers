@@ -91,6 +91,21 @@ func AssertSearchResults(t *testing.T, products []datasource.Product, query stri
 	}
 }
 
+// HTMLFixtureServer creates an httptest.Server that serves the given HTML fixture file.
+func HTMLFixtureServer(t *testing.T, fixturePath string) *httptest.Server {
+	t.Helper()
+	fixture, err := os.ReadFile(fixturePath) //nolint:gosec // Test fixture path.
+	require.NoError(t, err)
+	srv := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+			w.Header().Set("Content-Type", "text/html")
+			_, _ = w.Write(fixture)
+		}),
+	)
+	t.Cleanup(srv.Close)
+	return srv
+}
+
 // JSONFixtureServer creates an httptest.Server that serves the given JSON fixture file.
 func JSONFixtureServer(t *testing.T, fixturePath string) *httptest.Server {
 	t.Helper()

@@ -1,7 +1,7 @@
 package tesco_test
 
 import (
-	"context"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,7 +21,7 @@ func TestParseSearchResults(t *testing.T) {
 
 	p := products[0]
 	assert.Equal(t, "Tesco Semi Skimmed Milk 2.272L/4 Pints", p.Name)
-	assert.Equal(t, 1.65, p.Price)
+	assert.InDelta(t, 1.65, p.Price, 0.001)
 	assert.Equal(t, "72.6p/litre", p.PricePerUnit)
 	assert.Equal(t, "Clubcard Price", p.Promotion)
 	assert.Equal(t, datasource.Tesco, p.Supermarket)
@@ -30,7 +30,7 @@ func TestParseSearchResults(t *testing.T) {
 
 	p2 := products[1]
 	assert.Equal(t, "Cravendale Semi Skimmed Milk 2L", p2.Name)
-	assert.Equal(t, 1.95, p2.Price)
+	assert.InDelta(t, 1.95, p2.Price, 0.001)
 	assert.Equal(t, "987654321", p2.ID)
 }
 
@@ -38,7 +38,7 @@ func TestParseProductPage(t *testing.T) {
 	p := testutil.ParseProductFile(t, "testdata/tesco_product.html", tesco.ParseProductPage)
 
 	assert.Equal(t, "Tesco British Semi Skimmed Milk 2.272L, 4 Pints", p.Name)
-	assert.Equal(t, 1.65, p.Price)
+	assert.InDelta(t, 1.65, p.Price, 0.001)
 	assert.Equal(t, "£0.73/litre", p.PricePerUnit)
 	assert.NotEmpty(t, p.Description)
 	assert.Contains(t, p.Ingredients, "Milk")
@@ -72,7 +72,7 @@ func TestParseOrderHistory(t *testing.T) {
 	o1 := result.Orders[0]
 	assert.Equal(t, "1234-5678-90", o1.ID)
 	assert.Equal(t, "Delivered", o1.Status)
-	assert.Equal(t, 85.50, o1.TotalPrice)
+	assert.InDelta(t, 85.50, o1.TotalPrice, 0.001)
 	assert.Equal(t, 5, o1.TotalItems)
 	assert.Equal(t, "delivery", o1.ShoppingMethod)
 	assert.Equal(t, "GBP", o1.Currency)
@@ -92,7 +92,7 @@ func TestParseOrderHistory(t *testing.T) {
 	o2 := result.Orders[1]
 	assert.Equal(t, "9876-5432-10", o2.ID)
 	assert.Equal(t, "Cancelled", o2.Status)
-	assert.Equal(t, 42.00, o2.TotalPrice)
+	assert.InDelta(t, 42.00, o2.TotalPrice, 0.001)
 	assert.Equal(t, "collection", o2.ShoppingMethod)
 	require.Len(t, o2.Items, 1)
 	assert.Equal(t, "Cheddar Cheese 400g", o2.Items[0].Name)
@@ -104,8 +104,8 @@ func TestSearchIntegration(t *testing.T) {
 	}
 	browser := scraper.NewBrowser()
 	defer browser.Close()
-	ds := tesco.NewDatasource(browser)
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	ds := tesco.NewDatasource(browser, &http.Client{})
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	testutil.AssertSearchResults(t, products, "milk")
 }
@@ -116,12 +116,12 @@ func TestProductDetailsIntegration(t *testing.T) {
 	}
 	browser := scraper.NewBrowser()
 	defer browser.Close()
-	ds := tesco.NewDatasource(browser)
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	ds := tesco.NewDatasource(browser, &http.Client{})
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	require.NotEmpty(t, products, "no search results to look up")
 
-	p, err := ds.GetProductDetails(context.Background(), products[0].ID)
+	p, err := ds.GetProductDetails(t.Context(), products[0].ID)
 	require.NoError(t, err)
 	assert.NotEmpty(t, p.Name)
 	assert.Positive(t, p.Price)
@@ -138,9 +138,9 @@ func TestBrowseCategoriesIntegration(t *testing.T) {
 	}
 	browser := scraper.NewBrowser()
 	defer browser.Close()
-	ds := tesco.NewDatasource(browser)
+	ds := tesco.NewDatasource(browser, &http.Client{})
 
-	categories, err := ds.BrowseCategories(context.Background())
+	categories, err := ds.BrowseCategories(t.Context())
 	require.NoError(t, err)
 	require.NotEmpty(t, categories)
 	for _, c := range categories {
@@ -157,7 +157,7 @@ func TestParseBasket(t *testing.T) {
 
 	assert.Equal(t, datasource.Tesco, basket.Supermarket)
 	assert.Equal(t, "GBP", basket.Currency)
-	assert.Equal(t, 12.50, basket.TotalPrice)
+	assert.InDelta(t, 12.50, basket.TotalPrice, 0.001)
 	assert.Equal(t, 5, basket.TotalItems)
 	require.Len(t, basket.Items, 2)
 
@@ -165,16 +165,16 @@ func TestParseBasket(t *testing.T) {
 	assert.Equal(t, "111111", i1.ProductID)
 	assert.Equal(t, "Semi Skimmed Milk 2L", i1.Name)
 	assert.Equal(t, 2, i1.Quantity)
-	assert.Equal(t, 3.30, i1.Cost)
-	assert.Equal(t, 1.65, i1.Price)
+	assert.InDelta(t, 3.30, i1.Cost, 0.001)
+	assert.InDelta(t, 1.65, i1.Price, 0.001)
 	assert.Equal(t, "Clubcard Price", i1.Promotion)
 
 	i2 := basket.Items[1]
 	assert.Equal(t, "222222", i2.ProductID)
 	assert.Equal(t, "Wholemeal Bread 800g", i2.Name)
 	assert.Equal(t, 3, i2.Quantity)
-	assert.Equal(t, 9.20, i2.Cost)
-	assert.Equal(t, 1.10, i2.Price)
+	assert.InDelta(t, 9.20, i2.Cost, 0.001)
+	assert.InDelta(t, 1.10, i2.Price, 0.001)
 	assert.Empty(t, i2.Promotion)
 }
 
@@ -183,7 +183,7 @@ func TestGetBasketIntegration(t *testing.T) {
 		t.Skip("skipping integration test")
 	}
 	ds := tescoWithCookies(t)
-	basket, err := ds.GetBasket(context.Background())
+	basket, err := ds.GetBasket(t.Context())
 	require.NoError(t, err)
 	assert.Equal(t, datasource.Tesco, basket.Supermarket)
 	assert.Equal(t, "GBP", basket.Currency)
@@ -207,7 +207,7 @@ func tescoWithCookies(t *testing.T) *tesco.Datasource {
 	if len(cookies) == 0 {
 		t.Skip("no cached cookies for tesco")
 	}
-	ds := tesco.NewDatasource(scraper.NewBrowser())
+	ds := tesco.NewDatasource(scraper.NewBrowser(), &http.Client{})
 	ds.SetCookies(cookies)
 	return ds
 }

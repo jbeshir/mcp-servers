@@ -76,29 +76,38 @@ type SearchResult struct {
 	Error       string        `json:"error,omitempty"`
 }
 
-// Datasource provides access to a supermarket's product data.
-// All datasources must implement the full interface. Datasources that do
-// not support order history or basket management should embed NoOrderHistory
-// and/or NoBasket to provide default "not supported" implementations.
-type Datasource interface {
+// ProductSource provides access to a supermarket's product catalog.
+type ProductSource interface {
 	ID() SupermarketID
 	Name() string
 	Description() string
 	SearchProducts(ctx context.Context, query string) ([]Product, error)
 	GetProductDetails(ctx context.Context, productID string) (*Product, error)
 	BrowseCategories(ctx context.Context) ([]Category, error)
+}
+
+// OrderHistorySource provides access to a supermarket's order history.
+type OrderHistorySource interface {
 	GetOrderHistory(ctx context.Context, page int) (*OrderHistoryResult, error)
+}
+
+// BasketSource provides access to a supermarket's basket management.
+type BasketSource interface {
 	GetBasket(ctx context.Context) (*Basket, error)
 	UpdateBasketItem(ctx context.Context, productID string, quantity int) (*Basket, error)
 }
 
-// AuthDatasource is a Datasource that supports session cookie injection
+// AuthProductSource is a ProductSource that supports session cookie injection
 // and session validation.
-type AuthDatasource interface {
-	Datasource
+type AuthProductSource interface {
+	ProductSource
 	SetCookies(cookies []*http.Cookie)
 	CheckSession(ctx context.Context) bool
 }
+
+// ErrSessionExpired signals that a datasource's session has expired
+// and re-authentication is needed.
+var ErrSessionExpired = errors.New("session expired")
 
 // OrderItem represents a single item in an order.
 type OrderItem struct {
@@ -132,17 +141,6 @@ type OrderHistoryResult struct {
 	Error       string        `json:"error,omitempty"`
 }
 
-// ErrOrderHistoryNotSupported is returned by datasources that do not support order history.
-var ErrOrderHistoryNotSupported = errors.New("order history is not supported for this supermarket")
-
-// NoOrderHistory can be embedded by datasources that do not support order history.
-type NoOrderHistory struct{}
-
-// GetOrderHistory returns ErrOrderHistoryNotSupported.
-func (NoOrderHistory) GetOrderHistory(context.Context, int) (*OrderHistoryResult, error) {
-	return nil, ErrOrderHistoryNotSupported
-}
-
 // BasketItem represents an item in the shopping basket.
 type BasketItem struct {
 	ProductID string  `json:"productId"`
@@ -161,20 +159,4 @@ type Basket struct {
 	TotalPrice  float64       `json:"totalPrice"`
 	TotalItems  int           `json:"totalItems"`
 	Currency    string        `json:"currency"`
-}
-
-// ErrBasketNotSupported is returned by datasources that do not support basket management.
-var ErrBasketNotSupported = errors.New("basket management is not supported for this supermarket")
-
-// NoBasket can be embedded by datasources that do not support basket management.
-type NoBasket struct{}
-
-// GetBasket returns ErrBasketNotSupported.
-func (NoBasket) GetBasket(context.Context) (*Basket, error) {
-	return nil, ErrBasketNotSupported
-}
-
-// UpdateBasketItem returns ErrBasketNotSupported.
-func (NoBasket) UpdateBasketItem(context.Context, string, int) (*Basket, error) {
-	return nil, ErrBasketNotSupported
 }

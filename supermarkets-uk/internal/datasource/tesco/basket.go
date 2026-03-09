@@ -364,7 +364,7 @@ func (d *Datasource) UpdateBasketItem(
 	}
 	req.Extensions.MFEName = "mfe-basket-manager"
 
-	resp, err := graphQL(ctx, token, req)
+	resp, err := d.graphQL(ctx, token, req)
 	if err != nil {
 		return nil, fmt.Errorf("tesco: update basket: %w", err)
 	}
@@ -385,7 +385,7 @@ func extractOrderID(
 	return cb.ID, nil
 }
 
-func graphQL(
+func (d *Datasource) graphQL(
 	ctx context.Context, token string, gqlReq graphQLRequest,
 ) (json.RawMessage, error) {
 	// Tesco xapi expects a JSON array of operations.
@@ -404,7 +404,7 @@ func graphQL(
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("x-apikey", xapiKey)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := d.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

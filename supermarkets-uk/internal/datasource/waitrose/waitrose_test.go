@@ -1,7 +1,6 @@
 package waitrose_test
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -37,7 +36,7 @@ func TestParsePencePrice(t *testing.T) {
 	// Product 8 in the fixture has a "95p" price (no £ sign).
 	require.Greater(t, len(products), 8)
 	p := products[8]
-	assert.Equal(t, 0.95, p.Price)
+	assert.InDelta(t, 0.95, p.Price, 0.001)
 }
 
 func TestParseCategories(t *testing.T) {
@@ -76,7 +75,7 @@ func TestParseProductPage(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "Essential British Free Range Semi-Skimmed Milk 4 Pints", p.Name)
-	assert.Equal(t, 1.75, p.Price)
+	assert.InDelta(t, 1.75, p.Price, 0.001)
 	assert.Equal(t, "77p/litre", p.PricePerUnit)
 	assert.NotEmpty(t, p.Description)
 	assert.Contains(t, p.Ingredients, "milk")
@@ -93,7 +92,7 @@ func TestSearchIntegration(t *testing.T) {
 	browser := scraper.NewBrowser()
 	defer browser.Close()
 	ds := waitrose.NewDatasource(browser)
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	require.NotEmpty(t, products)
 }
@@ -106,11 +105,11 @@ func TestProductDetailsIntegration(t *testing.T) {
 	defer browser.Close()
 	ds := waitrose.NewDatasource(browser)
 
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	require.NotEmpty(t, products, "no search results to look up")
 
-	p, err := ds.GetProductDetails(context.Background(), products[0].ID)
+	p, err := ds.GetProductDetails(t.Context(), products[0].ID)
 	require.NoError(t, err)
 	assert.NotEmpty(t, p.Name)
 	assert.Positive(t, p.Price)
@@ -128,7 +127,7 @@ func TestBrowseCategoriesIntegration(t *testing.T) {
 	defer browser.Close()
 	ds := waitrose.NewDatasource(browser)
 
-	categories, err := ds.BrowseCategories(context.Background())
+	categories, err := ds.BrowseCategories(t.Context())
 	require.NoError(t, err)
 	require.NotEmpty(t, categories)
 	for _, c := range categories {

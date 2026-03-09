@@ -59,10 +59,8 @@ var selectors = scraper.Config{
 	},
 }
 
-// Datasource implements datasource.AuthDatasource for Waitrose using a headless browser.
+// Datasource implements datasource.AuthProductSource for Waitrose using a headless browser.
 type Datasource struct {
-	datasource.NoOrderHistory
-	datasource.NoBasket
 	browser *scraper.Browser
 	cookies []*http.Cookie
 }

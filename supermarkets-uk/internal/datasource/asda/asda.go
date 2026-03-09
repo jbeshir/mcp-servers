@@ -87,18 +87,16 @@ type algoliaResponse struct {
 // Datasource uses the Algolia API for search and a headless browser
 // for categories and product detail pages.
 type Datasource struct {
-	datasource.NoOrderHistory
-	datasource.NoBasket
 	browser    *scraper.Browser
 	cookies    []*http.Cookie
 	httpClient *http.Client
 }
 
 // NewDatasource creates a new Asda datasource.
-func NewDatasource(browser *scraper.Browser) *Datasource {
+func NewDatasource(browser *scraper.Browser, httpClient *http.Client) *Datasource {
 	return &Datasource{
 		browser:    browser,
-		httpClient: &http.Client{},
+		httpClient: httpClient,
 	}
 }
 

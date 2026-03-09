@@ -24,22 +24,15 @@ type Config struct {
 	BaseURL     string // e.g. "https://hiyou.co"
 }
 
-// Datasource implements datasource.Datasource for Shopify stores.
+// Datasource implements datasource.ProductSource for Shopify stores.
 type Datasource struct {
-	datasource.NoOrderHistory
-	datasource.NoBasket
 	cfg        Config
 	httpClient *http.Client
 }
 
-// NewDatasource creates a Datasource with a default HTTP client.
-func NewDatasource(cfg Config) *Datasource {
-	return &Datasource{cfg: cfg, httpClient: http.DefaultClient}
-}
-
-// NewDatasourceWithClient creates a Datasource with a custom HTTP client (for testing).
-func NewDatasourceWithClient(cfg Config, client *http.Client) *Datasource {
-	return &Datasource{cfg: cfg, httpClient: client}
+// NewDatasource creates a Datasource with the given HTTP client.
+func NewDatasource(cfg Config, httpClient *http.Client) *Datasource {
+	return &Datasource{cfg: cfg, httpClient: httpClient}
 }
 
 // ID returns the supermarket identifier.

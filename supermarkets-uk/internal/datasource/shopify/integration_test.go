@@ -1,7 +1,7 @@
 package shopify_test
 
 import (
-	"context"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -11,7 +11,7 @@ import (
 
 type shopifyTestCase struct {
 	name        string
-	constructor func() *shopify.Datasource
+	constructor func(*http.Client) *shopify.Datasource
 	id          datasource.SupermarketID
 }
 
@@ -27,8 +27,8 @@ func TestShopifySearchIntegration(t *testing.T) {
 	}
 	for _, tc := range shopifyStores {
 		t.Run(tc.name, func(t *testing.T) {
-			ds := tc.constructor()
-			products, err := ds.SearchProducts(context.Background(), "rice")
+			ds := tc.constructor(&http.Client{})
+			products, err := ds.SearchProducts(t.Context(), "rice")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -66,10 +66,10 @@ func TestShopifyProductDetailsIntegration(t *testing.T) {
 	}
 	for _, tc := range shopifyStores {
 		t.Run(tc.name, func(t *testing.T) {
-			ds := tc.constructor()
+			ds := tc.constructor(&http.Client{})
 
 			// First search to get a valid handle.
-			products, err := ds.SearchProducts(context.Background(), "rice")
+			products, err := ds.SearchProducts(t.Context(), "rice")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -77,7 +77,7 @@ func TestShopifyProductDetailsIntegration(t *testing.T) {
 				t.Fatal("no search results to look up")
 			}
 
-			p, err := ds.GetProductDetails(context.Background(), products[0].ID)
+			p, err := ds.GetProductDetails(t.Context(), products[0].ID)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -100,8 +100,8 @@ func TestShopifyBrowseCategoriesIntegration(t *testing.T) {
 	}
 	for _, tc := range shopifyStores {
 		t.Run(tc.name, func(t *testing.T) {
-			ds := tc.constructor()
-			categories, err := ds.BrowseCategories(context.Background())
+			ds := tc.constructor(&http.Client{})
+			categories, err := ds.BrowseCategories(t.Context())
 			if err != nil {
 				t.Fatal(err)
 			}

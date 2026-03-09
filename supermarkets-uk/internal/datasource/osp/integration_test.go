@@ -1,7 +1,7 @@
 package osp_test
 
 import (
-	"context"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,8 +16,8 @@ func TestOcadoSearchIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	ds := osp.NewOcado()
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	ds := osp.NewOcado(osp.Config{}, &http.Client{})
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	testutil.AssertSearchResults(t, products, "milk")
 }
@@ -26,8 +26,8 @@ func TestMorrisonsSearchIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	ds := osp.NewMorrisons()
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	ds := osp.NewMorrisons(osp.Config{}, &http.Client{})
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	testutil.AssertSearchResults(t, products, "milk")
 }
@@ -36,13 +36,13 @@ func TestOcadoProductDetailsIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	ds := osp.NewOcado()
+	ds := osp.NewOcado(osp.Config{}, &http.Client{})
 
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	require.NotEmpty(t, products, "no search results to look up")
 
-	p, err := ds.GetProductDetails(context.Background(), products[0].ID)
+	p, err := ds.GetProductDetails(t.Context(), products[0].ID)
 	require.NoError(t, err)
 	assert.NotEmpty(t, p.Name)
 	assert.Positive(t, p.Price)
@@ -56,13 +56,13 @@ func TestMorrisonsProductDetailsIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	ds := osp.NewMorrisons()
+	ds := osp.NewMorrisons(osp.Config{}, &http.Client{})
 
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	require.NotEmpty(t, products, "no search results to look up")
 
-	p, err := ds.GetProductDetails(context.Background(), products[0].ID)
+	p, err := ds.GetProductDetails(t.Context(), products[0].ID)
 	require.NoError(t, err)
 	assert.NotEmpty(t, p.Name)
 	assert.Positive(t, p.Price)
@@ -76,9 +76,9 @@ func TestOcadoBrowseCategoriesIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	ds := osp.NewOcado()
+	ds := osp.NewOcado(osp.Config{}, &http.Client{})
 
-	categories, err := ds.BrowseCategories(context.Background())
+	categories, err := ds.BrowseCategories(t.Context())
 	require.NoError(t, err)
 	require.NotEmpty(t, categories)
 	for _, c := range categories {
@@ -92,9 +92,9 @@ func TestMorrisonsBrowseCategoriesIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	ds := osp.NewMorrisons()
+	ds := osp.NewMorrisons(osp.Config{}, &http.Client{})
 
-	categories, err := ds.BrowseCategories(context.Background())
+	categories, err := ds.BrowseCategories(t.Context())
 	require.NoError(t, err)
 	require.NotEmpty(t, categories)
 	for _, c := range categories {

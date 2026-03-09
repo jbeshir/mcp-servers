@@ -167,12 +167,7 @@ func (s *Server) handleBrowseCategories(
 	}
 
 	sid := datasource.SupermarketID(supermarketID)
-	ds, ok := s.client.GetDatasource(sid)
-	if !ok {
-		return mcp.NewToolResultError(fmt.Sprintf("unknown supermarket: %s", supermarketID)), nil
-	}
-
-	categories, err := ds.BrowseCategories(ctx)
+	categories, err := s.client.BrowseCategories(ctx, sid)
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to browse categories: %v", err)), nil
 	}
@@ -197,12 +192,7 @@ func (s *Server) handleGetProductDetails(
 	}
 
 	sid := datasource.SupermarketID(supermarketID)
-	ds, ok := s.client.GetDatasource(sid)
-	if !ok {
-		return mcp.NewToolResultError(fmt.Sprintf("unknown supermarket: %s", supermarketID)), nil
-	}
-
-	product, err := ds.GetProductDetails(ctx, productID)
+	product, err := s.client.GetProductDetails(ctx, sid, productID)
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to get product details: %v", err)), nil
 	}

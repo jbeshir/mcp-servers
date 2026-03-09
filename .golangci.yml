@@ -11,7 +11,10 @@ formatters:
 linters:
   enable:
     - asasalint
+    - bodyclose
     - dupl
+    - dupword
+    - durationcheck
     - errcheck
     - errchkjson
     - errorlint
@@ -24,24 +27,39 @@ linters:
     - gosec
     - govet
     - iface
+    - ineffassign
+    - intrange
     - lll
     - loggercheck
     - makezero
     - misspell
     - musttag
+    - nakedret
+    - nilerr
+    - noctx
     - nolintlint
+    - predeclared
     - reassign
     - recvcheck
     - sloglint
     - staticcheck
+    - testifylint
+    - unconvert
     - unparam
     - unused
     - usestdlibvars
+    - usetesting
   exclusions:
     rules:
       - linters:
-        - lll
+          - lll
         path: ".*_test\\.go$"
+      - linters:
+          - nilerr
+        path: "internal/server/"
   settings:
+    dupword:
+      ignore:
+        - "Tuk"
     gocyclo:
       min-complexity: 12

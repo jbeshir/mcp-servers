@@ -13,6 +13,7 @@ import (
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
+	"golang.org/x/time/rate"
 )
 
 const browserRenderTimeout = 30 * time.Second
@@ -31,6 +32,9 @@ type Browser struct {
 
 	mu      sync.Mutex
 	started bool
+
+	hostLimiters map[string]*rate.Limiter
+	limiterMu    sync.Mutex
 }
 
 // NewBrowser creates a new Browser. Call Close when done.
@@ -105,6 +109,27 @@ func waitForSelector(ctx context.Context, sel string) error {
 	}
 }
 
+// limiterForHost returns a per-host rate limiter, creating one lazily at 1 req/sec.
+func (b *Browser) limiterForHost(rawURL string) *rate.Limiter {
+	u, err := url.Parse(rawURL)
+	host := rawURL
+	if err == nil {
+		host = u.Host
+	}
+
+	b.limiterMu.Lock()
+	defer b.limiterMu.Unlock()
+	if b.hostLimiters == nil {
+		b.hostLimiters = make(map[string]*rate.Limiter)
+	}
+	if lim, ok := b.hostLimiters[host]; ok {
+		return lim
+	}
+	lim := rate.NewLimiter(1, 1)
+	b.hostLimiters[host] = lim
+	return lim
+}
+
 // FetchAndReadCookie navigates to the given URL, waits for the page to
 // render, and returns both the HTML and the value of a specific cookie.
 // This is useful when the browser's JavaScript refreshes tokens that
@@ -116,6 +141,10 @@ func (b *Browser) FetchAndReadCookie(
 	cookieName string,
 	waitSelector string,
 ) (io.ReadCloser, string, error) {
+	if err := b.limiterForHost(targetURL).Wait(ctx); err != nil {
+		return nil, "", err
+	}
+
 	b.mu.Lock()
 	b.start()
 	b.mu.Unlock()

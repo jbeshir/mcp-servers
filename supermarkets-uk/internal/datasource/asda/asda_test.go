@@ -1,7 +1,7 @@
 package asda_test
 
 import (
-	"context"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -48,7 +48,7 @@ func TestParseProductPage(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "ASDA British Milk Semi Skimmed 4 Pints", p.Name)
-	assert.Equal(t, 1.65, p.Price)
+	assert.InDelta(t, 1.65, p.Price, 0.001)
 	assert.NotEmpty(t, p.PricePerUnit)
 	assert.Equal(t, "4 pint", p.Weight)
 	assert.NotEmpty(t, p.ImageURL)
@@ -65,8 +65,8 @@ func TestSearchIntegration(t *testing.T) {
 	}
 	browser := scraper.NewBrowser()
 	defer browser.Close()
-	ds := asda.NewDatasource(browser)
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	ds := asda.NewDatasource(browser, &http.Client{})
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	require.NotEmpty(t, products)
 }
@@ -77,13 +77,13 @@ func TestProductDetailsIntegration(t *testing.T) {
 	}
 	browser := scraper.NewBrowser()
 	defer browser.Close()
-	ds := asda.NewDatasource(browser)
+	ds := asda.NewDatasource(browser, &http.Client{})
 
-	products, err := ds.SearchProducts(context.Background(), "milk")
+	products, err := ds.SearchProducts(t.Context(), "milk")
 	require.NoError(t, err)
 	require.NotEmpty(t, products, "no search results to look up")
 
-	p, err := ds.GetProductDetails(context.Background(), products[0].ID)
+	p, err := ds.GetProductDetails(t.Context(), products[0].ID)
 	require.NoError(t, err)
 	assert.NotEmpty(t, p.Name)
 	assert.Positive(t, p.Price)
@@ -99,9 +99,9 @@ func TestBrowseCategoriesIntegration(t *testing.T) {
 	}
 	browser := scraper.NewBrowser()
 	defer browser.Close()
-	ds := asda.NewDatasource(browser)
+	ds := asda.NewDatasource(browser, &http.Client{})
 
-	categories, err := ds.BrowseCategories(context.Background())
+	categories, err := ds.BrowseCategories(t.Context())
 	require.NoError(t, err)
 	require.NotEmpty(t, categories)
 	for _, c := range categories {

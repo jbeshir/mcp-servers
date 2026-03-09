@@ -14,6 +14,10 @@ To validate changes in this repository, run the following automated checks:
 
 All automated steps must pass before changes can be merged.
 
+For changes to datasource scraping/parsing logic, also run live integration tests:
+
+- Integration tests: `make test` (omits `-short` — hits live supermarket sites, may be flaky)
+
 Additionally, perform the following manual checks:
 
 ### Manual Quality Checks
@@ -31,6 +35,7 @@ After automated validation passes, review code for these issues:
    - Functions that are defined but never called
    - Features partially implemented but not wired up
    - TODO comments indicating unfinished work
+   - Environment variables referenced in code but missing from README documentation
 
 4. **Validation Script Coverage**: Ensure any new validations are:
    - Added to CI
@@ -42,7 +47,31 @@ After automated validation passes, review code for these issues:
 6. **Poor use of types**: Look for:
    - String comparisons on errors instead of using typed errors and errors.Is or errors.As
 
+7. **MCP tool definitions out of sync**: When adding or changing tool parameters, descriptions, or behaviour, check all three locations are consistent:
+   - `internal/server/tools.go` — authoritative tool registration (descriptions, parameters, options)
+   - `manifest.json` — tool list for MCPB distribution
+   - `README.md` — user-facing tool documentation table
+
 All steps must pass before changes can be merged.
+
+## Coding Standards
+
+### Naming
+- Names should make sense from the current code alone — don't encode history (e.g. no `SearchEnhanced` because the old `Search` was removed)
+
+### General
+- Prefer immutable data flows — return results rather than mutating state on receivers (e.g. return a value from a method rather than accumulating fields on a struct)
+
+### Testing
+- Use `t.Context()` instead of `context.Background()` in tests — ties context cancellation to the test lifecycle
+
+### Datasource Constructors
+- Single `New` constructor taking `(Config, *http.Client)` — no `NewWithURL`/`NewWithClient` variants
+- `Config` struct holds optional overrides (e.g. `BaseURL`); zero value uses built-in defaults
+- Per-store wrappers (e.g. `NewHiyou`) are thin: fill in the store-specific `Config` and delegate to the generic constructor
+
+### URL Handling
+- Store `baseURL` in config, compute full URLs inline in methods — don't precompute URL functions or store derived URL fields
 
 ## Supermarkets-UK
 

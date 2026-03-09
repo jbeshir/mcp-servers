@@ -25,7 +25,7 @@ func TestParseSearchResults(t *testing.T) {
 	p := products[0]
 	assert.Equal(t, "B09CDRVQZC", p.ASIN)
 	assert.Equal(t, "Sony WH-1000XM4 Wireless Noise Cancelling Headphones", p.Name)
-	assert.Equal(t, 248.0, p.Price)
+	assert.InDelta(t, 248.0, p.Price, 0.001)
 	assert.Equal(t, "GBP", p.Currency)
 	assert.Equal(t, ukRegion.BaseURL+"/dp/B09CDRVQZC", p.URL)
 	assert.Contains(t, p.ImageURL, "51aXvjzcukL")
@@ -35,7 +35,7 @@ func TestParseSearchResults(t *testing.T) {
 	p2 := products[1]
 	assert.Equal(t, "B0BXL6ZZWB", p2.ASIN)
 	assert.Equal(t, "JBL Tune 510BT Wireless On-Ear Headphones", p2.Name)
-	assert.Equal(t, 29.99, p2.Price)
+	assert.InDelta(t, 29.99, p2.Price, 0.001)
 	assert.False(t, p2.IsPrime)
 }
 
@@ -49,7 +49,7 @@ func TestParseProductPage(t *testing.T) {
 
 	assert.Equal(t, "B09CDRVQZC", p.ASIN)
 	assert.Equal(t, "Sony WH-1000XM4 Wireless Premium Noise Cancelling Overhead Headphones", p.Name)
-	assert.Equal(t, 248.0, p.Price)
+	assert.InDelta(t, 248.0, p.Price, 0.001)
 	assert.Equal(t, "GBP", p.Currency)
 	assert.Equal(t, ukRegion.BaseURL+"/dp/B09CDRVQZC", p.URL)
 	assert.Equal(t, "4.6 out of 5 stars", p.Rating)
@@ -165,7 +165,7 @@ func TestParsePrice(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
-			assert.Equal(t, tt.want, parsePrice(tt.input))
+			assert.InDelta(t, tt.want, parsePrice(tt.input), 0.001)
 		})
 	}
 }
