@@ -20,7 +20,7 @@ func NewServer(apiClient *client.Client) *Server {
 
 	s.mcpServer = server.NewMCPServer(
 		"manifold",
-		"1.0.0",
+		"0.1.0",
 		server.WithLogging(),
 	)
 

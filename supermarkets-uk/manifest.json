@@ -36,10 +36,10 @@
     { "name": "compare_prices", "description": "Compare prices for a product across all supermarkets" },
     { "name": "get_product_details", "description": "Get detailed product info (price, description, ingredients, nutrition)" },
     { "name": "browse_categories", "description": "Browse product categories for a supermarket" },
-    { "name": "get_order_history", "description": "Get past order history (requires login)" },
-    { "name": "get_basket", "description": "Get current shopping basket contents (requires login)" },
-    { "name": "add_to_basket", "description": "Add a product to basket or update quantity (requires login)" },
-    { "name": "remove_from_basket", "description": "Remove a product from basket (requires login)" }
+    { "name": "get_order_history", "description": "Get past order history (Tesco only, requires login)" },
+    { "name": "get_basket", "description": "Get current shopping basket contents (Tesco only, requires login)" },
+    { "name": "add_to_basket", "description": "Add a product to basket or update quantity (Tesco only, requires login)" },
+    { "name": "remove_from_basket", "description": "Remove a product from basket (Tesco only, requires login)" }
   ],
   "compatibility": {
     "platforms": ["darwin", "win32", "linux"]

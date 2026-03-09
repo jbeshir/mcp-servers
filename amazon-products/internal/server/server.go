@@ -27,7 +27,7 @@ func NewServer(browser *scraper.Browser, defaultRegionID string) *Server {
 	s := &Server{browser: browser, defaultRegionID: defaultRegionID}
 	s.mcpServer = server.NewMCPServer(
 		"amazon",
-		"1.0.0",
+		"0.1.0",
 		server.WithLogging(),
 	)
 	s.registerTools()

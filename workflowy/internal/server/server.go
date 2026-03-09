@@ -23,7 +23,7 @@ func NewServer(apiClient *client.Client, exportCache *cache.Cache) *Server {
 
 	s.mcpServer = server.NewMCPServer(
 		"workflowy",
-		"1.0.0",
+		"0.1.0",
 		server.WithLogging(),
 	)
 
