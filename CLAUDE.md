@@ -49,7 +49,7 @@ After automated validation passes, review code for these issues:
 
 7. **MCP tool definitions out of sync**: When adding or changing tool parameters, descriptions, or behaviour, check all three locations are consistent:
    - `internal/server/tools.go` — authoritative tool registration (descriptions, parameters, options)
-   - `manifest.json` — tool list for MCPB distribution
+   - `manifest.json` — tool list for MCPB distribution (every server must have one)
    - `README.md` — user-facing tool documentation table
 
 All steps must pass before changes can be merged.
@@ -61,9 +61,6 @@ All steps must pass before changes can be merged.
 
 ### General
 - Prefer immutable data flows — return results rather than mutating state on receivers (e.g. return a value from a method rather than accumulating fields on a struct)
-
-### Testing
-- Use `t.Context()` instead of `context.Background()` in tests — ties context cancellation to the test lifecycle
 
 ### Datasource Constructors
 - Single `New` constructor taking `(Config, *http.Client)` — no `NewWithURL`/`NewWithClient` variants

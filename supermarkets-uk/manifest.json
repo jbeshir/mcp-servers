@@ -1,0 +1,47 @@
+{
+  "manifest_version": "0.3",
+  "name": "supermarkets-uk-mcp",
+  "display_name": "UK Supermarkets",
+  "version": "0.1.0",
+  "description": "Search and compare grocery prices across UK supermarkets. Returns product details including prices, promotions, descriptions, ingredients, and nutritional information.",
+  "author": {
+    "name": "John Beshir",
+    "url": "https://github.com/jbeshir"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbeshir/mcp-servers.git"
+  },
+  "license": "MIT",
+  "server": {
+    "type": "binary",
+    "entry_point": "server/supermarkets-uk-mcp-linux-amd64",
+    "mcp_config": {
+      "command": "${__dirname}/server/supermarkets-uk-mcp-linux-amd64",
+      "args": [],
+      "env": {},
+      "platform_overrides": {
+        "darwin": {
+          "command": "${__dirname}/server/supermarkets-uk-mcp-darwin-arm64"
+        },
+        "win32": {
+          "command": "${__dirname}/server/supermarkets-uk-mcp-windows-amd64.exe"
+        }
+      }
+    }
+  },
+  "tools": [
+    { "name": "list_supermarkets", "description": "List all supported supermarkets with IDs and status" },
+    { "name": "search_products", "description": "Search for products across one or more supermarkets" },
+    { "name": "compare_prices", "description": "Compare prices for a product across all supermarkets" },
+    { "name": "get_product_details", "description": "Get detailed product info (price, description, ingredients, nutrition)" },
+    { "name": "browse_categories", "description": "Browse product categories for a supermarket" },
+    { "name": "get_order_history", "description": "Get past order history (requires login)" },
+    { "name": "get_basket", "description": "Get current shopping basket contents (requires login)" },
+    { "name": "add_to_basket", "description": "Add a product to basket or update quantity (requires login)" },
+    { "name": "remove_from_basket", "description": "Remove a product from basket (requires login)" }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"]
+  }
+}

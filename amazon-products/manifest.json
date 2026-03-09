@@ -1,0 +1,51 @@
+{
+  "manifest_version": "0.3",
+  "name": "amazon-products-mcp",
+  "display_name": "Amazon Products",
+  "version": "0.1.0",
+  "description": "Search for products and get detailed product information from Amazon. Supports multiple regional Amazon sites.",
+  "author": {
+    "name": "John Beshir",
+    "url": "https://github.com/jbeshir"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbeshir/mcp-servers.git"
+  },
+  "license": "MIT",
+  "server": {
+    "type": "binary",
+    "entry_point": "server/amazon-products-mcp-linux-amd64",
+    "mcp_config": {
+      "command": "${__dirname}/server/amazon-products-mcp-linux-amd64",
+      "args": [],
+      "env": {
+        "AMAZON_REGION": "${user_config.region}"
+      },
+      "platform_overrides": {
+        "darwin": {
+          "command": "${__dirname}/server/amazon-products-mcp-darwin-arm64"
+        },
+        "win32": {
+          "command": "${__dirname}/server/amazon-products-mcp-windows-amd64.exe"
+        }
+      }
+    }
+  },
+  "user_config": {
+    "region": {
+      "type": "string",
+      "title": "Default Region",
+      "description": "Default Amazon region (e.g. us, uk, de). Can be overridden per request.",
+      "required": false
+    }
+  },
+  "tools": [
+    { "name": "list_regions", "description": "List all supported Amazon regions with IDs, names, and currencies" },
+    { "name": "search_products", "description": "Search for products on Amazon by keyword" },
+    { "name": "get_product_details", "description": "Get detailed product info by ASIN (price, features, rating, description)" }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"]
+  }
+}

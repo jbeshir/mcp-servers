@@ -1,0 +1,60 @@
+{
+  "manifest_version": "0.3",
+  "name": "workflowy-mcp",
+  "display_name": "Workflowy",
+  "version": "0.1.0",
+  "description": "Search, read, create, and organize Workflowy nodes. Full read/write access with breadcrumb context, completion filtering, and smart caching.",
+  "long_description": "A full-featured Workflowy MCP server with read and write access to your Workflowy account.\n\n**Key features:**\n\n- **Search with breadcrumb paths** — search results include the full ancestor path for each node, so you can see where things are in your hierarchy\n- **Hierarchical completion filtering** — understands that completing a parent implicitly completes its children, and filters accordingly\n- **Smart caching** — caches exports to respect Workflowy's rate limits, automatically invalidates on writes\n- **Layout modes** — supports bullets, todos, headings (h1–h3), code blocks, and quote blocks\n- **System targets** — work with home, inbox, and user shortcuts by name instead of IDs\n- **Full CRUD** — create, read, update, delete, move, complete, and uncomplete nodes",
+  "author": {
+    "name": "John Beshir",
+    "url": "https://github.com/jbeshir"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbeshir/mcp-servers.git"
+  },
+  "license": "MIT",
+  "server": {
+    "type": "binary",
+    "entry_point": "server/workflowy-mcp-linux-amd64",
+    "mcp_config": {
+      "command": "${__dirname}/server/workflowy-mcp-linux-amd64",
+      "args": [],
+      "env": {
+        "WORKFLOWY_API_TOKEN": "${user_config.api_token}"
+      },
+      "platform_overrides": {
+        "darwin": {
+          "command": "${__dirname}/server/workflowy-mcp-darwin-arm64"
+        },
+        "win32": {
+          "command": "${__dirname}/server/workflowy-mcp-windows-amd64.exe"
+        }
+      }
+    }
+  },
+  "user_config": {
+    "api_token": {
+      "type": "string",
+      "title": "API Token",
+      "description": "Workflowy API token from workflowy.com/api-key",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "tools": [
+    { "name": "search_nodes", "description": "Search nodes by keyword across name and note fields" },
+    { "name": "get_node", "description": "Get full details of a node by ID" },
+    { "name": "list_children", "description": "List child nodes of a parent, sorted by priority" },
+    { "name": "create_node", "description": "Create a new node" },
+    { "name": "update_node", "description": "Update an existing node's properties" },
+    { "name": "delete_node", "description": "Delete a node" },
+    { "name": "move_node", "description": "Move a node to a different parent" },
+    { "name": "complete_node", "description": "Mark a node as completed" },
+    { "name": "uncomplete_node", "description": "Mark a node as not completed" },
+    { "name": "list_targets", "description": "List system locations (home/inbox) and user shortcuts" }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"]
+  }
+}

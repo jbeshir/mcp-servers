@@ -1,0 +1,65 @@
+{
+  "manifest_version": "0.3",
+  "name": "manifold-mcp",
+  "display_name": "Manifold Markets",
+  "version": "0.1.0",
+  "description": "Search and read prediction markets, place bets and limit orders, create and resolve markets, and comment on Manifold Markets.",
+  "author": {
+    "name": "John Beshir",
+    "url": "https://github.com/jbeshir"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbeshir/mcp-servers.git"
+  },
+  "license": "MIT",
+  "server": {
+    "type": "binary",
+    "entry_point": "server/manifold-mcp-linux-amd64",
+    "mcp_config": {
+      "command": "${__dirname}/server/manifold-mcp-linux-amd64",
+      "args": [],
+      "env": {
+        "MANIFOLD_API_KEY": "${user_config.api_key}"
+      },
+      "platform_overrides": {
+        "darwin": {
+          "command": "${__dirname}/server/manifold-mcp-darwin-arm64"
+        },
+        "win32": {
+          "command": "${__dirname}/server/manifold-mcp-windows-amd64.exe"
+        }
+      }
+    }
+  },
+  "user_config": {
+    "api_key": {
+      "type": "string",
+      "title": "API Key",
+      "description": "Manifold Markets API key from your account settings",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "tools": [
+    { "name": "search_markets", "description": "Search markets by keyword and filters" },
+    { "name": "get_market", "description": "Get full market details including answers and description" },
+    { "name": "get_user", "description": "Get a user's profile by username" },
+    { "name": "get_me", "description": "Get the authenticated user's profile" },
+    { "name": "list_bets", "description": "List bets with optional filters" },
+    { "name": "get_comments", "description": "Get comments on markets" },
+    { "name": "get_positions", "description": "Get user positions for a specific market" },
+    { "name": "place_bet", "description": "Place a bet or limit order (supports dryRun)" },
+    { "name": "sell_shares", "description": "Sell shares in a market" },
+    { "name": "cancel_bet", "description": "Cancel a pending limit order" },
+    { "name": "create_market", "description": "Create a new market (binary, multiple choice, or numeric)" },
+    { "name": "resolve_market", "description": "Resolve a market you created" },
+    { "name": "close_market", "description": "Close a market or change its closing time" },
+    { "name": "add_comment", "description": "Comment on a market" },
+    { "name": "add_liquidity", "description": "Add mana liquidity to a market" },
+    { "name": "send_mana", "description": "Send mana to other users" }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"]
+  }
+}
