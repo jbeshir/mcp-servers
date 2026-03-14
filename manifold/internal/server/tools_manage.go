@@ -77,9 +77,9 @@ func (s *Server) handleResolveMarket(
 ) (*mcp.CallToolResult, error) {
 	args := request.Params.Arguments
 
-	marketID, ok := args["market_id"].(string)
+	marketID, ok := args["marketId"].(string)
 	if !ok || marketID == "" {
-		return mcp.NewToolResultError("market_id is required"), nil
+		return mcp.NewToolResultError("marketId is required"), nil
 	}
 
 	outcome, ok := args["outcome"].(string)
@@ -114,9 +114,9 @@ func (s *Server) handleCloseMarket(
 ) (*mcp.CallToolResult, error) {
 	args := request.Params.Arguments
 
-	marketID, ok := args["market_id"].(string)
+	marketID, ok := args["marketId"].(string)
 	if !ok || marketID == "" {
-		return mcp.NewToolResultError("market_id is required"), nil
+		return mcp.NewToolResultError("marketId is required"), nil
 	}
 
 	req := client.CloseMarketRequest{}
@@ -167,9 +167,9 @@ func (s *Server) handleAddLiquidity(
 ) (*mcp.CallToolResult, error) {
 	args := request.Params.Arguments
 
-	marketID, ok := args["market_id"].(string)
+	marketID, ok := args["marketId"].(string)
 	if !ok || marketID == "" {
-		return mcp.NewToolResultError("market_id is required"), nil
+		return mcp.NewToolResultError("marketId is required"), nil
 	}
 
 	amount, ok := args["amount"].(float64)

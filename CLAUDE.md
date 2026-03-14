@@ -54,6 +54,15 @@ After automated validation passes, review code for these issues:
 
 All steps must pass before changes can be merged.
 
+## Desloppify
+
+Subjective LLM-based code review complementing golangci-lint. Local-only (not in CI).
+
+- `make desloppify` — scan for quality issues
+- `desloppify next` — show priority fix queue
+- `.desloppify/` is committed for state persistence across sessions
+- Exclude worktree directories when created: `desloppify exclude <worktree-dir>/`
+
 ## Coding Standards
 
 ### Naming

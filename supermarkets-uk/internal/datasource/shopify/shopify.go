@@ -35,14 +35,9 @@ func NewDatasource(cfg Config, httpClient *http.Client) *Datasource {
 	return &Datasource{cfg: cfg, httpClient: httpClient}
 }
 
-// ID returns the supermarket identifier.
 func (d *Datasource) ID() datasource.SupermarketID { return d.cfg.ID }
-
-// Name returns the human-readable name.
-func (d *Datasource) Name() string { return d.cfg.Name }
-
-// Description returns a short description of the supermarket.
-func (d *Datasource) Description() string { return d.cfg.Description }
+func (d *Datasource) Name() string                 { return d.cfg.Name }
+func (d *Datasource) Description() string           { return d.cfg.Description }
 
 // searchResponse is the top-level Shopify predictive search response.
 type searchResponse struct {

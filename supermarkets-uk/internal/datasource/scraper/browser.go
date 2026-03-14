@@ -237,11 +237,7 @@ func (b *Browser) Close() {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if b.started {
-		if b.browserCancel != nil {
-			b.browserCancel()
-		}
-		if b.allocCancel != nil {
-			b.allocCancel()
-		}
+		b.browserCancel()
+		b.allocCancel()
 	}
 }

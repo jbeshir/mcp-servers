@@ -320,7 +320,6 @@ func ParsePrice(s string) float64 {
 	if i := strings.Index(s, "£"); i >= 0 {
 		s = s[i:]
 		s = strings.TrimPrefix(s, "£")
-		s = strings.TrimPrefix(s, "$")
 		s = strings.ReplaceAll(s, ",", "")
 		f, _ := strconv.ParseFloat(s, 64)
 		return f
@@ -338,10 +337,7 @@ func LastPathSegment(rawURL string) string {
 		return ""
 	}
 	parts := strings.Split(u.Path, "/")
-	if len(parts) > 0 {
-		return parts[len(parts)-1]
-	}
-	return ""
+	return parts[len(parts)-1]
 }
 
 // ResolveURL resolves a potentially relative URL against a base URL.
@@ -393,6 +389,30 @@ func TextContent(n *html.Node) string {
 		}
 	})
 	return strings.TrimSpace(sb.String())
+}
+
+// SectionContent finds a heading element (e.g. "h2", "h3") whose text matches
+// heading and returns the text content of the next sibling element.
+func SectionContent(doc *html.Node, tag, heading string) string {
+	var result string
+	WalkTree(doc, func(n *html.Node) {
+		if result != "" {
+			return
+		}
+		if n.Type != html.ElementNode || n.Data != tag {
+			return
+		}
+		if TextContent(n) != heading {
+			return
+		}
+		for sib := n.NextSibling; sib != nil; sib = sib.NextSibling {
+			if sib.Type == html.ElementNode {
+				result = TextContent(sib)
+				return
+			}
+		}
+	})
+	return result
 }
 
 // HTMLHasElement parses HTML and returns whether any element matches the selector.

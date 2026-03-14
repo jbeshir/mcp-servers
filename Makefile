@@ -42,6 +42,12 @@ fmt:
 	done
 	goimports -w .
 
+# ── Desloppify ───────────────────────────────────────────────
+
+.PHONY: desloppify
+desloppify:
+	desloppify scan --path .
+
 # ── Build ─────────────────────────────────────────────────────
 
 .PHONY: build

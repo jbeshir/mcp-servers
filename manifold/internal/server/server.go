@@ -64,7 +64,7 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("get_market",
 		mcp.WithDescription("Get full details of a specific Manifold market including answers and description."),
-		mcp.WithString("market_id",
+		mcp.WithString("marketId",
 			mcp.Required(),
 			mcp.Description("The market ID or slug"),
 		),
@@ -116,7 +116,7 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("get_positions",
 		mcp.WithDescription("Get user positions (holdings) for a specific market."),
-		mcp.WithString("market_id",
+		mcp.WithString("marketId",
 			mcp.Required(),
 			mcp.Description("The market ID"),
 		),
@@ -162,7 +162,7 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("sell_shares",
 		mcp.WithDescription("Sell shares in a Manifold market."),
-		mcp.WithString("market_id",
+		mcp.WithString("marketId",
 			mcp.Required(),
 			mcp.Description("The market ID to sell shares in"),
 		),
@@ -179,7 +179,7 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("cancel_bet",
 		mcp.WithDescription("Cancel a pending limit order."),
-		mcp.WithString("bet_id",
+		mcp.WithString("betId",
 			mcp.Required(),
 			mcp.Description("The bet/limit order ID to cancel"),
 		),
@@ -224,7 +224,7 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("resolve_market",
 		mcp.WithDescription("Resolve a Manifold market you created."),
-		mcp.WithString("market_id",
+		mcp.WithString("marketId",
 			mcp.Required(),
 			mcp.Description("The market ID to resolve"),
 		),
@@ -245,7 +245,7 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("close_market",
 		mcp.WithDescription("Close a Manifold market (set or change its closing time)."),
-		mcp.WithString("market_id",
+		mcp.WithString("marketId",
 			mcp.Required(),
 			mcp.Description("The market ID to close"),
 		),
@@ -268,7 +268,7 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("add_liquidity",
 		mcp.WithDescription("Add mana liquidity to a Manifold market's pool."),
-		mcp.WithString("market_id",
+		mcp.WithString("marketId",
 			mcp.Required(),
 			mcp.Description("The market ID to add liquidity to"),
 		),

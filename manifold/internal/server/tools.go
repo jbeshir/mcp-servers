@@ -56,9 +56,9 @@ func (s *Server) handleGetMarket(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	marketID, ok := request.Params.Arguments["market_id"].(string)
+	marketID, ok := request.Params.Arguments["marketId"].(string)
 	if !ok || marketID == "" {
-		return mcp.NewToolResultError("market_id is required"), nil
+		return mcp.NewToolResultError("marketId is required"), nil
 	}
 
 	market, err := s.client.GetMarket(ctx, marketID)
@@ -144,9 +144,9 @@ func (s *Server) handleGetPositions(
 ) (*mcp.CallToolResult, error) {
 	args := request.Params.Arguments
 
-	marketID, ok := args["market_id"].(string)
+	marketID, ok := args["marketId"].(string)
 	if !ok || marketID == "" {
-		return mcp.NewToolResultError("market_id is required"), nil
+		return mcp.NewToolResultError("marketId is required"), nil
 	}
 
 	params := url.Values{}

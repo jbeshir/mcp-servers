@@ -100,17 +100,11 @@ func NewDatasource(browser *scraper.Browser, httpClient *http.Client) *Datasourc
 	}
 }
 
-// SetCookies sets session cookies.
 func (d *Datasource) SetCookies(cookies []*http.Cookie) { d.cookies = cookies }
 
-// ID returns the supermarket identifier.
 func (d *Datasource) ID() datasource.SupermarketID { return datasource.Asda }
-
-// Name returns the human-readable name.
-func (d *Datasource) Name() string { return "Asda" }
-
-// Description returns a short description of the supermarket.
-func (d *Datasource) Description() string { return "One of the UK's largest supermarket chains" }
+func (d *Datasource) Name() string                 { return "Asda" }
+func (d *Datasource) Description() string           { return "One of the UK's largest supermarket chains" }
 
 // CheckSession validates whether cached cookies represent a valid session.
 func (d *Datasource) CheckSession(ctx context.Context) bool {

@@ -71,17 +71,11 @@ func NewDatasource(browser *scraper.Browser) *Datasource {
 	return &Datasource{browser: browser}
 }
 
-// SetCookies sets session cookies.
 func (d *Datasource) SetCookies(cookies []*http.Cookie) { d.cookies = cookies }
 
-// ID returns the supermarket identifier.
 func (d *Datasource) ID() datasource.SupermarketID { return datasource.Waitrose }
-
-// Name returns the human-readable name.
-func (d *Datasource) Name() string { return "Waitrose" }
-
-// Description returns a short description.
-func (d *Datasource) Description() string { return "Premium UK supermarket chain" }
+func (d *Datasource) Name() string                 { return "Waitrose" }
+func (d *Datasource) Description() string           { return "Premium UK supermarket chain" }
 
 // CheckSession validates the session.
 func (d *Datasource) CheckSession(ctx context.Context) bool {
@@ -255,10 +249,7 @@ func productIDFromURL(rawURL string) string {
 	if len(parts) >= 2 {
 		return parts[len(parts)-2] + "/" + parts[len(parts)-1]
 	}
-	if len(parts) >= 1 {
-		return parts[len(parts)-1]
-	}
-	return ""
+	return parts[len(parts)-1]
 }
 
 // ParseCategories parses a Waitrose categories page by finding <a> elements

@@ -102,38 +102,13 @@ func parseOSPProductPage(r io.Reader, cfg ospConfig) (*datasource.Product, error
 	}
 
 	p := scraper.ParseProductFields(doc, cfg.selectors.ProductSel, cfg.id)
-	p.Description = sectionContent(doc, "Product Information")
-	p.Ingredients = sectionContent(doc, "Ingredients")
+	p.Description = scraper.SectionContent(doc, "h2", "Product Information")
+	p.Ingredients = scraper.SectionContent(doc, "h2", "Ingredients")
 	table := scraper.FindNutritionTable(doc, cfg.nutritionTableSel)
 	p.Nutrition = scraper.ParseNutritionTable(table)
 	return p, nil
 }
 
-// sectionContent finds an h2 whose text matches heading and returns the text
-// content of the next sibling element. OSP product pages use this pattern for
-// all detail sections.
-func sectionContent(doc *html.Node, heading string) string {
-	var result string
-	scraper.WalkTree(doc, func(n *html.Node) {
-		if result != "" {
-			return
-		}
-		if n.Type != html.ElementNode || n.Data != "h2" {
-			return
-		}
-		if scraper.TextContent(n) != heading {
-			return
-		}
-		// Return text of the next sibling element.
-		for sib := n.NextSibling; sib != nil; sib = sib.NextSibling {
-			if sib.Type == html.ElementNode {
-				result = scraper.TextContent(sib)
-				return
-			}
-		}
-	})
-	return result
-}
 
 // --- Ocado ---
 

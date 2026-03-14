@@ -62,17 +62,11 @@ func NewDatasource(browser *scraper.Browser, httpClient *http.Client) *Datasourc
 	return &Datasource{browser: browser, httpClient: httpClient}
 }
 
-// SetCookies sets session cookies.
 func (d *Datasource) SetCookies(cookies []*http.Cookie) { d.cookies = cookies }
 
-// ID returns the supermarket identifier.
 func (d *Datasource) ID() datasource.SupermarketID { return datasource.Tesco }
-
-// Name returns the human-readable name.
-func (d *Datasource) Name() string { return "Tesco" }
-
-// Description returns a short description.
-func (d *Datasource) Description() string { return "The UK's largest supermarket chain" }
+func (d *Datasource) Name() string                 { return "Tesco" }
+func (d *Datasource) Description() string           { return "The UK's largest supermarket chain" }
 
 // CheckSession validates the session.
 func (d *Datasource) CheckSession(ctx context.Context) bool {
@@ -111,8 +105,8 @@ func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*
 	}
 
 	p := scraper.ParseProductFields(doc, selectors.ProductSel, datasource.Tesco)
-	p.Description = h3SectionContent(doc, "Description")
-	p.Ingredients = h3SectionContent(doc, "Ingredients")
+	p.Description = scraper.SectionContent(doc, "h3", "Description")
+	p.Ingredients = scraper.SectionContent(doc, "h3", "Ingredients")
 	table := scraper.FindNutritionTable(doc, nutritionTableSel)
 	p.Nutrition = scraper.ParseNutritionTable(table)
 	p.ID = productID
@@ -143,36 +137,11 @@ func ParseProductPage(r io.Reader) (*datasource.Product, error) {
 		return nil, fmt.Errorf("tesco: parse product HTML: %w", err)
 	}
 	p := scraper.ParseProductFields(doc, selectors.ProductSel, datasource.Tesco)
-	p.Description = h3SectionContent(doc, "Description")
-	p.Ingredients = h3SectionContent(doc, "Ingredients")
+	p.Description = scraper.SectionContent(doc, "h3", "Description")
+	p.Ingredients = scraper.SectionContent(doc, "h3", "Ingredients")
 	table := scraper.FindNutritionTable(doc, nutritionTableSel)
 	p.Nutrition = scraper.ParseNutritionTable(table)
 	return p, nil
-}
-
-// h3SectionContent finds an h3 whose text matches heading and returns the text
-// content of the next sibling element. Tesco product pages use h3 headings to
-// label content sections (e.g. "Description", "Nutrition information").
-func h3SectionContent(doc *html.Node, heading string) string {
-	var result string
-	scraper.WalkTree(doc, func(n *html.Node) {
-		if result != "" {
-			return
-		}
-		if n.Type != html.ElementNode || n.Data != "h3" {
-			return
-		}
-		if scraper.TextContent(n) != heading {
-			return
-		}
-		for sib := n.NextSibling; sib != nil; sib = sib.NextSibling {
-			if sib.Type == html.ElementNode {
-				result = scraper.TextContent(sib)
-				return
-			}
-		}
-	})
-	return result
 }
 
 // ParseCategories parses a Tesco categories page.
