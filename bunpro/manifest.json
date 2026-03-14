@@ -1,0 +1,67 @@
+{
+  "manifest_version": "0.3",
+  "name": "bunpro-mcp",
+  "display_name": "Bunpro",
+  "version": "0.1.0",
+  "description": "Read Bunpro SRS data: user profile, study queue, deck settings, review statistics, JLPT progress, review forecasts, and grammar/vocabulary details.",
+  "author": {
+    "name": "John Beshir",
+    "url": "https://github.com/jbeshir"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbeshir/mcp-servers.git"
+  },
+  "license": "MIT",
+  "server": {
+    "type": "binary",
+    "entry_point": "server/bunpro-mcp-linux-amd64",
+    "mcp_config": {
+      "command": "${__dirname}/server/bunpro-mcp-linux-amd64",
+      "args": [],
+      "env": {
+        "BUNPRO_EMAIL": "${user_config.email}",
+        "BUNPRO_PASSWORD": "${user_config.password}"
+      },
+      "platform_overrides": {
+        "darwin": {
+          "command": "${__dirname}/server/bunpro-mcp-darwin-arm64"
+        },
+        "win32": {
+          "command": "${__dirname}/server/bunpro-mcp-windows-amd64.exe"
+        }
+      }
+    }
+  },
+  "user_config": {
+    "email": {
+      "type": "string",
+      "title": "Email",
+      "description": "Bunpro account email address",
+      "required": true
+    },
+    "password": {
+      "type": "string",
+      "title": "Password",
+      "description": "Bunpro account password",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "tools": [
+    { "name": "get_user", "description": "Get the authenticated user's Bunpro profile" },
+    { "name": "get_study_queue", "description": "Get due grammar and vocabulary review counts" },
+    { "name": "get_decks", "description": "Get study deck settings and progress" },
+    { "name": "get_stats", "description": "Get study statistics, streak, and badges" },
+    { "name": "get_jlpt_progress", "description": "Get JLPT progress across all levels" },
+    { "name": "get_review_forecast", "description": "Get upcoming review forecast (daily or hourly)" },
+    { "name": "get_srs_overview", "description": "Get aggregate SRS level counts" },
+    { "name": "get_review_activity", "description": "Get daily review counts for the past month" },
+    { "name": "get_srs_details", "description": "Get review items at a specific SRS level" },
+    { "name": "get_grammar_point", "description": "Get grammar point details by ID" },
+    { "name": "get_vocab", "description": "Get vocabulary details by slug or ID" }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"]
+  }
+}

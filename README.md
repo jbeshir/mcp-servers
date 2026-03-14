@@ -36,6 +36,22 @@ Search for products and get detailed information from Amazon across 20+ regional
 
 **Requires:** Chrome/Chromium/Edge
 
+### [WaniKani](wanikani/)
+
+Read-only access to [WaniKani](https://www.wanikani.com) SRS data — user profile, lesson/review summaries, assignments, subjects (radicals, kanji, vocabulary), review statistics, and level progressions. Supports paginated collection endpoints with configurable limits.
+
+**6 tools:** `get_user`, `get_summary`, `get_assignments`, `get_subjects`, `get_review_statistics`, `get_level_progressions`
+
+**Requires:** WaniKani API token
+
+### [Bunpro](bunpro/)
+
+Read-only access to [Bunpro](https://bunpro.jp) Japanese grammar SRS data — user profile, study queue, deck settings, review forecasts, JLPT progress, SRS level details, and grammar point/vocabulary lookups. Authenticates via email/password with automatic Devise login.
+
+**11 tools:** `get_user`, `get_study_queue`, `get_decks`, `get_stats`, `get_jlpt_progress`, `get_review_forecast`, `get_srs_overview`, `get_review_activity`, `get_srs_details`, `get_grammar_point`, `get_vocab`
+
+**Requires:** Bunpro email and password
+
 ## Installation
 
 ### Pre-built binaries
@@ -51,6 +67,8 @@ go install github.com/jbeshir/mcp-servers/workflowy/cmd/workflowy-mcp@latest
 go install github.com/jbeshir/mcp-servers/manifold/cmd/manifold-mcp@latest
 go install github.com/jbeshir/mcp-servers/supermarkets-uk/cmd/supermarkets-uk-mcp@latest
 go install github.com/jbeshir/mcp-servers/amazon-products/cmd/amazon-products-mcp@latest
+go install github.com/jbeshir/mcp-servers/wanikani/cmd/wanikani-mcp@latest
+go install github.com/jbeshir/mcp-servers/bunpro/cmd/bunpro-mcp@latest
 ```
 
 ### Build from source
@@ -65,3 +83,5 @@ These servers are published to the [MCP Registry](https://registry.modelcontextp
 - [manifold-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/manifold-mcp)
 - [supermarkets-uk-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/supermarkets-uk-mcp)
 - [amazon-products-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/amazon-products-mcp)
+- [wanikani-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/wanikani-mcp)
+- [bunpro-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/bunpro-mcp)

@@ -1,7 +1,7 @@
 # MCP Servers workspace Makefile
 # Validates and builds all MCP server modules in this workspace.
 
-MODULES := workflowy manifold supermarkets-uk amazon-products
+MODULES := workflowy manifold supermarkets-uk amazon-products wanikani bunpro
 
 .PHONY: setup-tools
 setup-tools:
@@ -51,7 +51,7 @@ desloppify:
 # ── Build ─────────────────────────────────────────────────────
 
 .PHONY: build
-build: build-workflowy build-manifold build-supermarkets-uk build-amazon-products
+build: build-workflowy build-manifold build-supermarkets-uk build-amazon-products build-wanikani build-bunpro
 
 .PHONY: build-workflowy
 build-workflowy:
@@ -69,8 +69,16 @@ build-supermarkets-uk:
 build-amazon-products:
 	go build -o bin/amazon-products-mcp ./amazon-products/cmd/amazon-products-mcp
 
+.PHONY: build-wanikani
+build-wanikani:
+	go build -o bin/wanikani-mcp ./wanikani/cmd/wanikani-mcp
+
+.PHONY: build-bunpro
+build-bunpro:
+	go build -o bin/bunpro-mcp ./bunpro/cmd/bunpro-mcp
+
 .PHONY: build-all-platforms
-build-all-platforms: build-workflowy-all-platforms build-manifold-all-platforms build-supermarkets-uk-all-platforms build-amazon-products-all-platforms
+build-all-platforms: build-workflowy-all-platforms build-manifold-all-platforms build-supermarkets-uk-all-platforms build-amazon-products-all-platforms build-wanikani-all-platforms build-bunpro-all-platforms
 
 .PHONY: build-workflowy-all-platforms
 build-workflowy-all-platforms:
@@ -100,13 +108,27 @@ build-amazon-products-all-platforms:
 	GOOS=linux GOARCH=amd64 go build -o bin/amazon-products-mcp-linux-amd64 ./amazon-products/cmd/amazon-products-mcp
 	GOOS=windows GOARCH=amd64 go build -o bin/amazon-products-mcp-windows-amd64.exe ./amazon-products/cmd/amazon-products-mcp
 
+.PHONY: build-wanikani-all-platforms
+build-wanikani-all-platforms:
+	GOOS=darwin GOARCH=amd64 go build -o bin/wanikani-mcp-darwin-amd64 ./wanikani/cmd/wanikani-mcp
+	GOOS=darwin GOARCH=arm64 go build -o bin/wanikani-mcp-darwin-arm64 ./wanikani/cmd/wanikani-mcp
+	GOOS=linux GOARCH=amd64 go build -o bin/wanikani-mcp-linux-amd64 ./wanikani/cmd/wanikani-mcp
+	GOOS=windows GOARCH=amd64 go build -o bin/wanikani-mcp-windows-amd64.exe ./wanikani/cmd/wanikani-mcp
+
+.PHONY: build-bunpro-all-platforms
+build-bunpro-all-platforms:
+	GOOS=darwin GOARCH=amd64 go build -o bin/bunpro-mcp-darwin-amd64 ./bunpro/cmd/bunpro-mcp
+	GOOS=darwin GOARCH=arm64 go build -o bin/bunpro-mcp-darwin-arm64 ./bunpro/cmd/bunpro-mcp
+	GOOS=linux GOARCH=amd64 go build -o bin/bunpro-mcp-linux-amd64 ./bunpro/cmd/bunpro-mcp
+	GOOS=windows GOARCH=amd64 go build -o bin/bunpro-mcp-windows-amd64.exe ./bunpro/cmd/bunpro-mcp
+
 # ── MCPB Bundles ─────────────────────────────────────────────
 
 # Build multi-platform .mcpb bundles for all servers.
 # Each bundle is a zip containing manifest.json and binaries for all platforms.
 # Usage: make mcpb
 
-SERVERS := workflowy:workflowy-mcp manifold:manifold-mcp supermarkets-uk:supermarkets-uk-mcp amazon-products:amazon-products-mcp
+SERVERS := workflowy:workflowy-mcp manifold:manifold-mcp supermarkets-uk:supermarkets-uk-mcp amazon-products:amazon-products-mcp wanikani:wanikani-mcp bunpro:bunpro-mcp
 
 .PHONY: mcpb
 mcpb: build-all-platforms
