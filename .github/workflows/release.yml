@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "*/v*"
+      - "*-v*"
 
 permissions:
   id-token: write
@@ -20,14 +20,15 @@ jobs:
       - name: Extract module from tag
         id: meta
         run: |
-          # Tag format: <module>/v<version> (e.g. workflowy/v1.0.0)
+          # Tag format: <module>-v<version> (e.g. workflowy-v1.0.0)
           TAG="${GITHUB_REF#refs/tags/}"
-          MODULE="${TAG%%/v*}"
-          VERSION="${TAG#*/v}"
+          MODULE="${TAG%-v*}"
+          VERSION="${TAG##*-v}"
           BINARY="${MODULE}-mcp"
           echo "module=${MODULE}" >> "$GITHUB_OUTPUT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "binary=${BINARY}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
           echo "Releasing module=${MODULE} version=${VERSION}"
 
       - name: Setup Go
@@ -72,18 +73,19 @@ jobs:
         id: meta
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
-          MODULE="${TAG%%/v*}"
-          VERSION="${TAG#*/v}"
+          MODULE="${TAG%-v*}"
+          VERSION="${TAG##*-v}"
           BINARY="${MODULE}-mcp"
           echo "module=${MODULE}" >> "$GITHUB_OUTPUT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "binary=${BINARY}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
           echo "Publishing module=${MODULE} version=${VERSION}"
 
       - name: Download MCPB bundle from release
         run: |
           BINARY="${{ steps.meta.outputs.binary }}"
-          TAG="${GITHUB_REF#refs/tags/}"
+          TAG="${{ steps.meta.outputs.tag }}"
           gh release download "$TAG" --pattern "${BINARY}.mcpb" --dir /tmp
         env:
           GH_TOKEN: ${{ github.token }}
@@ -101,7 +103,7 @@ jobs:
           MODULE="${{ steps.meta.outputs.module }}"
           VERSION="${{ steps.meta.outputs.version }}"
           SHA="${{ steps.sha.outputs.sha256 }}"
-          TAG="${GITHUB_REF#refs/tags/}"
+          TAG="${{ steps.meta.outputs.tag }}"
           BINARY="${{ steps.meta.outputs.binary }}"
           MCPB_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/${BINARY}.mcpb"
 
