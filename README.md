@@ -23,6 +23,15 @@ go install github.com/jbeshir/mcp-servers/amazon-products/cmd/amazon-products-mc
 
 Clone the repo and run `make build` — binaries are written to `bin/`.
 
+## Registry
+
+These servers are published to the [MCP Registry](https://registry.modelcontextprotocol.io):
+
+- [workflowy-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/workflowy-mcp)
+- [manifold-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/manifold-mcp)
+- [supermarkets-uk-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/supermarkets-uk-mcp)
+- [amazon-products-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/amazon-products-mcp)
+
 ---
 
 # Workflowy
@@ -224,7 +233,7 @@ Not all supermarkets provide the same level of detail:
 
 ## Login
 
-Login is optional and requires running the server locally (it is not available via Smithery, since login requires a visible browser window for manual interaction). Some supermarkets return location-specific results (e.g. local stock and delivery availability) when logged in, and login is required for order history and basket features. All other features work without it.
+Login is optional and requires running the server locally. Some supermarkets return location-specific results (e.g. local stock and delivery availability) when logged in, and login is required for order history and basket features. All other features work without it.
 
 To enable login, [install the binary locally](#installation) and set `<SUPERMARKET>_LOGIN=true` for each supermarket you want to log in to. On first use, a visible browser window opens for you to complete login manually. Session cookies are cached to disk and reused on subsequent runs. If cookies expire, the server clears them and triggers a fresh login.
 

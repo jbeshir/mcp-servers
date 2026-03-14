@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.jbeshir/amazon-products-mcp",
+  "title": "Amazon Products",
+  "description": "Search for products and get detailed product information from Amazon across multiple regional sites.",
+  "version": "0.0.0",
+  "repository": {
+    "url": "https://github.com/jbeshir/mcp-servers",
+    "source": "github",
+    "subfolder": "amazon-products"
+  },
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/jbeshir/mcp-servers/releases/download/amazon-products/v0.0.0/amazon-products-mcp.mcpb",
+      "fileSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "AMAZON_REGION",
+          "description": "Default Amazon region (e.g. us, uk, de). Can be overridden per request.",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}

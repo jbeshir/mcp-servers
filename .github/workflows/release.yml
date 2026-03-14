@@ -35,8 +35,32 @@ jobs:
       - name: Build platform binaries
         run: make build-${{ steps.meta.outputs.module }}-all-platforms
 
+      - name: Derive binary name from module
+        id: binary
+        run: |
+          # Module directory name → binary name (e.g. supermarkets-uk → supermarkets-uk-mcp)
+          MODULE="${{ steps.meta.outputs.module }}"
+          BINARY="${MODULE}-mcp"
+          echo "name=${BINARY}" >> "$GITHUB_OUTPUT"
+
+      - name: Package MCPB bundle
+        run: |
+          MODULE="${{ steps.meta.outputs.module }}"
+          BINARY="${{ steps.binary.outputs.name }}"
+          mkdir -p bin/mcpb
+          tmpdir=$(mktemp -d)
+          mkdir -p "$tmpdir/server"
+          cp "$MODULE/manifest.json" "$tmpdir/manifest.json"
+          cp "bin/${BINARY}-darwin-arm64" "$tmpdir/server/${BINARY}-darwin-arm64"
+          cp "bin/${BINARY}-linux-amd64" "$tmpdir/server/${BINARY}-linux-amd64"
+          cp "bin/${BINARY}-windows-amd64.exe" "$tmpdir/server/${BINARY}-windows-amd64.exe"
+          (cd "$tmpdir" && zip -q -r - .) > "bin/mcpb/${BINARY}.mcpb"
+          rm -rf "$tmpdir"
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: bin/*
+          files: |
+            bin/${{ steps.binary.outputs.name }}-*
+            bin/mcpb/${{ steps.binary.outputs.name }}.mcpb
           generate_release_notes: true

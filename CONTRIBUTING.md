@@ -31,7 +31,7 @@ This is a Go workspace with independent modules:
 | `workflowy/` | Workflowy MCP server |
 | `manifold/` | Manifold Markets MCP server |
 | `supermarkets-uk/` | UK Supermarkets MCP server |
-| `amazon/` | Amazon MCP server |
+| `amazon-products/` | Amazon Products MCP server |
 
 Each module has its own `go.mod` and builds independently. The entry point for each server is `<module>/cmd/<module>-mcp/main.go`.
 

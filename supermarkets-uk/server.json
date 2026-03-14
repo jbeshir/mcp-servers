@@ -1,0 +1,22 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.jbeshir/supermarkets-uk-mcp",
+  "title": "UK Supermarkets",
+  "description": "Search and compare grocery prices across UK supermarkets with product details, promotions, and nutritional information.",
+  "version": "0.0.0",
+  "repository": {
+    "url": "https://github.com/jbeshir/mcp-servers",
+    "source": "github",
+    "subfolder": "supermarkets-uk"
+  },
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/jbeshir/mcp-servers/releases/download/supermarkets-uk/v0.0.0/supermarkets-uk-mcp.mcpb",
+      "fileSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
