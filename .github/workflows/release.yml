@@ -126,4 +126,5 @@ jobs:
       - name: Publish to MCP Registry
         run: |
           MODULE="${{ steps.meta.outputs.module }}"
-          ./mcp-publisher publish --mcp-file "${MODULE}/server.json"
+          cd "${MODULE}"
+          ../mcp-publisher publish
