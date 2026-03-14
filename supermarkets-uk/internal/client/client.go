@@ -66,7 +66,7 @@ func (a *authResolver) ensureAuth(ctx context.Context) {
 	a.authed = true
 }
 
-func (a *authResolver) handleAuthError(ctx context.Context, err error) bool {
+func (a *authResolver) tryReauth(ctx context.Context, err error) bool {
 	if !errors.Is(err, datasource.ErrSessionExpired) {
 		return false
 	}
@@ -245,7 +245,7 @@ func withAuth[T any](
 	c.ensureAuth(ctx, id)
 	result, err := fn()
 	if err != nil {
-		if ar, ok := c.auth[id]; ok && ar.handleAuthError(ctx, err) {
+		if ar, ok := c.auth[id]; ok && ar.tryReauth(ctx, err) {
 			return fn()
 		}
 	}

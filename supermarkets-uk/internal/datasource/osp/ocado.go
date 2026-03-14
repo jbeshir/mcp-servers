@@ -109,7 +109,6 @@ func parseOSPProductPage(r io.Reader, cfg ospConfig) (*datasource.Product, error
 	return p, nil
 }
 
-
 // --- Ocado ---
 
 const ocadoBaseURL = "https://www.ocado.com"

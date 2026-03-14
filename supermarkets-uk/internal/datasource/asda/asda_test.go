@@ -13,9 +13,9 @@ import (
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/testutil"
 )
 
-func TestParseAlgoliaResults(t *testing.T) {
+func TestParseSearchResults(t *testing.T) {
 	f := testutil.OpenTestFile(t, "testdata/asda_search.json")
-	products, err := asda.ParseAlgoliaResults(f)
+	products, err := asda.ParseSearchResults(f)
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(products), 3)
 

@@ -25,12 +25,6 @@ const categoryHrefPrefix = "/ecom/shop/browse/groceries/"
 const waitSelector = `article[data-testid="product-pod"]`
 
 var (
-	searchURL = scraper.QuerySearchURL(baseURL+"/ecom/shop/search", "searchTerm")
-
-	productURLFn = func(id string) string {
-		return baseURL + "/ecom/products/" + id
-	}
-
 	categoryURL           = baseURL + "/ecom/shop/browse"
 	sessionCheckURL       = baseURL + "/"
 	sessionCheckQuery     = scraper.ElemSel{Tag: "a", Att: "data-test", Val: "signOut"}
@@ -75,9 +69,8 @@ func (d *Datasource) SetCookies(cookies []*http.Cookie) { d.cookies = cookies }
 
 func (d *Datasource) ID() datasource.SupermarketID { return datasource.Waitrose }
 func (d *Datasource) Name() string                 { return "Waitrose" }
-func (d *Datasource) Description() string           { return "Premium UK supermarket chain" }
+func (d *Datasource) Description() string          { return "Premium UK supermarket chain" }
 
-// CheckSession validates the session.
 func (d *Datasource) CheckSession(ctx context.Context) bool {
 	if len(d.cookies) == 0 {
 		return true
@@ -92,7 +85,8 @@ func (d *Datasource) CheckSession(ctx context.Context) bool {
 
 // SearchProducts searches for products with Waitrose-specific price parsing.
 func (d *Datasource) SearchProducts(ctx context.Context, query string) ([]datasource.Product, error) {
-	body, err := d.browser.Fetch(ctx, searchURL(query), d.cookies, waitSelector)
+	searchURL := baseURL + "/ecom/shop/search?searchTerm=" + url.QueryEscape(query)
+	body, err := d.browser.Fetch(ctx, searchURL, d.cookies, waitSelector)
 	if err != nil {
 		return nil, fmt.Errorf("waitrose search fetch: %w", err)
 	}
@@ -108,7 +102,7 @@ func (d *Datasource) SearchProducts(ctx context.Context, query string) ([]dataso
 
 // GetProductDetails fetches product details.
 func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*datasource.Product, error) {
-	body, err := d.browser.Fetch(ctx, productURLFn(productID), d.cookies, `h1`)
+	body, err := d.browser.Fetch(ctx, baseURL+"/ecom/products/"+productID, d.cookies, `h1`)
 	if err != nil {
 		return nil, fmt.Errorf("waitrose product fetch: %w", err)
 	}
@@ -122,7 +116,7 @@ func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*
 	p := scraper.ParseProductFields(doc, selectors.ProductSel, datasource.Waitrose)
 	extractWaitroseProductDetails(doc, p)
 	p.ID = productID
-	p.URL = productURLFn(productID)
+	p.URL = baseURL + "/ecom/products/" + productID
 	return p, nil
 }
 

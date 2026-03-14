@@ -108,7 +108,7 @@ func (s *Datasource) SetCookies(cookies []*http.Cookie) { s.cookies = cookies }
 
 func (s *Datasource) ID() datasource.SupermarketID { return datasource.Sainsburys }
 func (s *Datasource) Name() string                 { return "Sainsbury's" }
-func (s *Datasource) Description() string           { return "One of the UK's largest supermarket chains" }
+func (s *Datasource) Description() string          { return "One of the UK's largest supermarket chains" }
 
 // CheckSession validates whether cached cookies represent a valid session.
 // It makes a minimal search request because the categories endpoint works

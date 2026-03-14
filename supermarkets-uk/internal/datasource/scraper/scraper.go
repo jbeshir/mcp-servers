@@ -442,20 +442,6 @@ func SetBrowserHeaders(req *http.Request) {
 	req.Header.Set("Accept-Language", "en-GB,en;q=0.9")
 }
 
-// QuerySearchURL returns a search URL builder that appends ?<param>=<query>.
-func QuerySearchURL(base, param string) func(string) string {
-	return func(query string) string {
-		return base + "?" + param + "=" + url.QueryEscape(query)
-	}
-}
-
-// ProductURLBuilder returns a product URL builder that appends /<id> to the base.
-func ProductURLBuilder(base string) func(string) string {
-	return func(id string) string {
-		return base + url.PathEscape(id)
-	}
-}
-
 // nutritionHeaderRows are first-cell values that indicate a header row
 // rather than a nutrient data row.
 var nutritionHeaderRows = map[string]bool{

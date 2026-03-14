@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 
 	"golang.org/x/net/html"
 
@@ -19,9 +20,6 @@ const baseURL = "https://www.tesco.com"
 const waitSelector = `li[data-testid]`
 
 var (
-	searchURL  = scraper.QuerySearchURL(baseURL+"/groceries/en-GB/search", "query")
-	productURL = scraper.ProductURLBuilder(baseURL + "/groceries/en-GB/products/")
-
 	categoryURL       = baseURL + "/groceries/en-GB/search?query=a"
 	sessionCheckURL   = baseURL + "/"
 	sessionCheckQuery = scraper.ElemSel{Tag: "a", Att: "id", Val: "app-bar-sign-out"}
@@ -66,9 +64,8 @@ func (d *Datasource) SetCookies(cookies []*http.Cookie) { d.cookies = cookies }
 
 func (d *Datasource) ID() datasource.SupermarketID { return datasource.Tesco }
 func (d *Datasource) Name() string                 { return "Tesco" }
-func (d *Datasource) Description() string           { return "The UK's largest supermarket chain" }
+func (d *Datasource) Description() string          { return "The UK's largest supermarket chain" }
 
-// CheckSession validates the session.
 func (d *Datasource) CheckSession(ctx context.Context) bool {
 	if len(d.cookies) == 0 {
 		return true
@@ -83,7 +80,8 @@ func (d *Datasource) CheckSession(ctx context.Context) bool {
 
 // SearchProducts searches for products using the search wait selector.
 func (d *Datasource) SearchProducts(ctx context.Context, query string) ([]datasource.Product, error) {
-	body, err := d.browser.Fetch(ctx, searchURL(query), d.cookies, waitSelector)
+	searchURL := baseURL + "/groceries/en-GB/search?query=" + url.QueryEscape(query)
+	body, err := d.browser.Fetch(ctx, searchURL, d.cookies, waitSelector)
 	if err != nil {
 		return nil, fmt.Errorf("tesco search fetch: %w", err)
 	}
@@ -93,7 +91,7 @@ func (d *Datasource) SearchProducts(ctx context.Context, query string) ([]dataso
 
 // GetProductDetails fetches product details.
 func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*datasource.Product, error) {
-	body, err := d.browser.Fetch(ctx, productURL(productID), d.cookies, `h1`)
+	body, err := d.browser.Fetch(ctx, baseURL+"/groceries/en-GB/products/"+url.PathEscape(productID), d.cookies, `h1`)
 	if err != nil {
 		return nil, fmt.Errorf("tesco product fetch: %w", err)
 	}
@@ -110,7 +108,7 @@ func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*
 	table := scraper.FindNutritionTable(doc, nutritionTableSel)
 	p.Nutrition = scraper.ParseNutritionTable(table)
 	p.ID = productID
-	p.URL = productURL(productID)
+	p.URL = baseURL + "/groceries/en-GB/products/" + url.PathEscape(productID)
 	return p, nil
 }
 

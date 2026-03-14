@@ -31,7 +31,6 @@ const (
 )
 
 var (
-	productURL        = scraper.ProductURLBuilder(baseURL + "/groceries/product/")
 	sessionCheckURL   = baseURL + "/"
 	sessionCheckQuery = scraper.ElemSel{Tag: "button", Att: "data-locator", Val: "btn-sign-off"}
 	nutritionTableSel = scraper.ElemSel{Tag: "table", Att: "data-testid", Val: "nutrition-table"}
@@ -104,9 +103,8 @@ func (d *Datasource) SetCookies(cookies []*http.Cookie) { d.cookies = cookies }
 
 func (d *Datasource) ID() datasource.SupermarketID { return datasource.Asda }
 func (d *Datasource) Name() string                 { return "Asda" }
-func (d *Datasource) Description() string           { return "One of the UK's largest supermarket chains" }
+func (d *Datasource) Description() string          { return "One of the UK's largest supermarket chains" }
 
-// CheckSession validates whether cached cookies represent a valid session.
 func (d *Datasource) CheckSession(ctx context.Context) bool {
 	if len(d.cookies) == 0 {
 		return true
@@ -146,13 +144,13 @@ func (d *Datasource) SearchProducts(ctx context.Context, query string) ([]dataso
 		return nil, fmt.Errorf("asda: algolia HTTP %d", resp.StatusCode)
 	}
 
-	return ParseAlgoliaResults(resp.Body)
+	return ParseSearchResults(resp.Body)
 }
 
 // GetProductDetails fetches product details via the browser.
 func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*datasource.Product, error) {
 	waitSel := `[data-testid="txt-pdp-product-name"]`
-	body, err := d.browser.Fetch(ctx, productURL(productID), d.cookies, waitSel)
+	body, err := d.browser.Fetch(ctx, baseURL+"/groceries/product/"+url.PathEscape(productID), d.cookies, waitSel)
 	if err != nil {
 		return nil, fmt.Errorf("asda product fetch: %w", err)
 	}
@@ -167,7 +165,7 @@ func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*
 	table := scraper.FindNutritionTable(doc, nutritionTableSel)
 	p.Nutrition = scraper.ParseNutritionTable(table)
 	p.ID = productID
-	p.URL = productURL(productID)
+	p.URL = baseURL + "/groceries/product/" + url.PathEscape(productID)
 	return p, nil
 }
 
@@ -183,8 +181,8 @@ func (d *Datasource) BrowseCategories(ctx context.Context) ([]datasource.Categor
 	return ParseCategories(body)
 }
 
-// ParseAlgoliaResults parses an Algolia search response JSON into products.
-func ParseAlgoliaResults(r io.Reader) ([]datasource.Product, error) {
+// ParseSearchResults parses an Algolia search response JSON into products.
+func ParseSearchResults(r io.Reader) ([]datasource.Product, error) {
 	var resp algoliaResponse
 	if err := json.NewDecoder(r).Decode(&resp); err != nil {
 		return nil, fmt.Errorf("asda: decode algolia response: %w", err)
@@ -241,7 +239,7 @@ func convertHit(hit algoliaHit) datasource.Product {
 		Name:        hit.Name,
 		Currency:    "GBP",
 		Available:   true,
-		URL:         baseURL + "/groceries/product/" + hit.ObjectID,
+		URL:         baseURL + "/groceries/product/" + url.PathEscape(hit.ObjectID),
 	}
 
 	if hit.ImageID != "" {
