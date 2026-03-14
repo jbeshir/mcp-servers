@@ -6,6 +6,7 @@ on:
       - "*/v*"
 
 permissions:
+  id-token: write
   contents: write
 
 jobs:
@@ -22,9 +23,11 @@ jobs:
           # Tag format: <module>/v<version> (e.g. workflowy/v1.0.0)
           TAG="${GITHUB_REF#refs/tags/}"
           MODULE="${TAG%%/v*}"
-          VERSION="${TAG#*/}"
+          VERSION="${TAG#*/v}"
+          BINARY="${MODULE}-mcp"
           echo "module=${MODULE}" >> "$GITHUB_OUTPUT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "binary=${BINARY}" >> "$GITHUB_OUTPUT"
           echo "Releasing module=${MODULE} version=${VERSION}"
 
       - name: Setup Go
@@ -35,18 +38,10 @@ jobs:
       - name: Build platform binaries
         run: make build-${{ steps.meta.outputs.module }}-all-platforms
 
-      - name: Derive binary name from module
-        id: binary
-        run: |
-          # Module directory name → binary name (e.g. supermarkets-uk → supermarkets-uk-mcp)
-          MODULE="${{ steps.meta.outputs.module }}"
-          BINARY="${MODULE}-mcp"
-          echo "name=${BINARY}" >> "$GITHUB_OUTPUT"
-
       - name: Package MCPB bundle
         run: |
           MODULE="${{ steps.meta.outputs.module }}"
-          BINARY="${{ steps.binary.outputs.name }}"
+          BINARY="${{ steps.meta.outputs.binary }}"
           mkdir -p bin/mcpb
           tmpdir=$(mktemp -d)
           mkdir -p "$tmpdir/server"
@@ -61,6 +56,74 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            bin/${{ steps.binary.outputs.name }}-*
-            bin/mcpb/${{ steps.binary.outputs.name }}.mcpb
+            bin/${{ steps.meta.outputs.binary }}-*
+            bin/mcpb/${{ steps.meta.outputs.binary }}.mcpb
           generate_release_notes: true
+
+  publish:
+    name: Publish to MCP Registry
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract module and version from tag
+        id: meta
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          MODULE="${TAG%%/v*}"
+          VERSION="${TAG#*/v}"
+          BINARY="${MODULE}-mcp"
+          echo "module=${MODULE}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "binary=${BINARY}" >> "$GITHUB_OUTPUT"
+          echo "Publishing module=${MODULE} version=${VERSION}"
+
+      - name: Download MCPB bundle from release
+        run: |
+          BINARY="${{ steps.meta.outputs.binary }}"
+          TAG="${GITHUB_REF#refs/tags/}"
+          gh release download "$TAG" --pattern "${BINARY}.mcpb" --dir /tmp
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Compute SHA-256 of MCPB bundle
+        id: sha
+        run: |
+          BINARY="${{ steps.meta.outputs.binary }}"
+          SHA=$(sha256sum "/tmp/${BINARY}.mcpb" | cut -d' ' -f1)
+          echo "sha256=${SHA}" >> "$GITHUB_OUTPUT"
+          echo "SHA-256: ${SHA}"
+
+      - name: Template server.json with version and SHA
+        run: |
+          MODULE="${{ steps.meta.outputs.module }}"
+          VERSION="${{ steps.meta.outputs.version }}"
+          SHA="${{ steps.sha.outputs.sha256 }}"
+          TAG="${GITHUB_REF#refs/tags/}"
+          BINARY="${{ steps.meta.outputs.binary }}"
+          MCPB_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/${BINARY}.mcpb"
+
+          jq \
+            --arg version "$VERSION" \
+            --arg identifier "$MCPB_URL" \
+            --arg sha "$SHA" \
+            '.version = $version | .packages[0].identifier = $identifier | .packages[0].fileSha256 = $sha' \
+            "${MODULE}/server.json" > "${MODULE}/server.json.tmp"
+          mv "${MODULE}/server.json.tmp" "${MODULE}/server.json"
+
+          echo "=== Templated server.json ==="
+          cat "${MODULE}/server.json"
+
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+
+      - name: Authenticate to MCP Registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish to MCP Registry
+        run: |
+          MODULE="${{ steps.meta.outputs.module }}"
+          ./mcp-publisher publish --file "${MODULE}/server.json"
