@@ -4,3 +4,5 @@ use ./workflowy
 use ./manifold
 use ./supermarkets-uk
 use ./amazon-products
+use ./wanikani
+use ./bunpro

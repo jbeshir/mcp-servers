@@ -1,0 +1,55 @@
+{
+  "manifest_version": "0.3",
+  "name": "wanikani-mcp",
+  "display_name": "WaniKani",
+  "version": "0.1.0",
+  "description": "Read WaniKani SRS data: user profile, lesson/review summaries, assignments, subjects, review statistics, and level progressions.",
+  "author": {
+    "name": "John Beshir",
+    "url": "https://github.com/jbeshir"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbeshir/mcp-servers.git"
+  },
+  "license": "MIT",
+  "server": {
+    "type": "binary",
+    "entry_point": "server/wanikani-mcp-linux-amd64",
+    "mcp_config": {
+      "command": "${__dirname}/server/wanikani-mcp-linux-amd64",
+      "args": [],
+      "env": {
+        "WANIKANI_API_KEY": "${user_config.api_key}"
+      },
+      "platform_overrides": {
+        "darwin": {
+          "command": "${__dirname}/server/wanikani-mcp-darwin-arm64"
+        },
+        "win32": {
+          "command": "${__dirname}/server/wanikani-mcp-windows-amd64.exe"
+        }
+      }
+    }
+  },
+  "user_config": {
+    "api_key": {
+      "type": "string",
+      "title": "API Key",
+      "description": "WaniKani API token from wanikani.com/settings/personal_access_tokens",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "tools": [
+    { "name": "get_user", "description": "Get the authenticated user's WaniKani profile" },
+    { "name": "get_summary", "description": "Get available lessons and reviews grouped by hour" },
+    { "name": "get_assignments", "description": "Get SRS assignments with optional filters" },
+    { "name": "get_subjects", "description": "Get radicals, kanji, and vocabulary with meanings and readings" },
+    { "name": "get_review_statistics", "description": "Get review accuracy statistics per subject" },
+    { "name": "get_level_progressions", "description": "Get progression history through WaniKani levels" }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"]
+  }
+}

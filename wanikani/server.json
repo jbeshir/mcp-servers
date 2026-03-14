@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.jbeshir/wanikani-mcp",
+  "title": "WaniKani",
+  "description": "Read WaniKani SRS data: user profile, lesson/review summaries, assignments, subjects, review statistics, and level progressions.",
+  "version": "0.0.0",
+  "repository": {
+    "url": "https://github.com/jbeshir/mcp-servers",
+    "source": "github",
+    "subfolder": "wanikani"
+  },
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/jbeshir/mcp-servers/releases/download/wanikani/v0.0.0/wanikani-mcp.mcpb",
+      "fileSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "WANIKANI_API_KEY",
+          "description": "WaniKani API token from wanikani.com/settings/personal_access_tokens",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

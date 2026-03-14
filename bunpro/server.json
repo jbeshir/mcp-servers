@@ -1,0 +1,36 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.jbeshir/bunpro-mcp",
+  "title": "Bunpro",
+  "description": "Read Bunpro SRS data: user profile, study queue, deck settings, review statistics, JLPT progress, review forecasts, and grammar/vocabulary details.",
+  "version": "0.0.0",
+  "repository": {
+    "url": "https://github.com/jbeshir/mcp-servers",
+    "source": "github",
+    "subfolder": "bunpro"
+  },
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/jbeshir/mcp-servers/releases/download/bunpro/v0.0.0/bunpro-mcp.mcpb",
+      "fileSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "BUNPRO_EMAIL",
+          "description": "Bunpro account email address",
+          "isRequired": true,
+          "isSecret": false
+        },
+        {
+          "name": "BUNPRO_PASSWORD",
+          "description": "Bunpro account password",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
