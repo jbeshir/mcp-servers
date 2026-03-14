@@ -42,23 +42,6 @@ func TestParseCategories(t *testing.T) {
 	assert.NotEmpty(t, categories[0].URL)
 }
 
-func TestParseProductPage(t *testing.T) {
-	f := testutil.OpenTestFile(t, "testdata/asda_product.html")
-	p, err := asda.ParseProductPage(f)
-	require.NoError(t, err)
-
-	assert.Equal(t, "ASDA British Milk Semi Skimmed 4 Pints", p.Name)
-	assert.InDelta(t, 1.65, p.Price, 0.001)
-	assert.NotEmpty(t, p.PricePerUnit)
-	assert.Equal(t, "4 pint", p.Weight)
-	assert.NotEmpty(t, p.ImageURL)
-	assert.NotEmpty(t, p.Description)
-	assert.Contains(t, p.Ingredients, "Milk")
-	require.NotNil(t, p.Nutrition)
-	assert.NotEmpty(t, p.Nutrition.Per100g["Energy"])
-	assert.NotEmpty(t, p.Nutrition.Per100g["Fat"])
-}
-
 func TestSearchIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")

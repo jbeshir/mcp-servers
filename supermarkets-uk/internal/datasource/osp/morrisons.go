@@ -58,8 +58,9 @@ func ParseMorrisonsSearchResults(r io.Reader) ([]datasource.Product, error) {
 	return scraper.ParseSearchResults(r, morrisonsCfg.selectors)
 }
 
-// ParseMorrisonsProductPage parses a Morrisons product detail page.
-func ParseMorrisonsProductPage(r io.Reader) (*datasource.Product, error) {
+// parseMorrisonsProductPage parses a Morrisons product detail page.
+// The returned Product does not have ID or URL set.
+func parseMorrisonsProductPage(r io.Reader) (*datasource.Product, error) {
 	return parseOSPProductPage(r, morrisonsCfg)
 }
 

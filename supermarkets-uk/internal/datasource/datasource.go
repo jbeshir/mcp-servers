@@ -102,6 +102,8 @@ type BasketSource interface {
 type AuthProductSource interface {
 	ProductSource
 	SetCookies(cookies []*http.Cookie)
+	// CheckSession returns true if the session is usable.
+	// When no cookies have been set, it returns true (no session to validate).
 	CheckSession(ctx context.Context) bool
 }
 

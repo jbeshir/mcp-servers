@@ -97,16 +97,10 @@ func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*
 	}
 	defer body.Close() //nolint:errcheck // Best-effort close.
 
-	doc, err := html.Parse(body)
+	p, err := parseProductPage(body)
 	if err != nil {
-		return nil, fmt.Errorf("tesco: parse product HTML: %w", err)
+		return nil, err
 	}
-
-	p := scraper.ParseProductFields(doc, selectors.ProductSel, datasource.Tesco)
-	p.Description = scraper.SectionContent(doc, "h3", "Description")
-	p.Ingredients = scraper.SectionContent(doc, "h3", "Ingredients")
-	table := scraper.FindNutritionTable(doc, nutritionTableSel)
-	p.Nutrition = scraper.ParseNutritionTable(table)
 	p.ID = productID
 	p.URL = baseURL + "/groceries/en-GB/products/" + url.PathEscape(productID)
 	return p, nil
@@ -128,8 +122,9 @@ func ParseSearchResults(r io.Reader) ([]datasource.Product, error) {
 	return scraper.ParseSearchResults(r, selectors)
 }
 
-// ParseProductPage parses a Tesco product detail page.
-func ParseProductPage(r io.Reader) (*datasource.Product, error) {
+// parseProductPage parses a Tesco product detail page.
+// The returned Product does not have ID or URL set.
+func parseProductPage(r io.Reader) (*datasource.Product, error) {
 	doc, err := html.Parse(r)
 	if err != nil {
 		return nil, fmt.Errorf("tesco: parse product HTML: %w", err)

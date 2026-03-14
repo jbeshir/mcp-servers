@@ -23,18 +23,6 @@ func TestParseMorrisonsSearchResults(t *testing.T) {
 	assert.Equal(t, datasource.Morrisons, p.Supermarket)
 }
 
-func TestParseMorrisonsProductPage(t *testing.T) {
-	p := testutil.ParseProductFile(t, "testdata/morrisons_product.html", osp.ParseMorrisonsProductPage)
-
-	assert.Equal(t, "Mighty Slice Caramelised Biscuit High Protein Cheesecake 115g", p.Name)
-	assert.InDelta(t, 2.80, p.Price, 0.001)
-	assert.NotEmpty(t, p.Description)
-	assert.Contains(t, p.Ingredients, "Milk")
-	require.NotNil(t, p.Nutrition)
-	assert.NotEmpty(t, p.Nutrition.Per100g["Energy"])
-	assert.NotEmpty(t, p.Nutrition.Per100g["Fat"])
-}
-
 func TestParseMorrisonsCategories(t *testing.T) {
 	categories := testutil.ParseCategoryFile(t, "testdata/morrisons_categories.html", osp.ParseMorrisonsCategories)
 

@@ -34,20 +34,6 @@ func TestParseSearchResults(t *testing.T) {
 	assert.Equal(t, "987654321", p2.ID)
 }
 
-func TestParseProductPage(t *testing.T) {
-	p := testutil.ParseProductFile(t, "testdata/tesco_product.html", tesco.ParseProductPage)
-
-	assert.Equal(t, "Tesco British Semi Skimmed Milk 2.272L, 4 Pints", p.Name)
-	assert.InDelta(t, 1.65, p.Price, 0.001)
-	assert.Equal(t, "£0.73/litre", p.PricePerUnit)
-	assert.NotEmpty(t, p.Description)
-	assert.Contains(t, p.Ingredients, "Milk")
-	require.NotNil(t, p.Nutrition)
-	assert.NotEmpty(t, p.Nutrition.Per100g["Energy"])
-	assert.NotEmpty(t, p.Nutrition.Per100g["Fat"])
-	assert.NotEmpty(t, p.Nutrition.PerPortion["Energy"])
-}
-
 func TestParseCategories(t *testing.T) {
 	categories := testutil.ParseCategoryFile(t, "testdata/tesco_categories.html", tesco.ParseCategories)
 

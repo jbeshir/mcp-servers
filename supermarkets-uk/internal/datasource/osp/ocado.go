@@ -160,8 +160,9 @@ func ParseOcadoSearchResults(r io.Reader) ([]datasource.Product, error) {
 	return scraper.ParseSearchResults(r, ocadoCfg.selectors)
 }
 
-// ParseOcadoProductPage parses an Ocado product detail page.
-func ParseOcadoProductPage(r io.Reader) (*datasource.Product, error) {
+// parseOcadoProductPage parses an Ocado product detail page.
+// The returned Product does not have ID or URL set.
+func parseOcadoProductPage(r io.Reader) (*datasource.Product, error) {
 	return parseOSPProductPage(r, ocadoCfg)
 }
 

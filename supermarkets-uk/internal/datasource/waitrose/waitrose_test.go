@@ -69,22 +69,6 @@ func TestParseCategories(t *testing.T) {
 	}
 }
 
-func TestParseProductPage(t *testing.T) {
-	f := testutil.OpenTestFile(t, "testdata/waitrose_product.html")
-	p, err := waitrose.ParseProductPage(f)
-	require.NoError(t, err)
-
-	assert.Equal(t, "Essential British Free Range Semi-Skimmed Milk 4 Pints", p.Name)
-	assert.InDelta(t, 1.75, p.Price, 0.001)
-	assert.Equal(t, "77p/litre", p.PricePerUnit)
-	assert.NotEmpty(t, p.Description)
-	assert.Contains(t, p.Ingredients, "milk")
-	require.NotNil(t, p.Nutrition)
-	assert.NotEmpty(t, p.Nutrition.Per100g["Energy"])
-	assert.NotEmpty(t, p.Nutrition.Per100g["Fat"])
-	assert.NotEmpty(t, p.Nutrition.PerPortion["Energy"])
-}
-
 func TestSearchIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")

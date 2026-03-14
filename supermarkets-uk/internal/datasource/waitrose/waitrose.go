@@ -108,13 +108,10 @@ func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*
 	}
 	defer body.Close() //nolint:errcheck // Best-effort close.
 
-	doc, err := html.Parse(body)
+	p, err := parseProductPage(body)
 	if err != nil {
-		return nil, fmt.Errorf("waitrose: parse product HTML: %w", err)
+		return nil, err
 	}
-
-	p := scraper.ParseProductFields(doc, selectors.ProductSel, datasource.Waitrose)
-	extractWaitroseProductDetails(doc, p)
 	p.ID = productID
 	p.URL = baseURL + "/ecom/products/" + productID
 	return p, nil
@@ -142,8 +139,9 @@ func ParseSearchResults(r io.Reader) ([]datasource.Product, error) {
 	return parseProducts(doc)
 }
 
-// ParseProductPage parses a Waitrose product detail page.
-func ParseProductPage(r io.Reader) (*datasource.Product, error) {
+// parseProductPage parses a Waitrose product detail page.
+// The returned Product does not have ID or URL set.
+func parseProductPage(r io.Reader) (*datasource.Product, error) {
 	doc, err := html.Parse(r)
 	if err != nil {
 		return nil, fmt.Errorf("waitrose: parse product HTML: %w", err)
