@@ -12,9 +12,9 @@ func (s *Server) handleGetNode(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	nodeID, ok := request.Params.Arguments["node_id"].(string)
+	nodeID, ok := request.Params.Arguments["nodeId"].(string)
 	if !ok || nodeID == "" {
-		return mcp.NewToolResultError("node_id is required"), nil
+		return mcp.NewToolResultError("nodeId is required"), nil
 	}
 
 	node, err := s.client.GetNode(ctx, nodeID)
@@ -29,7 +29,7 @@ func (s *Server) handleListChildren(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	parentID, _ := request.Params.Arguments["parent_id"].(string)
+	parentID, _ := request.Params.Arguments["parentId"].(string)
 
 	nodes, err := s.client.ListChildren(ctx, parentID)
 	if err != nil {
@@ -53,13 +53,13 @@ func (s *Server) handleCreateNode(
 	req := client.CreateNodeRequest{
 		Name: name,
 	}
-	if parentID, ok := args["parent_id"].(string); ok && parentID != "" {
+	if parentID, ok := args["parentId"].(string); ok && parentID != "" {
 		req.ParentID = parentID
 	}
 	if note, ok := args["note"].(string); ok {
 		req.Note = note
 	}
-	if layoutMode, ok := args["layout_mode"].(string); ok {
+	if layoutMode, ok := args["layoutMode"].(string); ok {
 		req.LayoutMode = layoutMode
 	}
 	if position, ok := args["position"].(string); ok {
@@ -81,9 +81,9 @@ func (s *Server) handleUpdateNode(
 ) (*mcp.CallToolResult, error) {
 	args := request.Params.Arguments
 
-	nodeID, ok := args["node_id"].(string)
+	nodeID, ok := args["nodeId"].(string)
 	if !ok || nodeID == "" {
-		return mcp.NewToolResultError("node_id is required"), nil
+		return mcp.NewToolResultError("nodeId is required"), nil
 	}
 
 	req := client.UpdateNodeRequest{}
@@ -93,7 +93,7 @@ func (s *Server) handleUpdateNode(
 	if note, ok := args["note"].(string); ok {
 		req.Note = &note
 	}
-	if layoutMode, ok := args["layout_mode"].(string); ok {
+	if layoutMode, ok := args["layoutMode"].(string); ok {
 		req.LayoutMode = &layoutMode
 	}
 
@@ -109,9 +109,9 @@ func (s *Server) handleDeleteNode(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	nodeID, ok := request.Params.Arguments["node_id"].(string)
+	nodeID, ok := request.Params.Arguments["nodeId"].(string)
 	if !ok || nodeID == "" {
-		return mcp.NewToolResultError("node_id is required"), nil
+		return mcp.NewToolResultError("nodeId is required"), nil
 	}
 
 	if err := s.client.DeleteNode(ctx, nodeID); err != nil {
@@ -128,13 +128,13 @@ func (s *Server) handleMoveNode(
 ) (*mcp.CallToolResult, error) {
 	args := request.Params.Arguments
 
-	nodeID, ok := args["node_id"].(string)
+	nodeID, ok := args["nodeId"].(string)
 	if !ok || nodeID == "" {
-		return mcp.NewToolResultError("node_id is required"), nil
+		return mcp.NewToolResultError("nodeId is required"), nil
 	}
 
 	req := client.MoveNodeRequest{}
-	if parentID, ok := args["parent_id"].(string); ok {
+	if parentID, ok := args["parentId"].(string); ok {
 		req.ParentID = parentID
 	}
 	if position, ok := args["position"].(string); ok {
@@ -153,9 +153,9 @@ func (s *Server) handleCompleteNode(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	nodeID, ok := request.Params.Arguments["node_id"].(string)
+	nodeID, ok := request.Params.Arguments["nodeId"].(string)
 	if !ok || nodeID == "" {
-		return mcp.NewToolResultError("node_id is required"), nil
+		return mcp.NewToolResultError("nodeId is required"), nil
 	}
 
 	if err := s.client.CompleteNode(ctx, nodeID); err != nil {
@@ -170,9 +170,9 @@ func (s *Server) handleUncompleteNode(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	nodeID, ok := request.Params.Arguments["node_id"].(string)
+	nodeID, ok := request.Params.Arguments["nodeId"].(string)
 	if !ok || nodeID == "" {
-		return mcp.NewToolResultError("node_id is required"), nil
+		return mcp.NewToolResultError("nodeId is required"), nil
 	}
 
 	if err := s.client.UncompleteNode(ctx, nodeID); err != nil {

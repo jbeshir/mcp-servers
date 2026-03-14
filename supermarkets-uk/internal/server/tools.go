@@ -54,7 +54,7 @@ func (s *Server) registerTools() {
 			mcp.Required(),
 			mcp.Description("Supermarket ID. Use list_supermarkets to see all available IDs."),
 		),
-		mcp.WithString("product_id",
+		mcp.WithString("productId",
 			mcp.Required(),
 			mcp.Description("Product ID from search results"),
 		),
@@ -95,7 +95,7 @@ func (s *Server) registerTools() {
 			mcp.Required(),
 			mcp.Description("Supermarket ID — must be 'tesco'."),
 		),
-		mcp.WithString("product_id",
+		mcp.WithString("productId",
 			mcp.Required(),
 			mcp.Description("Product ID from search results"),
 		),
@@ -113,7 +113,7 @@ func (s *Server) registerTools() {
 			mcp.Required(),
 			mcp.Description("Supermarket ID — must be 'tesco'."),
 		),
-		mcp.WithString("product_id",
+		mcp.WithString("productId",
 			mcp.Required(),
 			mcp.Description("Product ID to remove"),
 		),
@@ -186,9 +186,9 @@ func (s *Server) handleGetProductDetails(
 		return mcp.NewToolResultError("supermarket is required"), nil
 	}
 
-	productID, ok := args["product_id"].(string)
+	productID, ok := args["productId"].(string)
 	if !ok || productID == "" {
-		return mcp.NewToolResultError("product_id is required"), nil
+		return mcp.NewToolResultError("productId is required"), nil
 	}
 
 	sid := datasource.SupermarketID(supermarketID)
@@ -258,9 +258,9 @@ func (s *Server) handleAddToBasket(
 		return mcp.NewToolResultError("supermarket is required"), nil
 	}
 
-	productID, ok := args["product_id"].(string)
+	productID, ok := args["productId"].(string)
 	if !ok || productID == "" {
-		return mcp.NewToolResultError("product_id is required"), nil
+		return mcp.NewToolResultError("productId is required"), nil
 	}
 
 	quantity := 1
@@ -290,9 +290,9 @@ func (s *Server) handleRemoveFromBasket(
 		return mcp.NewToolResultError("supermarket is required"), nil
 	}
 
-	productID, ok := args["product_id"].(string)
+	productID, ok := args["productId"].(string)
 	if !ok || productID == "" {
-		return mcp.NewToolResultError("product_id is required"), nil
+		return mcp.NewToolResultError("productId is required"), nil
 	}
 
 	sid := datasource.SupermarketID(supermarketID)

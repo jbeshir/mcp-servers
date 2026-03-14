@@ -56,7 +56,7 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("get_node",
 		mcp.WithDescription("Get full details of a specific Workflowy node by its ID."),
-		mcp.WithString("node_id",
+		mcp.WithString("nodeId",
 			mcp.Required(),
 			mcp.Description("The UUID of the node to retrieve"),
 		),
@@ -65,8 +65,8 @@ func (s *Server) registerTools() {
 	s.mcpServer.AddTool(mcp.NewTool("list_children",
 		mcp.WithDescription(
 			"List child nodes of a given parent. Nodes are returned sorted by priority. "+
-				"Use a target key like 'home' or 'inbox' as parent_id, or omit for top-level nodes."),
-		mcp.WithString("parent_id",
+				"Use a target key like 'home' or 'inbox' as parentId, or omit for top-level nodes."),
+		mcp.WithString("parentId",
 			mcp.Description("Parent node UUID, target key ('home', 'inbox'), or omit for top-level nodes"),
 		),
 	), s.handleListChildren)
@@ -77,13 +77,13 @@ func (s *Server) registerTools() {
 			mcp.Required(),
 			mcp.Description("Text content of the node (supports markdown formatting)"),
 		),
-		mcp.WithString("parent_id",
+		mcp.WithString("parentId",
 			mcp.Description("Parent node UUID or target key ('home', 'inbox'). Omit for top-level."),
 		),
 		mcp.WithString("note",
 			mcp.Description("Additional note content below the main text"),
 		),
-		mcp.WithString("layout_mode",
+		mcp.WithString("layoutMode",
 			mcp.Description("Display mode: 'bullets' (default), 'todo', 'h1', 'h2', 'h3', 'code-block', 'quote-block'"),
 		),
 		mcp.WithString("position",
@@ -93,7 +93,7 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("update_node",
 		mcp.WithDescription("Update properties of an existing Workflowy node."),
-		mcp.WithString("node_id",
+		mcp.WithString("nodeId",
 			mcp.Required(),
 			mcp.Description("The UUID of the node to update"),
 		),
@@ -103,14 +103,14 @@ func (s *Server) registerTools() {
 		mcp.WithString("note",
 			mcp.Description("New note content"),
 		),
-		mcp.WithString("layout_mode",
+		mcp.WithString("layoutMode",
 			mcp.Description("New display mode: 'bullets', 'todo', 'h1', 'h2', 'h3', 'code-block', 'quote-block'"),
 		),
 	), s.handleUpdateNode)
 
 	s.mcpServer.AddTool(mcp.NewTool("delete_node",
 		mcp.WithDescription("Delete a Workflowy node by its ID."),
-		mcp.WithString("node_id",
+		mcp.WithString("nodeId",
 			mcp.Required(),
 			mcp.Description("The UUID of the node to delete"),
 		),
@@ -118,11 +118,11 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("move_node",
 		mcp.WithDescription("Move a Workflowy node to a different parent."),
-		mcp.WithString("node_id",
+		mcp.WithString("nodeId",
 			mcp.Required(),
 			mcp.Description("The UUID of the node to move"),
 		),
-		mcp.WithString("parent_id",
+		mcp.WithString("parentId",
 			mcp.Description("Destination parent UUID or target key"),
 		),
 		mcp.WithString("position",
@@ -132,7 +132,7 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("complete_node",
 		mcp.WithDescription("Mark a Workflowy node as completed."),
-		mcp.WithString("node_id",
+		mcp.WithString("nodeId",
 			mcp.Required(),
 			mcp.Description("The UUID of the node to complete"),
 		),
@@ -140,7 +140,7 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("uncomplete_node",
 		mcp.WithDescription("Mark a Workflowy node as not completed (uncomplete it)."),
-		mcp.WithString("node_id",
+		mcp.WithString("nodeId",
 			mcp.Required(),
 			mcp.Description("The UUID of the node to uncomplete"),
 		),
