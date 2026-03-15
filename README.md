@@ -77,11 +77,6 @@ Clone the repo and run `make build` — binaries are written to `bin/`.
 
 ## Registry
 
-These servers are published to the [MCP Registry](https://registry.modelcontextprotocol.io):
+These servers are published to the [MCP Registry](https://registry.modelcontextprotocol.io) under the `io.github.jbeshir` namespace:
 
-- [workflowy-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/workflowy-mcp)
-- [manifold-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/manifold-mcp)
-- [supermarkets-uk-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/supermarkets-uk-mcp)
-- [amazon-products-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/amazon-products-mcp)
-- [wanikani-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/wanikani-mcp)
-- [bunpro-mcp](https://registry.modelcontextprotocol.io/server/io.github.jbeshir/bunpro-mcp)
+`workflowy-mcp`, `manifold-mcp`, `supermarkets-uk-mcp`, `amazon-products-mcp`, `wanikani-mcp`, `bunpro-mcp`
