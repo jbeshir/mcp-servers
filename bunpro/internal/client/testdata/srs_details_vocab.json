@@ -1,0 +1,2074 @@
+{
+    "type": "regular",
+    "reviews": {
+        "data": [
+            {
+                "id": "53444193",
+                "type": "review",
+                "attributes": {
+                    "id": 53444193,
+                    "streak": 1,
+                    "next_review": "2026-03-15T01:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-14T01:00:00.000Z",
+                    "reviewable_id": 1052,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-14T01:15:50.111Z",
+                    "updated_at": "2026-03-14T21:10:13.914Z",
+                    "accuracy": 60,
+                    "times_studied": 5,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "19948",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "1052",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53444201",
+                "type": "review",
+                "attributes": {
+                    "id": 53444201,
+                    "streak": 1,
+                    "next_review": "2026-03-15T02:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-14T01:00:00.000Z",
+                    "reviewable_id": 517,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-14T01:16:27.694Z",
+                    "updated_at": "2026-03-14T22:33:21.579Z",
+                    "accuracy": 50,
+                    "times_studied": 6,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "18278",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "517",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53444229",
+                "type": "review",
+                "attributes": {
+                    "id": 53444229,
+                    "streak": 1,
+                    "next_review": "2026-03-15T02:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-14T01:00:00.000Z",
+                    "reviewable_id": 609,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-14T01:17:57.663Z",
+                    "updated_at": "2026-03-14T22:33:26.440Z",
+                    "accuracy": 50,
+                    "times_studied": 6,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "18464",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "609",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53495990",
+                "type": "review",
+                "attributes": {
+                    "id": 53495990,
+                    "streak": 1,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-15T00:00:00.000Z",
+                    "reviewable_id": 286,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-15T00:13:38.932Z",
+                    "updated_at": "2026-03-15T00:13:42.221Z",
+                    "accuracy": 100,
+                    "times_studied": 1,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "11593",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "286",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53495991",
+                "type": "review",
+                "attributes": {
+                    "id": 53495991,
+                    "streak": 1,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-15T00:00:00.000Z",
+                    "reviewable_id": 736,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-15T00:13:38.949Z",
+                    "updated_at": "2026-03-15T00:13:44.367Z",
+                    "accuracy": 100,
+                    "times_studied": 1,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "12493",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "736",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53495995",
+                "type": "review",
+                "attributes": {
+                    "id": 53495995,
+                    "streak": 1,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-15T00:00:00.000Z",
+                    "reviewable_id": 1092,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-15T00:13:55.610Z",
+                    "updated_at": "2026-03-15T00:34:35.561Z",
+                    "accuracy": 100,
+                    "times_studied": 1,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "20109",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "1092",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53495996",
+                "type": "review",
+                "attributes": {
+                    "id": 53495996,
+                    "streak": 1,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-15T00:00:00.000Z",
+                    "reviewable_id": 695,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-15T00:13:55.627Z",
+                    "updated_at": "2026-03-15T00:34:44.557Z",
+                    "accuracy": 100,
+                    "times_studied": 1,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "12411",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "695",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53496375",
+                "type": "review",
+                "attributes": {
+                    "id": 53496375,
+                    "streak": 1,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-15T00:00:00.000Z",
+                    "reviewable_id": 877,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-15T00:35:05.685Z",
+                    "updated_at": "2026-03-15T00:35:18.480Z",
+                    "accuracy": 100,
+                    "times_studied": 1,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "19248",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "877",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53496376",
+                "type": "review",
+                "attributes": {
+                    "id": 53496376,
+                    "streak": 1,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-15T00:00:00.000Z",
+                    "reviewable_id": 653,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-15T00:35:05.703Z",
+                    "updated_at": "2026-03-15T00:35:27.147Z",
+                    "accuracy": 100,
+                    "times_studied": 1,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "12327",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "653",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53496444",
+                "type": "review",
+                "attributes": {
+                    "id": 53496444,
+                    "streak": 1,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-15T00:00:00.000Z",
+                    "reviewable_id": 329,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-15T00:39:49.905Z",
+                    "updated_at": "2026-03-15T00:40:00.280Z",
+                    "accuracy": 100,
+                    "times_studied": 1,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "11679",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "329",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53496445",
+                "type": "review",
+                "attributes": {
+                    "id": 53496445,
+                    "streak": 1,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-15T00:00:00.000Z",
+                    "reviewable_id": 452,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-15T00:39:49.922Z",
+                    "updated_at": "2026-03-15T00:40:11.525Z",
+                    "accuracy": 100,
+                    "times_studied": 1,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "11925",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "452",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53496462",
+                "type": "review",
+                "attributes": {
+                    "id": 53496462,
+                    "streak": 1,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-15T00:00:00.000Z",
+                    "reviewable_id": 696,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-15T00:41:10.911Z",
+                    "updated_at": "2026-03-15T00:41:16.128Z",
+                    "accuracy": 100,
+                    "times_studied": 1,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "12413",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "696",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "52781233",
+                "type": "review",
+                "attributes": {
+                    "id": 52781233,
+                    "streak": 2,
+                    "next_review": "2026-03-15T01:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-04T00:00:00.000Z",
+                    "reviewable_id": 836,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-04T00:17:21.013Z",
+                    "updated_at": "2026-03-14T17:48:04.473Z",
+                    "accuracy": 57,
+                    "times_studied": 14,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "19083",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "836",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53246127",
+                "type": "review",
+                "attributes": {
+                    "id": 53246127,
+                    "streak": 2,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-11T06:00:00.000Z",
+                    "reviewable_id": 496,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-11T06:44:06.620Z",
+                    "updated_at": "2026-03-15T00:04:40.668Z",
+                    "accuracy": 62,
+                    "times_studied": 8,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "12012",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "496",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53444210",
+                "type": "review",
+                "attributes": {
+                    "id": 53444210,
+                    "streak": 2,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-14T01:00:00.000Z",
+                    "reviewable_id": 952,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-14T01:16:46.395Z",
+                    "updated_at": "2026-03-14T20:10:36.491Z",
+                    "accuracy": 75,
+                    "times_studied": 4,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "19548",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "952",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53444220",
+                "type": "review",
+                "attributes": {
+                    "id": 53444220,
+                    "streak": 2,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-14T01:00:00.000Z",
+                    "reviewable_id": 409,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-14T01:17:33.413Z",
+                    "updated_at": "2026-03-14T20:15:47.727Z",
+                    "accuracy": 75,
+                    "times_studied": 4,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "11838",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "409",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53444221",
+                "type": "review",
+                "attributes": {
+                    "id": 53444221,
+                    "streak": 2,
+                    "next_review": "2026-03-15T04:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-14T01:00:00.000Z",
+                    "reviewable_id": 1041,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-14T01:17:33.430Z",
+                    "updated_at": "2026-03-14T20:09:45.081Z",
+                    "accuracy": 75,
+                    "times_studied": 4,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "19904",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "1041",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "51808893",
+                "type": "review",
+                "attributes": {
+                    "id": 51808893,
+                    "streak": 3,
+                    "next_review": "2026-03-15T09:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-02-17T01:00:00.000Z",
+                    "reviewable_id": 377,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-02-17T01:52:24.160Z",
+                    "updated_at": "2026-03-14T22:44:21.382Z",
+                    "accuracy": 50,
+                    "times_studied": 24,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "11774",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "377",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "52190805",
+                "type": "review",
+                "attributes": {
+                    "id": 52190805,
+                    "streak": 3,
+                    "next_review": "2026-03-15T09:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-02-23T00:00:00.000Z",
+                    "reviewable_id": 323,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-02-23T00:13:50.098Z",
+                    "updated_at": "2026-03-14T22:44:16.837Z",
+                    "accuracy": 53,
+                    "times_studied": 13,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "11666",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "323",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "52462769",
+                "type": "review",
+                "attributes": {
+                    "id": 52462769,
+                    "streak": 3,
+                    "next_review": "2026-03-15T02:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-02-27T00:00:00.000Z",
+                    "reviewable_id": 890,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-02-27T00:27:18.175Z",
+                    "updated_at": "2026-03-14T15:31:54.048Z",
+                    "accuracy": 52,
+                    "times_studied": 23,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "19299",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "890",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "52861349",
+                "type": "review",
+                "attributes": {
+                    "id": 52861349,
+                    "streak": 3,
+                    "next_review": "2026-03-15T06:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-05T03:00:00.000Z",
+                    "reviewable_id": 397,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-05T03:12:37.840Z",
+                    "updated_at": "2026-03-14T19:41:19.351Z",
+                    "accuracy": 58,
+                    "times_studied": 12,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "11814",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "397",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "52861359",
+                "type": "review",
+                "attributes": {
+                    "id": 52861359,
+                    "streak": 3,
+                    "next_review": "2026-03-15T18:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-05T03:00:00.000Z",
+                    "reviewable_id": 341,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-05T03:13:05.029Z",
+                    "updated_at": "2026-03-14T19:24:29.174Z",
+                    "accuracy": 58,
+                    "times_studied": 12,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "11702",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "341",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "52970710",
+                "type": "review",
+                "attributes": {
+                    "id": 52970710,
+                    "streak": 3,
+                    "next_review": "2026-03-15T23:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-07T01:00:00.000Z",
+                    "reviewable_id": 815,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-07T01:37:18.269Z",
+                    "updated_at": "2026-03-15T00:03:51.856Z",
+                    "accuracy": 54,
+                    "times_studied": 24,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "19000",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "815",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53023423",
+                "type": "review",
+                "attributes": {
+                    "id": 53023423,
+                    "streak": 3,
+                    "next_review": "2026-03-15T11:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-08T00:00:00.000Z",
+                    "reviewable_id": 477,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-08T00:24:40.227Z",
+                    "updated_at": "2026-03-15T00:04:45.865Z",
+                    "accuracy": 66,
+                    "times_studied": 9,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "11975",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "477",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53023469",
+                "type": "review",
+                "attributes": {
+                    "id": 53023469,
+                    "streak": 3,
+                    "next_review": "2026-03-15T02:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-08T00:00:00.000Z",
+                    "reviewable_id": 338,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-08T00:26:06.458Z",
+                    "updated_at": "2026-03-14T15:32:49.853Z",
+                    "accuracy": 56,
+                    "times_studied": 16,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "11696",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "338",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53154575",
+                "type": "review",
+                "attributes": {
+                    "id": 53154575,
+                    "streak": 3,
+                    "next_review": "2026-03-15T08:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-10T00:00:00.000Z",
+                    "reviewable_id": 649,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-10T00:10:57.987Z",
+                    "updated_at": "2026-03-14T21:27:45.063Z",
+                    "accuracy": 66,
+                    "times_studied": 9,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "12318",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "649",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53246212",
+                "type": "review",
+                "attributes": {
+                    "id": 53246212,
+                    "streak": 3,
+                    "next_review": "2026-03-15T21:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-11T06:00:00.000Z",
+                    "reviewable_id": 969,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-11T06:45:33.916Z",
+                    "updated_at": "2026-03-14T22:44:14.213Z",
+                    "accuracy": 71,
+                    "times_studied": 7,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "19615",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "969",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53286192",
+                "type": "review",
+                "attributes": {
+                    "id": 53286192,
+                    "streak": 3,
+                    "next_review": "2026-03-15T14:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-12T00:00:00.000Z",
+                    "reviewable_id": 411,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-12T00:38:58.034Z",
+                    "updated_at": "2026-03-14T15:12:56.666Z",
+                    "accuracy": 71,
+                    "times_studied": 7,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "18015",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "411",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53346031",
+                "type": "review",
+                "attributes": {
+                    "id": 53346031,
+                    "streak": 3,
+                    "next_review": "2026-03-15T14:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-13T00:00:00.000Z",
+                    "reviewable_id": 752,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-13T00:45:14.431Z",
+                    "updated_at": "2026-03-14T15:18:40.073Z",
+                    "accuracy": 66,
+                    "times_studied": 6,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "18751",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "752",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53346032",
+                "type": "review",
+                "attributes": {
+                    "id": 53346032,
+                    "streak": 3,
+                    "next_review": "2026-03-15T23:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-13T00:00:00.000Z",
+                    "reviewable_id": 570,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-13T00:45:14.445Z",
+                    "updated_at": "2026-03-15T00:04:19.303Z",
+                    "accuracy": 62,
+                    "times_studied": 8,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "12161",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "570",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53346046",
+                "type": "review",
+                "attributes": {
+                    "id": 53346046,
+                    "streak": 3,
+                    "next_review": "2026-03-15T14:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-13T00:00:00.000Z",
+                    "reviewable_id": 807,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-13T00:45:40.059Z",
+                    "updated_at": "2026-03-14T15:24:59.893Z",
+                    "accuracy": 80,
+                    "times_studied": 5,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "18969",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "807",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53346047",
+                "type": "review",
+                "attributes": {
+                    "id": 53346047,
+                    "streak": 3,
+                    "next_review": "2026-03-15T14:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-13T00:00:00.000Z",
+                    "reviewable_id": 1007,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-13T00:45:40.073Z",
+                    "updated_at": "2026-03-14T15:07:42.147Z",
+                    "accuracy": 66,
+                    "times_studied": 6,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "19765",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "1007",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53346075",
+                "type": "review",
+                "attributes": {
+                    "id": 53346075,
+                    "streak": 3,
+                    "next_review": "2026-03-15T14:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-13T00:00:00.000Z",
+                    "reviewable_id": 1062,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-13T00:46:16.687Z",
+                    "updated_at": "2026-03-14T15:12:51.607Z",
+                    "accuracy": 66,
+                    "times_studied": 6,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "19983",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "1062",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53346076",
+                "type": "review",
+                "attributes": {
+                    "id": 53346076,
+                    "streak": 3,
+                    "next_review": "2026-03-15T02:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-13T00:00:00.000Z",
+                    "reviewable_id": 389,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-13T00:46:16.701Z",
+                    "updated_at": "2026-03-14T03:19:35.880Z",
+                    "accuracy": 100,
+                    "times_studied": 3,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "17971",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "389",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53346090",
+                "type": "review",
+                "attributes": {
+                    "id": 53346090,
+                    "streak": 3,
+                    "next_review": "2026-03-15T02:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-13T00:00:00.000Z",
+                    "reviewable_id": 125,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-13T00:46:42.582Z",
+                    "updated_at": "2026-03-14T03:20:09.315Z",
+                    "accuracy": 100,
+                    "times_studied": 3,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "17362",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "125",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53346091",
+                "type": "review",
+                "attributes": {
+                    "id": 53346091,
+                    "streak": 3,
+                    "next_review": "2026-03-15T14:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-13T00:00:00.000Z",
+                    "reviewable_id": 976,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-13T00:46:42.600Z",
+                    "updated_at": "2026-03-14T15:12:22.426Z",
+                    "accuracy": 80,
+                    "times_studied": 5,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "19643",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "976",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53346093",
+                "type": "review",
+                "attributes": {
+                    "id": 53346093,
+                    "streak": 3,
+                    "next_review": "2026-03-15T02:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-13T00:00:00.000Z",
+                    "reviewable_id": 360,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-13T00:47:03.742Z",
+                    "updated_at": "2026-03-14T03:19:51.072Z",
+                    "accuracy": 100,
+                    "times_studied": 3,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "17913",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "360",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53444194",
+                "type": "review",
+                "attributes": {
+                    "id": 53444194,
+                    "streak": 3,
+                    "next_review": "2026-03-15T23:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-14T01:00:00.000Z",
+                    "reviewable_id": 786,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-14T01:15:50.145Z",
+                    "updated_at": "2026-03-15T00:03:01.001Z",
+                    "accuracy": 100,
+                    "times_studied": 3,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "18883",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "786",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53444200",
+                "type": "review",
+                "attributes": {
+                    "id": 53444200,
+                    "streak": 3,
+                    "next_review": "2026-03-15T23:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-14T01:00:00.000Z",
+                    "reviewable_id": 404,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-14T01:16:27.678Z",
+                    "updated_at": "2026-03-15T00:04:09.349Z",
+                    "accuracy": 100,
+                    "times_studied": 3,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "18001",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "404",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53444209",
+                "type": "review",
+                "attributes": {
+                    "id": 53444209,
+                    "streak": 3,
+                    "next_review": "2026-03-15T23:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-14T01:00:00.000Z",
+                    "reviewable_id": 768,
+                    "reviewable_type": "Vocab",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-14T01:16:46.372Z",
+                    "updated_at": "2026-03-15T00:03:03.140Z",
+                    "accuracy": 100,
+                    "times_studied": 3,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "18810",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "768",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            }
+        ],
+        "included": [
+            {
+                "id": "1052",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 1052,
+                    "slug": "\u96fb\u8a71",
+                    "title": "\u96fb\u8a71",
+                    "meaning": "telephone call, phone call",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "517",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 517,
+                    "slug": "\u5bbf\u984c",
+                    "title": "\u5bbf\u984c",
+                    "meaning": "homework",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "609",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 609,
+                    "slug": "\u6368\u3066\u308b",
+                    "title": "\u6368\u3066\u308b",
+                    "meaning": "to throw away, to cast away, to dump, to discard",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "286",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 286,
+                    "slug": "\u4e7e\u676f",
+                    "title": "\u4e7e\u676f",
+                    "meaning": "cheers, bottoms-up, prosit",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "736",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 736,
+                    "slug": "\u6bce\u9031",
+                    "title": "\u6bce\u9031",
+                    "meaning": "every week",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "1092",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 1092,
+                    "slug": "\u9ce5",
+                    "title": "\u9ce5",
+                    "meaning": "bird",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "695",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 695,
+                    "slug": "\u6765\u9031",
+                    "title": "\u6765\u9031",
+                    "meaning": "next week",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "877",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 877,
+                    "slug": "\u7d50\u5a5a",
+                    "title": "\u7d50\u5a5a",
+                    "meaning": "marriage",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "653",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 653,
+                    "slug": "\u6642\u3005",
+                    "title": "\u6642\u3005",
+                    "meaning": "sometimes, at times",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "329",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 329,
+                    "slug": "\u4f4f\u3080",
+                    "title": "\u4f4f\u3080",
+                    "meaning": "to live (of humans), to reside, to inhabit, to dwell, to abide",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "452",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 452,
+                    "slug": "\u58f2\u308b",
+                    "title": "\u58f2\u308b",
+                    "meaning": "to sell",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "696",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 696,
+                    "slug": "\u6771",
+                    "title": "\u6771",
+                    "meaning": "east",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "836",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 836,
+                    "slug": "\u7740\u308b",
+                    "title": "\u7740\u308b",
+                    "meaning": "to wear (in modern Japanese, from the shoulders down), to put on",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "496",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 496,
+                    "slug": "\u59cb\u307e\u308b",
+                    "title": "\u59cb\u307e\u308b",
+                    "meaning": "to begin, to start, to commence",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "952",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 952,
+                    "slug": "\u8a00\u3046",
+                    "title": "\u8a00\u3046",
+                    "meaning": "to say, to utter, to declare",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "409",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 409,
+                    "slug": "\u5357",
+                    "title": "\u5357",
+                    "meaning": "south",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "1041",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 1041,
+                    "slug": "\u964d\u308b",
+                    "title": "\u964d\u308b",
+                    "meaning": "to fall (e.g. rain), to precipitate",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "377",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 377,
+                    "slug": "\u51b7\u305f\u3044",
+                    "title": "\u51b7\u305f\u3044",
+                    "meaning": "cold (to the touch), chilly, icy, freezing",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "323",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 323,
+                    "slug": "\u4f1a\u3046",
+                    "title": "\u4f1a\u3046",
+                    "meaning": "to meet, to encounter, to see",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "890",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 890,
+                    "slug": "\u7fd2\u3046",
+                    "title": "\u7fd2\u3046",
+                    "meaning": "to take lessons in, to be taught, to learn (from a teacher), to study (under a teacher), to get training in",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "397",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 397,
+                    "slug": "\u52c9\u5f37",
+                    "title": "\u52c9\u5f37",
+                    "meaning": "study",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "341",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 341,
+                    "slug": "\u4f7f\u3046",
+                    "title": "\u4f7f\u3046",
+                    "meaning": "to use (a thing, method, etc.), to make use of, to put to use",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "815",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 815,
+                    "slug": "\u75b2\u308c\u308b",
+                    "title": "\u75b2\u308c\u308b",
+                    "meaning": "to get tired, to tire",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "477",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 477,
+                    "slug": "\u5927\u5b66",
+                    "title": "\u5927\u5b66",
+                    "meaning": "post-secondary education institution, incl. university, college, etc.",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "338",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 338,
+                    "slug": "\u4f5c\u308b",
+                    "title": "\u4f5c\u308b",
+                    "meaning": "to make, to produce, to manufacture, to build, to construct",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "649",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 649,
+                    "slug": "\u663c",
+                    "title": "\u663c",
+                    "meaning": "noon, midday",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "969",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 969,
+                    "slug": "\u8c5a\u8089",
+                    "title": "\u8c5a\u8089",
+                    "meaning": "pork",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "411",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 411,
+                    "slug": "\u5371\u306a\u3044",
+                    "title": "\u5371\u306a\u3044",
+                    "meaning": "dangerous, risky, hazardous, perilous, precarious",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "752",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 752,
+                    "slug": "\u6d17\u3046",
+                    "title": "\u6d17\u3046",
+                    "meaning": "to wash",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "570",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 570,
+                    "slug": "\u5f85\u3064",
+                    "title": "\u5f85\u3064",
+                    "meaning": "to wait",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "807",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 807,
+                    "slug": "\u7537\u306e\u4eba",
+                    "title": "\u7537\u306e\u4eba",
+                    "meaning": "man",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "1007",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 1007,
+                    "slug": "\u904a\u3073",
+                    "title": "\u904a\u3073",
+                    "meaning": "playing",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "1062",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 1062,
+                    "slug": "\u97f3\u697d",
+                    "title": "\u97f3\u697d",
+                    "meaning": "music, musical movement",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "389",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 389,
+                    "slug": "\u5207\u624b",
+                    "title": "\u5207\u624b",
+                    "meaning": "stamp (postage), merchandise certificate",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "125",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 125,
+                    "slug": "\u30b9\u30fc\u30d1\u30fc",
+                    "title": "\u30b9\u30fc\u30d1\u30fc",
+                    "meaning": "supermarket",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "976",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 976,
+                    "slug": "\u8cd1\u3084\u304b",
+                    "title": "\u8cd1\u3084\u304b",
+                    "meaning": "bustling, busy, lively",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "360",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 360,
+                    "slug": "\u5148\u9031",
+                    "title": "\u5148\u9031",
+                    "meaning": "last week, the week before",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "786",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 786,
+                    "slug": "\u725b\u8089",
+                    "title": "\u725b\u8089",
+                    "meaning": "beef",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "404",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 404,
+                    "slug": "\u5348\u524d",
+                    "title": "\u5348\u524d",
+                    "meaning": "morning, a.m.",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            },
+            {
+                "id": "768",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 768,
+                    "slug": "\u6f2b\u753b",
+                    "title": "\u6f2b\u753b",
+                    "meaning": "cartoon, comic, comic strip",
+                    "level": "N5",
+                    "type_pascal": "Vocab",
+                    "type_snake": "vocab"
+                }
+            }
+        ]
+    },
+    "pagy": {
+        "scaffold_url": "/api/frontend/user_stats/srs_level_details?level=beginner&reviewable_type=Vocab&page=__pagy_page__",
+        "first_url": "/api/frontend/user_stats/srs_level_details?level=beginner&reviewable_type=Vocab&page=1",
+        "prev_url": "/api/frontend/user_stats/srs_level_details?level=beginner&reviewable_type=Vocab&page=",
+        "page_url": "/api/frontend/user_stats/srs_level_details?level=beginner&reviewable_type=Vocab&page=1",
+        "next_url": "/api/frontend/user_stats/srs_level_details?level=beginner&reviewable_type=Vocab&page=",
+        "last_url": "/api/frontend/user_stats/srs_level_details?level=beginner&reviewable_type=Vocab&page=1",
+        "count": 40,
+        "page": 1,
+        "items": 200,
+        "vars": {
+            "page": 1,
+            "items": 200,
+            "outset": 0,
+            "size": [
+                1,
+                4,
+                4,
+                1
+            ],
+            "page_param": "page",
+            "params": {},
+            "fragment": "",
+            "link_extra": "",
+            "i18n_key": "pagy.item_name",
+            "cycle": false,
+            "headers": {
+                "page": "Current-Page",
+                "items": "Page-Items",
+                "count": "Total-Count",
+                "pages": "Total-Pages"
+            },
+            "metadata": [
+                "scaffold_url",
+                "first_url",
+                "prev_url",
+                "page_url",
+                "next_url",
+                "last_url",
+                "count",
+                "page",
+                "items",
+                "vars",
+                "pages",
+                "last",
+                "in",
+                "from",
+                "to",
+                "prev",
+                "next",
+                "series"
+            ],
+            "count": 40
+        },
+        "pages": 1,
+        "last": 1,
+        "in": 40,
+        "from": 1,
+        "to": 40,
+        "prev": null,
+        "next": null,
+        "series": [
+            "1"
+        ]
+    }
+}

@@ -48,7 +48,7 @@ Read-only access to [WaniKani](https://www.wanikani.com) SRS data — user profi
 
 Read-only access to [Bunpro](https://bunpro.jp) Japanese grammar SRS data — user profile, study queue, deck settings, review forecasts, JLPT progress, SRS level details, and grammar point/vocabulary lookups. Authenticates via email/password with automatic Devise login.
 
-**11 tools:** `get_user`, `get_study_queue`, `get_decks`, `get_stats`, `get_jlpt_progress`, `get_review_forecast`, `get_srs_overview`, `get_review_activity`, `get_srs_details`, `get_grammar_point`, `get_vocab`
+**12 tools:** `get_user`, `get_study_queue`, `get_decks`, `get_stats`, `get_jlpt_progress`, `get_review_forecast`, `get_srs_overview`, `get_review_activity`, `get_grammar_srs_details`, `get_vocab_srs_details`, `get_grammar_point`, `get_vocab`
 
 **Requires:** Bunpro email and password
 

@@ -1,0 +1,1533 @@
+{
+    "object": "collection",
+    "url": "https://api.wanikani.com/v2/assignments?levels=1",
+    "pages": {
+        "per_page": 500,
+        "next_url": null,
+        "previous_url": null
+    },
+    "total_count": 80,
+    "data_updated_at": "2026-03-14T17:34:33.677085Z",
+    "data": [
+        {
+            "id": 737072502,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072502",
+            "data_updated_at": "2026-03-06T18:24:06.520868Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.090009Z",
+                "subject_id": 6,
+                "subject_type": "radical",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-07T18:54:26.084393Z",
+                "started_at": "2026-02-07T18:55:41.089266Z",
+                "passed_at": "2026-02-10T17:53:08.063875Z",
+                "burned_at": null,
+                "available_at": "2026-03-20T17:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072503,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072503",
+            "data_updated_at": "2026-03-12T00:45:07.176748Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.097805Z",
+                "subject_id": 5,
+                "subject_type": "radical",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-07T18:54:26.093119Z",
+                "started_at": "2026-02-07T18:55:48.429849Z",
+                "passed_at": "2026-02-10T17:52:50.726536Z",
+                "burned_at": null,
+                "available_at": "2026-03-25T23:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072504,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072504",
+            "data_updated_at": "2026-03-03T16:10:07.165236Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.107081Z",
+                "subject_id": 8762,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.101068Z",
+                "started_at": "2026-02-08T02:20:18.505639Z",
+                "passed_at": "2026-02-10T17:53:19.259419Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072505,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072505",
+            "data_updated_at": "2026-03-03T16:09:40.909555Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.112423Z",
+                "subject_id": 14,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.109849Z",
+                "started_at": "2026-02-07T19:14:29.568496Z",
+                "passed_at": "2026-02-10T17:52:54.024724Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072506,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072506",
+            "data_updated_at": "2026-03-03T16:09:28.600928Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.121165Z",
+                "subject_id": 25,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.114788Z",
+                "started_at": "2026-02-08T02:19:47.950135Z",
+                "passed_at": "2026-02-10T17:53:23.669576Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072507,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072507",
+            "data_updated_at": "2026-03-03T16:09:56.163469Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.132411Z",
+                "subject_id": 22,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.126017Z",
+                "started_at": "2026-02-08T02:20:15.295903Z",
+                "passed_at": "2026-02-10T17:53:28.652978Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072508,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072508",
+            "data_updated_at": "2026-03-03T16:10:46.173573Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.140175Z",
+                "subject_id": 20,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.135936Z",
+                "started_at": "2026-02-08T02:19:45.843918Z",
+                "passed_at": "2026-02-10T17:53:01.498750Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072509,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072509",
+            "data_updated_at": "2026-03-03T16:09:30.216062Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.144991Z",
+                "subject_id": 4,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.142680Z",
+                "started_at": "2026-02-07T19:14:33.396461Z",
+                "passed_at": "2026-02-10T17:53:30.605174Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072510,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072510",
+            "data_updated_at": "2026-03-06T00:54:50.577200Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.155234Z",
+                "subject_id": 11,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.151416Z",
+                "started_at": "2026-02-08T02:20:16.992420Z",
+                "passed_at": "2026-02-13T01:08:20.788827Z",
+                "burned_at": null,
+                "available_at": "2026-04-04T23:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072511,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072511",
+            "data_updated_at": "2026-03-03T16:10:33.848893Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.161107Z",
+                "subject_id": 15,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.157894Z",
+                "started_at": "2026-02-08T02:19:42.059674Z",
+                "passed_at": "2026-02-10T17:53:17.539201Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072512,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072512",
+            "data_updated_at": "2026-03-03T16:09:57.887881Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.165938Z",
+                "subject_id": 13,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.163518Z",
+                "started_at": "2026-02-07T19:14:31.251082Z",
+                "passed_at": "2026-02-10T17:52:52.193752Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072513,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072513",
+            "data_updated_at": "2026-03-03T16:09:36.818717Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.173735Z",
+                "subject_id": 10,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.171259Z",
+                "started_at": "2026-02-08T02:20:19.944903Z",
+                "passed_at": "2026-02-10T17:53:03.535250Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072514,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072514",
+            "data_updated_at": "2026-03-03T16:10:48.227389Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.181420Z",
+                "subject_id": 16,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.177613Z",
+                "started_at": "2026-02-07T19:14:27.887251Z",
+                "passed_at": "2026-02-10T17:52:45.347316Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072515,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072515",
+            "data_updated_at": "2026-03-03T16:09:26.247376Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.187368Z",
+                "subject_id": 18,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.183729Z",
+                "started_at": "2026-02-07T18:56:08.032406Z",
+                "passed_at": "2026-02-10T17:52:58.160070Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072516,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072516",
+            "data_updated_at": "2026-03-03T16:09:46.183522Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.192276Z",
+                "subject_id": 9,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.189868Z",
+                "started_at": "2026-02-07T18:56:11.279727Z",
+                "passed_at": "2026-02-10T17:52:47.067521Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072517,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072517",
+            "data_updated_at": "2026-03-03T16:10:09.158570Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.197264Z",
+                "subject_id": 1,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.194719Z",
+                "started_at": "2026-02-07T18:55:43.454193Z",
+                "passed_at": "2026-02-10T17:53:21.576565Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072518,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072518",
+            "data_updated_at": "2026-03-12T00:51:06.513837Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.202130Z",
+                "subject_id": 8,
+                "subject_type": "radical",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-07T18:54:26.199490Z",
+                "started_at": "2026-02-07T18:56:07.056312Z",
+                "passed_at": "2026-02-10T17:52:43.649324Z",
+                "burned_at": null,
+                "available_at": "2026-03-25T23:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072519,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072519",
+            "data_updated_at": "2026-03-03T16:10:35.505952Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.209121Z",
+                "subject_id": 21,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.206363Z",
+                "started_at": "2026-02-08T02:19:44.395789Z",
+                "passed_at": "2026-02-10T17:52:59.684228Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072520,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072520",
+            "data_updated_at": "2026-03-03T16:09:34.345356Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.213927Z",
+                "subject_id": 8761,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.211444Z",
+                "started_at": "2026-02-08T02:20:21.346409Z",
+                "passed_at": "2026-02-10T17:52:41.966028Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072521,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072521",
+            "data_updated_at": "2026-03-03T16:09:44.494374Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.218533Z",
+                "subject_id": 23,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.216230Z",
+                "started_at": "2026-02-08T02:19:49.184744Z",
+                "passed_at": "2026-02-10T17:52:55.742568Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072522,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072522",
+            "data_updated_at": "2026-03-03T16:10:39.353678Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.224578Z",
+                "subject_id": 3,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.222160Z",
+                "started_at": "2026-02-07T18:55:52.001917Z",
+                "passed_at": "2026-02-10T17:52:48.582035Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072523,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072523",
+            "data_updated_at": "2026-03-03T16:09:24.432885Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.231152Z",
+                "subject_id": 7,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.227474Z",
+                "started_at": "2026-02-07T18:56:05.084932Z",
+                "passed_at": "2026-02-10T17:53:13.835350Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072524,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072524",
+            "data_updated_at": "2026-03-03T16:09:42.740360Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.235967Z",
+                "subject_id": 19,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.233596Z",
+                "started_at": "2026-02-07T19:14:35.043178Z",
+                "passed_at": "2026-02-10T17:53:09.931024Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072525,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072525",
+            "data_updated_at": "2026-03-03T16:09:38.502751Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.240792Z",
+                "subject_id": 12,
+                "subject_type": "radical",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-07T18:54:26.238515Z",
+                "started_at": "2026-02-07T18:56:10.234831Z",
+                "passed_at": "2026-02-10T17:53:15.748156Z",
+                "burned_at": null,
+                "available_at": "2026-04-02T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 737072526,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/737072526",
+            "data_updated_at": "2026-03-12T00:43:49.927452Z",
+            "data": {
+                "created_at": "2026-02-07T18:54:26.254050Z",
+                "subject_id": 2,
+                "subject_type": "radical",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-07T18:54:26.248609Z",
+                "started_at": "2026-02-07T18:55:45.659060Z",
+                "passed_at": "2026-02-10T17:53:12.492122Z",
+                "burned_at": null,
+                "available_at": "2026-03-25T23:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786065,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786065",
+            "data_updated_at": "2026-03-14T17:10:06.259000Z",
+            "data": {
+                "created_at": "2026-02-10T17:52:45.416808Z",
+                "subject_id": 452,
+                "subject_type": "kanji",
+                "srs_stage": 4,
+                "unlocked_at": "2026-02-10T17:52:45.416199Z",
+                "started_at": "2026-02-10T18:01:06.740052Z",
+                "passed_at": "2026-02-13T01:08:34.565193Z",
+                "burned_at": null,
+                "available_at": "2026-03-15T16:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786067,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786067",
+            "data_updated_at": "2026-03-09T01:06:03.851559Z",
+            "data": {
+                "created_at": "2026-02-10T17:52:47.140255Z",
+                "subject_id": 444,
+                "subject_type": "kanji",
+                "srs_stage": 5,
+                "unlocked_at": "2026-02-10T17:52:47.139637Z",
+                "started_at": "2026-02-10T17:57:35.589660Z",
+                "passed_at": "2026-02-13T01:08:44.907140Z",
+                "burned_at": null,
+                "available_at": "2026-03-16T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786083,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786083",
+            "data_updated_at": "2026-03-09T23:42:42.653785Z",
+            "data": {
+                "created_at": "2026-02-10T17:52:52.256155Z",
+                "subject_id": 447,
+                "subject_type": "kanji",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-10T17:52:52.255494Z",
+                "started_at": "2026-02-10T17:59:10.099741Z",
+                "passed_at": "2026-02-13T21:27:13.318350Z",
+                "burned_at": null,
+                "available_at": "2026-03-23T22:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786089,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786089",
+            "data_updated_at": "2026-03-06T00:55:37.352921Z",
+            "data": {
+                "created_at": "2026-02-10T17:52:58.218658Z",
+                "subject_id": 453,
+                "subject_type": "kanji",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-10T17:52:58.218061Z",
+                "started_at": "2026-02-10T18:01:28.805528Z",
+                "passed_at": "2026-02-13T01:08:52.716141Z",
+                "burned_at": null,
+                "available_at": "2026-04-04T23:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786090,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786090",
+            "data_updated_at": "2026-03-06T19:29:04.171400Z",
+            "data": {
+                "created_at": "2026-02-10T17:52:59.746320Z",
+                "subject_id": 456,
+                "subject_type": "kanji",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-10T17:52:59.745648Z",
+                "started_at": "2026-02-11T15:15:38.797921Z",
+                "passed_at": "2026-02-13T21:26:20.338323Z",
+                "burned_at": null,
+                "available_at": "2026-04-05T18:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786093,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786093",
+            "data_updated_at": "2026-03-07T16:14:32.325777Z",
+            "data": {
+                "created_at": "2026-02-10T17:53:01.572497Z",
+                "subject_id": 455,
+                "subject_type": "kanji",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-10T17:53:01.571877Z",
+                "started_at": "2026-02-11T15:15:27.519987Z",
+                "passed_at": "2026-02-14T15:35:30.940253Z",
+                "burned_at": null,
+                "available_at": "2026-04-06T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786108,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786108",
+            "data_updated_at": "2026-03-01T17:20:05.709693Z",
+            "data": {
+                "created_at": "2026-02-10T17:53:09.998223Z",
+                "subject_id": 454,
+                "subject_type": "kanji",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-10T17:53:09.997588Z",
+                "started_at": "2026-02-10T18:01:14.736931Z",
+                "passed_at": "2026-02-13T21:27:00.947054Z",
+                "burned_at": null,
+                "available_at": "2026-03-15T16:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786136,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786136",
+            "data_updated_at": "2026-03-06T00:55:24.737411Z",
+            "data": {
+                "created_at": "2026-02-10T17:53:12.554488Z",
+                "subject_id": 446,
+                "subject_type": "kanji",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-10T17:53:12.553865Z",
+                "started_at": "2026-02-10T17:59:18.184784Z",
+                "passed_at": "2026-02-13T01:08:46.944603Z",
+                "burned_at": null,
+                "available_at": "2026-04-04T23:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786141,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786141",
+            "data_updated_at": "2026-03-06T19:29:05.695518Z",
+            "data": {
+                "created_at": "2026-02-10T17:53:13.905452Z",
+                "subject_id": 441,
+                "subject_type": "kanji",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-10T17:53:13.904746Z",
+                "started_at": "2026-02-10T17:55:47.052875Z",
+                "passed_at": "2026-02-13T21:27:07.310507Z",
+                "burned_at": null,
+                "available_at": "2026-04-05T18:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786142,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786142",
+            "data_updated_at": "2026-03-02T16:16:51.216430Z",
+            "data": {
+                "created_at": "2026-02-10T17:53:15.811084Z",
+                "subject_id": 445,
+                "subject_type": "kanji",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-10T17:53:15.810382Z",
+                "started_at": "2026-02-10T17:57:31.595193Z",
+                "passed_at": "2026-02-14T15:38:44.813822Z",
+                "burned_at": null,
+                "available_at": "2026-03-16T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786143,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786143",
+            "data_updated_at": "2026-03-06T19:29:00.589432Z",
+            "data": {
+                "created_at": "2026-02-10T17:53:17.598743Z",
+                "subject_id": 448,
+                "subject_type": "kanji",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-10T17:53:17.598121Z",
+                "started_at": "2026-02-10T17:59:15.553265Z",
+                "passed_at": "2026-02-13T21:26:37.054577Z",
+                "burned_at": null,
+                "available_at": "2026-04-05T18:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786145,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786145",
+            "data_updated_at": "2026-03-06T00:55:58.325794Z",
+            "data": {
+                "created_at": "2026-02-10T17:53:21.634372Z",
+                "subject_id": 440,
+                "subject_type": "kanji",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-10T17:53:21.633690Z",
+                "started_at": "2026-02-10T17:55:10.991051Z",
+                "passed_at": "2026-02-13T01:08:28.224157Z",
+                "burned_at": null,
+                "available_at": "2026-04-04T23:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786146,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786146",
+            "data_updated_at": "2026-03-06T00:56:00.325036Z",
+            "data": {
+                "created_at": "2026-02-10T17:53:21.634372Z",
+                "subject_id": 449,
+                "subject_type": "kanji",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-10T17:53:21.633697Z",
+                "started_at": "2026-02-10T18:00:00.954386Z",
+                "passed_at": "2026-02-13T01:08:07.172890Z",
+                "burned_at": null,
+                "available_at": "2026-04-04T23:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786147,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786147",
+            "data_updated_at": "2026-03-09T01:17:52.477199Z",
+            "data": {
+                "created_at": "2026-02-10T17:53:21.634372Z",
+                "subject_id": 450,
+                "subject_type": "kanji",
+                "srs_stage": 5,
+                "unlocked_at": "2026-02-10T17:53:21.633699Z",
+                "started_at": "2026-02-10T17:59:57.257411Z",
+                "passed_at": "2026-02-14T16:14:45.342811Z",
+                "burned_at": null,
+                "available_at": "2026-03-16T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786148,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786148",
+            "data_updated_at": "2026-03-07T16:15:57.738413Z",
+            "data": {
+                "created_at": "2026-02-10T17:53:21.634372Z",
+                "subject_id": 451,
+                "subject_type": "kanji",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-10T17:53:21.633701Z",
+                "started_at": "2026-02-10T18:01:25.121790Z",
+                "passed_at": "2026-02-14T16:14:47.558545Z",
+                "burned_at": null,
+                "available_at": "2026-04-06T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786157,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786157",
+            "data_updated_at": "2026-03-06T00:55:35.974700Z",
+            "data": {
+                "created_at": "2026-02-10T17:53:23.779345Z",
+                "subject_id": 457,
+                "subject_type": "kanji",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-10T17:53:23.778719Z",
+                "started_at": "2026-02-10T18:00:56.282923Z",
+                "passed_at": "2026-02-13T01:08:42.188899Z",
+                "burned_at": null,
+                "available_at": "2026-04-04T23:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 738786163,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/738786163",
+            "data_updated_at": "2026-03-10T10:38:35.708826Z",
+            "data": {
+                "created_at": "2026-02-10T17:53:30.665367Z",
+                "subject_id": 443,
+                "subject_type": "kanji",
+                "srs_stage": 5,
+                "unlocked_at": "2026-02-10T17:53:30.664683Z",
+                "started_at": "2026-02-10T17:57:44.562788Z",
+                "passed_at": "2026-02-13T01:08:25.293174Z",
+                "burned_at": null,
+                "available_at": "2026-03-17T09:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740169812,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740169812",
+            "data_updated_at": "2026-03-08T01:15:57.734766Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:07.223831Z",
+                "subject_id": 2486,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T01:08:07.223291Z",
+                "started_at": "2026-02-13T01:18:18.950163Z",
+                "passed_at": "2026-02-15T00:52:05.800072Z",
+                "burned_at": null,
+                "available_at": "2026-04-07T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740169813,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740169813",
+            "data_updated_at": "2026-03-09T01:04:58.530202Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:07.223831Z",
+                "subject_id": 2487,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T01:08:07.223298Z",
+                "started_at": "2026-02-13T01:21:12.892704Z",
+                "passed_at": "2026-02-15T23:15:41.040127Z",
+                "burned_at": null,
+                "available_at": "2026-04-08T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740171142,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740171142",
+            "data_updated_at": "2026-03-14T02:03:00.260010Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:20.846185Z",
+                "subject_id": 442,
+                "subject_type": "kanji",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-13T01:08:20.845095Z",
+                "started_at": "2026-02-13T01:16:17.372325Z",
+                "passed_at": "2026-02-17T12:54:11.232588Z",
+                "burned_at": null,
+                "available_at": "2026-03-28T01:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740171146,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740171146",
+            "data_updated_at": "2026-03-02T16:10:38.482613Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:25.357039Z",
+                "subject_id": 2469,
+                "subject_type": "vocabulary",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-13T01:08:25.356419Z",
+                "started_at": "2026-02-13T01:16:05.933786Z",
+                "passed_at": "2026-02-15T01:06:08.558308Z",
+                "burned_at": null,
+                "available_at": "2026-03-16T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740171147,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740171147",
+            "data_updated_at": "2026-03-02T16:11:57.022680Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:25.357039Z",
+                "subject_id": 2470,
+                "subject_type": "vocabulary",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-13T01:08:25.356424Z",
+                "started_at": "2026-02-13T01:16:03.288825Z",
+                "passed_at": "2026-02-15T00:47:30.978969Z",
+                "burned_at": null,
+                "available_at": "2026-03-16T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740171153,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740171153",
+            "data_updated_at": "2026-03-08T01:15:33.356882Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:28.284165Z",
+                "subject_id": 2467,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T01:08:28.283436Z",
+                "started_at": "2026-02-13T01:15:51.194639Z",
+                "passed_at": "2026-02-15T00:45:07.412052Z",
+                "burned_at": null,
+                "available_at": "2026-04-07T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740171154,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740171154",
+            "data_updated_at": "2026-03-05T16:34:25.798402Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:28.284165Z",
+                "subject_id": 2468,
+                "subject_type": "vocabulary",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-13T01:08:28.283444Z",
+                "started_at": "2026-02-13T01:15:27.883244Z",
+                "passed_at": "2026-02-17T12:53:43.630137Z",
+                "burned_at": null,
+                "available_at": "2026-03-19T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740171158,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740171158",
+            "data_updated_at": "2026-03-09T01:18:22.344477Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:34.720383Z",
+                "subject_id": 2497,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T01:08:34.719731Z",
+                "started_at": "2026-02-13T01:21:05.625781Z",
+                "passed_at": "2026-02-15T23:16:39.864098Z",
+                "burned_at": null,
+                "available_at": "2026-04-08T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740179869,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740179869",
+            "data_updated_at": "2026-03-08T01:15:55.705244Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:44.981856Z",
+                "subject_id": 2475,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T01:08:44.981249Z",
+                "started_at": "2026-02-13T01:17:39.258748Z",
+                "passed_at": "2026-02-15T00:48:50.624673Z",
+                "burned_at": null,
+                "available_at": "2026-04-07T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740179870,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740179870",
+            "data_updated_at": "2026-03-08T01:15:42.736942Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:44.981856Z",
+                "subject_id": 2477,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T01:08:44.981254Z",
+                "started_at": "2026-02-13T01:18:16.258409Z",
+                "passed_at": "2026-02-15T00:48:55.360740Z",
+                "burned_at": null,
+                "available_at": "2026-04-07T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740179871,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740179871",
+            "data_updated_at": "2026-03-10T19:09:52.195989Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:44.981856Z",
+                "subject_id": 2488,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T01:08:44.981256Z",
+                "started_at": "2026-02-13T01:20:23.048296Z",
+                "passed_at": "2026-02-17T12:51:24.384973Z",
+                "burned_at": null,
+                "available_at": "2026-04-09T18:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740179872,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740179872",
+            "data_updated_at": "2026-03-05T16:18:34.777774Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:44.981856Z",
+                "subject_id": 3402,
+                "subject_type": "vocabulary",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-13T01:08:44.981257Z",
+                "started_at": "2026-02-14T01:45:36.971640Z",
+                "passed_at": "2026-02-17T12:56:37.756425Z",
+                "burned_at": null,
+                "available_at": "2026-03-19T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740179873,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740179873",
+            "data_updated_at": "2026-03-10T19:09:48.189486Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:44.981856Z",
+                "subject_id": 7560,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T01:08:44.981259Z",
+                "started_at": "2026-02-14T01:45:41.703517Z",
+                "passed_at": "2026-02-17T12:52:27.270946Z",
+                "burned_at": null,
+                "available_at": "2026-04-09T18:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740179876,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740179876",
+            "data_updated_at": "2026-03-08T01:15:35.250266Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:47.000427Z",
+                "subject_id": 2482,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T01:08:46.999883Z",
+                "started_at": "2026-02-13T01:17:59.864959Z",
+                "passed_at": "2026-02-15T00:49:35.174819Z",
+                "burned_at": null,
+                "available_at": "2026-04-07T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740179877,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740179877",
+            "data_updated_at": "2026-03-02T16:13:42.131404Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:47.000427Z",
+                "subject_id": 2483,
+                "subject_type": "vocabulary",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-13T01:08:46.999889Z",
+                "started_at": "2026-02-13T01:18:23.471218Z",
+                "passed_at": "2026-02-15T00:47:14.419073Z",
+                "burned_at": null,
+                "available_at": "2026-03-16T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740179888,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740179888",
+            "data_updated_at": "2026-03-08T01:15:53.391117Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:52.780966Z",
+                "subject_id": 2499,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T01:08:52.780348Z",
+                "started_at": "2026-02-13T01:21:01.798895Z",
+                "passed_at": "2026-02-15T00:59:25.237927Z",
+                "burned_at": null,
+                "available_at": "2026-04-07T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740179889,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740179889",
+            "data_updated_at": "2026-03-09T01:08:35.101275Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:52.780966Z",
+                "subject_id": 2500,
+                "subject_type": "vocabulary",
+                "srs_stage": 5,
+                "unlocked_at": "2026-02-13T01:08:52.780354Z",
+                "started_at": "2026-02-13T01:20:44.170011Z",
+                "passed_at": "2026-02-15T01:06:13.976280Z",
+                "burned_at": null,
+                "available_at": "2026-03-16T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740179890,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740179890",
+            "data_updated_at": "2026-03-09T16:08:47.995058Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:52.780966Z",
+                "subject_id": 2501,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T01:08:52.780356Z",
+                "started_at": "2026-02-14T00:58:02.678508Z",
+                "passed_at": "2026-02-16T18:12:18.480285Z",
+                "burned_at": null,
+                "available_at": "2026-04-08T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740179891,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740179891",
+            "data_updated_at": "2026-03-09T16:07:22.927081Z",
+            "data": {
+                "created_at": "2026-02-13T01:08:52.780966Z",
+                "subject_id": 2502,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T01:08:52.780357Z",
+                "started_at": "2026-02-14T01:44:44.720516Z",
+                "passed_at": "2026-02-16T18:12:31.654747Z",
+                "burned_at": null,
+                "available_at": "2026-04-08T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740581902,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740581902",
+            "data_updated_at": "2026-03-09T01:04:27.344434Z",
+            "data": {
+                "created_at": "2026-02-13T21:26:20.476727Z",
+                "subject_id": 2506,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T21:26:20.476140Z",
+                "started_at": "2026-02-14T01:42:49.053934Z",
+                "passed_at": "2026-02-15T23:16:13.002346Z",
+                "burned_at": null,
+                "available_at": "2026-04-08T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740581930,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740581930",
+            "data_updated_at": "2026-03-09T01:17:07.614621Z",
+            "data": {
+                "created_at": "2026-02-13T21:26:37.131830Z",
+                "subject_id": 2485,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T21:26:37.131113Z",
+                "started_at": "2026-02-14T00:10:08.394358Z",
+                "passed_at": "2026-02-15T23:16:24.865887Z",
+                "burned_at": null,
+                "available_at": "2026-04-08T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740582026,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740582026",
+            "data_updated_at": "2026-03-09T01:18:31.796624Z",
+            "data": {
+                "created_at": "2026-02-13T21:27:01.042273Z",
+                "subject_id": 2503,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T21:27:01.041715Z",
+                "started_at": "2026-02-14T01:43:01.733568Z",
+                "passed_at": "2026-02-15T23:15:55.503043Z",
+                "burned_at": null,
+                "available_at": "2026-04-08T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740582033,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740582033",
+            "data_updated_at": "2026-03-09T01:07:10.747719Z",
+            "data": {
+                "created_at": "2026-02-13T21:27:07.405472Z",
+                "subject_id": 2473,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T21:27:07.404670Z",
+                "started_at": "2026-02-14T00:10:10.902827Z",
+                "passed_at": "2026-02-15T23:15:11.526925Z",
+                "burned_at": null,
+                "available_at": "2026-04-08T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740582034,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740582034",
+            "data_updated_at": "2026-03-03T23:48:44.789899Z",
+            "data": {
+                "created_at": "2026-02-13T21:27:07.405472Z",
+                "subject_id": 2474,
+                "subject_type": "vocabulary",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-13T21:27:07.404683Z",
+                "started_at": "2026-02-14T00:10:06.042802Z",
+                "passed_at": "2026-02-16T18:14:24.542518Z",
+                "burned_at": null,
+                "available_at": "2026-03-17T22:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740582035,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740582035",
+            "data_updated_at": "2026-03-09T01:18:53.496924Z",
+            "data": {
+                "created_at": "2026-02-13T21:27:07.405472Z",
+                "subject_id": 2476,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T21:27:07.404686Z",
+                "started_at": "2026-02-14T00:07:45.044095Z",
+                "passed_at": "2026-02-15T23:16:09.265335Z",
+                "burned_at": null,
+                "available_at": "2026-04-08T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740582045,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740582045",
+            "data_updated_at": "2026-03-03T23:49:41.940474Z",
+            "data": {
+                "created_at": "2026-02-13T21:27:13.459214Z",
+                "subject_id": 2484,
+                "subject_type": "vocabulary",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-13T21:27:13.458526Z",
+                "started_at": "2026-02-14T00:10:15.864254Z",
+                "passed_at": "2026-02-16T18:12:43.532750Z",
+                "burned_at": null,
+                "available_at": "2026-03-17T22:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740582046,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740582046",
+            "data_updated_at": "2026-03-09T16:10:08.545353Z",
+            "data": {
+                "created_at": "2026-02-13T21:27:13.459214Z",
+                "subject_id": 8958,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-13T21:27:13.458538Z",
+                "started_at": "2026-02-14T01:44:06.022075Z",
+                "passed_at": "2026-02-16T18:12:51.222785Z",
+                "burned_at": null,
+                "available_at": "2026-04-08T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740941388,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740941388",
+            "data_updated_at": "2026-03-09T16:07:18.485394Z",
+            "data": {
+                "created_at": "2026-02-14T15:35:31.003378Z",
+                "subject_id": 2504,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-14T15:35:31.003104Z",
+                "started_at": "2026-02-14T15:42:10.283262Z",
+                "passed_at": "2026-02-16T18:13:00.400063Z",
+                "burned_at": null,
+                "available_at": "2026-04-08T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740941389,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740941389",
+            "data_updated_at": "2026-03-12T00:46:30.651626Z",
+            "data": {
+                "created_at": "2026-02-14T15:35:31.003378Z",
+                "subject_id": 2505,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-14T15:35:31.003109Z",
+                "started_at": "2026-02-16T00:12:31.095036Z",
+                "passed_at": "2026-02-18T19:11:35.574098Z",
+                "burned_at": null,
+                "available_at": "2026-04-10T23:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740951018,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740951018",
+            "data_updated_at": "2026-03-14T17:34:33.677085Z",
+            "data": {
+                "created_at": "2026-02-14T15:38:44.865608Z",
+                "subject_id": 2480,
+                "subject_type": "vocabulary",
+                "srs_stage": 4,
+                "unlocked_at": "2026-02-14T15:38:44.865412Z",
+                "started_at": "2026-02-14T15:41:57.912841Z",
+                "passed_at": "2026-02-17T12:52:12.701841Z",
+                "burned_at": null,
+                "available_at": "2026-03-15T16:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740951019,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740951019",
+            "data_updated_at": "2026-03-05T16:34:42.318049Z",
+            "data": {
+                "created_at": "2026-02-14T15:38:44.865608Z",
+                "subject_id": 2498,
+                "subject_type": "vocabulary",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-14T15:38:44.865417Z",
+                "started_at": "2026-02-14T15:42:07.904617Z",
+                "passed_at": "2026-02-17T12:54:48.232420Z",
+                "burned_at": null,
+                "available_at": "2026-03-19T15:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740962905,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740962905",
+            "data_updated_at": "2026-03-05T22:22:06.848823Z",
+            "data": {
+                "created_at": "2026-02-14T16:14:45.397898Z",
+                "subject_id": 2489,
+                "subject_type": "vocabulary",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-14T16:14:45.397440Z",
+                "started_at": "2026-02-15T01:02:33.313408Z",
+                "passed_at": "2026-02-17T17:37:33.958943Z",
+                "burned_at": null,
+                "available_at": "2026-03-19T21:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740962906,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740962906",
+            "data_updated_at": "2026-03-06T18:25:50.777337Z",
+            "data": {
+                "created_at": "2026-02-14T16:14:45.397898Z",
+                "subject_id": 2490,
+                "subject_type": "vocabulary",
+                "srs_stage": 6,
+                "unlocked_at": "2026-02-14T16:14:45.397445Z",
+                "started_at": "2026-02-15T01:04:24.243298Z",
+                "passed_at": "2026-02-17T17:33:09.290479Z",
+                "burned_at": null,
+                "available_at": "2026-03-20T17:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740962955,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740962955",
+            "data_updated_at": "2026-03-10T19:07:39.215773Z",
+            "data": {
+                "created_at": "2026-02-14T16:14:47.735215Z",
+                "subject_id": 2493,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-14T16:14:47.734738Z",
+                "started_at": "2026-02-15T01:05:46.101781Z",
+                "passed_at": "2026-02-17T17:30:02.895680Z",
+                "burned_at": null,
+                "available_at": "2026-04-09T18:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740962956,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740962956",
+            "data_updated_at": "2026-03-09T03:32:09.218046Z",
+            "data": {
+                "created_at": "2026-02-14T16:14:47.735215Z",
+                "subject_id": 2495,
+                "subject_type": "vocabulary",
+                "srs_stage": 5,
+                "unlocked_at": "2026-02-14T16:14:47.734743Z",
+                "started_at": "2026-02-16T00:09:03.077581Z",
+                "passed_at": "2026-02-19T18:04:23.095912Z",
+                "burned_at": null,
+                "available_at": "2026-03-16T02:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 740962957,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/740962957",
+            "data_updated_at": "2026-03-12T00:41:16.700980Z",
+            "data": {
+                "created_at": "2026-02-14T16:14:47.735215Z",
+                "subject_id": 2496,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-14T16:14:47.734745Z",
+                "started_at": "2026-02-16T00:10:45.947168Z",
+                "passed_at": "2026-02-19T01:16:44.092772Z",
+                "burned_at": null,
+                "available_at": "2026-04-10T23:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 742640234,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/742640234",
+            "data_updated_at": "2026-03-13T23:38:44.888431Z",
+            "data": {
+                "created_at": "2026-02-17T12:54:11.285166Z",
+                "subject_id": 2471,
+                "subject_type": "vocabulary",
+                "srs_stage": 5,
+                "unlocked_at": "2026-02-17T12:54:11.284626Z",
+                "started_at": "2026-02-18T01:17:23.179623Z",
+                "passed_at": "2026-02-20T01:34:32.603936Z",
+                "burned_at": null,
+                "available_at": "2026-03-20T22:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        },
+        {
+            "id": 742640235,
+            "object": "assignment",
+            "url": "https://api.wanikani.com/v2/assignments/742640235",
+            "data_updated_at": "2026-03-13T01:15:40.536450Z",
+            "data": {
+                "created_at": "2026-02-17T12:54:11.285166Z",
+                "subject_id": 2472,
+                "subject_type": "vocabulary",
+                "srs_stage": 7,
+                "unlocked_at": "2026-02-17T12:54:11.284631Z",
+                "started_at": "2026-02-18T01:17:42.923223Z",
+                "passed_at": "2026-02-20T01:32:00.259929Z",
+                "burned_at": null,
+                "available_at": "2026-04-12T00:00:00.000000Z",
+                "resurrected_at": null,
+                "hidden": false
+            }
+        }
+    ]
+}

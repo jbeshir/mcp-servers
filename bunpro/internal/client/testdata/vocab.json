@@ -1,0 +1,923 @@
+{
+    "data": {
+        "id": "1077",
+        "type": "vocab",
+        "attributes": {
+            "id": 1077,
+            "title": "\u98df\u3079\u308b",
+            "jlpt_level": "N5",
+            "furigana": "\u98df\uff08\u305f\uff09\u3079\u308b",
+            "kana": "\u305f\u3079\u308b",
+            "slug": "\u98df\u3079\u308b",
+            "pitch_accent_stress": "LHL",
+            "frequency_anime": 172,
+            "frequency_novels": 345,
+            "frequency_general": 199,
+            "frequency_netflix": 168,
+            "frequency_dictionary": 613,
+            "female_audio_url": "",
+            "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/pronunciation/\u98df\u3078\u3099\u308b-male.mp3",
+            "has_tts_audio": true,
+            "jmdict_id": 1358280,
+            "jmdict_data": {
+                "id": "1358280",
+                "kanji": [
+                    {
+                        "common": true,
+                        "text": "\u98df\u3079\u308b",
+                        "tags": []
+                    },
+                    {
+                        "common": false,
+                        "text": "\u55b0\u3079\u308b",
+                        "tags": [
+                            "iK"
+                        ]
+                    }
+                ],
+                "kana": [
+                    {
+                        "common": true,
+                        "text": "\u305f\u3079\u308b",
+                        "tags": [],
+                        "appliesToKanji": [
+                            "*"
+                        ]
+                    }
+                ],
+                "sense": [
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "eng",
+                                "gender": null,
+                                "type": null,
+                                "text": "to eat"
+                            }
+                        ]
+                    },
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "eng",
+                                "gender": null,
+                                "type": null,
+                                "text": "to live on (e.g. a salary)"
+                            },
+                            {
+                                "lang": "eng",
+                                "gender": null,
+                                "type": null,
+                                "text": "to live off"
+                            },
+                            {
+                                "lang": "eng",
+                                "gender": null,
+                                "type": null,
+                                "text": "to subsist on"
+                            }
+                        ]
+                    },
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "eten"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "opeten"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "consumeren"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "gebruiken"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "nemen"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "nuttigen"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "verorberen"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "naar binnen werken"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "wegwerken"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "{inform.} bikken"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "{inform.} binnenslaan"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "{i.h.b.} zich voeden met"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "{uitdr.} de inwendige mens versterken"
+                            }
+                        ]
+                    },
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "de kost verdienen"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "aan de kost komen"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "in zijn onderhoud voorzien"
+                            },
+                            {
+                                "lang": "dut",
+                                "gender": null,
+                                "type": null,
+                                "text": "leven (van)"
+                            }
+                        ]
+                    },
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "fre",
+                                "gender": null,
+                                "type": null,
+                                "text": "manger"
+                            }
+                        ]
+                    },
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "fre",
+                                "gender": null,
+                                "type": null,
+                                "text": "vivre avec (par ex. un salaire)"
+                            },
+                            {
+                                "lang": "fre",
+                                "gender": null,
+                                "type": null,
+                                "text": "vivre de (par ex. ses rentes)"
+                            },
+                            {
+                                "lang": "fre",
+                                "gender": null,
+                                "type": null,
+                                "text": "subsister gr\u00e2ce \u00e0"
+                            }
+                        ]
+                    },
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "ger",
+                                "gender": null,
+                                "type": null,
+                                "text": "essen"
+                            },
+                            {
+                                "lang": "ger",
+                                "gender": null,
+                                "type": null,
+                                "text": "speisen"
+                            },
+                            {
+                                "lang": "ger",
+                                "gender": null,
+                                "type": null,
+                                "text": "zu sich nehmen"
+                            },
+                            {
+                                "lang": "ger",
+                                "gender": null,
+                                "type": null,
+                                "text": "fressen"
+                            },
+                            {
+                                "lang": "ger",
+                                "gender": null,
+                                "type": null,
+                                "text": "probieren"
+                            }
+                        ]
+                    },
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "ger",
+                                "gender": null,
+                                "type": null,
+                                "text": "leben von"
+                            }
+                        ]
+                    },
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "hun",
+                                "gender": null,
+                                "type": null,
+                                "text": "kiesz"
+                            }
+                        ]
+                    },
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "rus",
+                                "gender": null,
+                                "type": null,
+                                "text": "1) \u0435\u0441\u0442\u044c"
+                            },
+                            {
+                                "lang": "rus",
+                                "gender": null,
+                                "type": null,
+                                "text": "2) (\u043f\u0435\u0440\u0435\u043d.) \u0436\u0438\u0442\u044c, \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u043e\u0432\u0430\u0442\u044c"
+                            }
+                        ]
+                    },
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "slv",
+                                "gender": null,
+                                "type": null,
+                                "text": "jesti"
+                            }
+                        ]
+                    },
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "spa",
+                                "gender": null,
+                                "type": null,
+                                "text": "comer"
+                            }
+                        ]
+                    },
+                    {
+                        "partOfSpeech": [
+                            "v1",
+                            "vt"
+                        ],
+                        "appliesToKanji": [
+                            "*"
+                        ],
+                        "appliesToKana": [
+                            "*"
+                        ],
+                        "related": [],
+                        "antonym": [],
+                        "field": [],
+                        "dialect": [],
+                        "misc": [],
+                        "info": [],
+                        "languageSource": [],
+                        "gloss": [
+                            {
+                                "lang": "swe",
+                                "gender": null,
+                                "type": null,
+                                "text": "\u00e4ta"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "jmdict_pos": [
+                "v1",
+                "vt"
+            ],
+            "wrong_answers": "",
+            "nuance": "\u6804\u990a\uff08\u3048\u3044\u3088\u3046\uff09\u6442\u53d6\uff08\u305b\u3063\u3057\u3085\uff09\u306e\u305f\u3081\u306b\u4f55\uff08\u306a\u306b\uff09\u304b\u3092\u565b\uff08\u304b\uff09\u3093\u3067\u98f2\uff08\u306e\uff09\u307f\u8fbc\uff08\u3053\uff09\u3080\u3053\u3068\u3002",
+            "type_snake": "vocab",
+            "type_pascal": "Vocab",
+            "meaning": "to eat",
+            "accepted_answers": "to eat, eat, to eat something",
+            "nuance_translation": "To chew and then swallow something as a source of nourishment."
+        },
+        "relationships": {
+            "study_questions": {
+                "data": [
+                    {
+                        "id": "20048",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "20042",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "178507",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "174233",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "20043",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "20049",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "174237",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "178508",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "178509",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "179853",
+                        "type": "study_question"
+                    }
+                ]
+            }
+        }
+    },
+    "included": [
+        {
+            "id": "20048",
+            "type": "study_question",
+            "attributes": {
+                "id": 20048,
+                "content": "<span class='vocab-popout' data-vocab-id='849'>\u79c1\uff08\u308f\u305f\u3057\uff09</span>\u306f<span class='gp-popout vocab-popout' data-gp-id='12' data-vocab-id='1077'><span class='study-area-input'>____</span></span>\u3053\u3068\u304c<span class='vocab-popout' data-vocab-id='492'>\u597d\uff08\u3059\uff09\u304d</span>\u3060\u3002",
+                "answer": "\u305f\u3079\u308b",
+                "alternate_grammar": [],
+                "kanji_answer": "\u98df\uff08\u305f\uff09\u3079\u308b",
+                "kanji_alt_grammar": [],
+                "nuance": "\u6804\u990a\uff08\u3048\u3044\u3088\u3046\uff09\u6442\u53d6\uff08\u305b\u3063\u3057\u3085\uff09\u306e\u305f\u3081\u306b\u4f55\uff08\u306a\u306b\uff09\u304b\u3092\u565b\uff08\u304b\uff09\u3093\u3067\u98f2\uff08\u306e\uff09\u307f\u8fbc\uff08\u3053\uff09\u3080\u3053\u3068\u3002",
+                "tense": "",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u79c1\u306f\u98df\u3078\u3099\u308b\u3053\u3068\u304b\u3099\u597d\u304d\u305f\u3099\u3002-male.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u79c1\u306f\u98df\u3078\u3099\u308b\u3053\u3068\u304b\u3099\u597d\u304d\u305f\u3099\u3002-female.mp3",
+                "word_prompt": null,
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 0,
+                "validation_status": "validated",
+                "level": "N5",
+                "has_tts_audio": true,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "I like <strong>to eat</strong>.",
+                "nuance_translation": "To chew and then swallow something as a source of nourishment.",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1077,
+                "reviewable_type": "vocab"
+            }
+        },
+        {
+            "id": "20042",
+            "type": "study_question",
+            "attributes": {
+                "id": 20042,
+                "content": "\u591c\uff08\u3088\u308b\uff09\u9045\uff08\u304a\u305d\uff09\u304f\u306b\u304a\u83d3\u5b50\uff08\u304b\u3057\uff09\u3092<span class='study-area-input'>____</span>\u306e\u306f\u5065\u5eb7\uff08\u3051\u3093\u3053\u3046\uff09\u306b\u60aa\uff08\u308f\u308b\uff09\u3044\u3067\u3059\u3002",
+                "answer": "\u305f\u3079\u308b",
+                "alternate_grammar": [],
+                "kanji_answer": "\u98df\uff08\u305f\uff09\u3079\u308b",
+                "kanji_alt_grammar": [],
+                "nuance": "\u6804\u990a\uff08\u3048\u3044\u3088\u3046\uff09\u6442\u53d6\uff08\u305b\u3063\u3057\u3085\uff09\u306e\u305f\u3081\u306b\u4f55\uff08\u306a\u306b\uff09\u304b\u3092\u565b\uff08\u304b\uff09\u3093\u3067\u98f2\uff08\u306e\uff09\u307f\u8fbc\uff08\u3053\uff09\u3080\u3053\u3068\u3002",
+                "tense": "",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u591c\u9045\u304f\u306b\u304a\u83d3\u5b50\u3092\u98df\u3078\u3099\u308b\u306e\u306f\u5065\u5eb7\u306b\u60aa\u3044\u3066\u3099\u3059\u3002-male.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u591c\u9045\u304f\u306b\u304a\u83d3\u5b50\u3092\u98df\u3078\u3099\u308b\u306e\u306f\u5065\u5eb7\u306b\u60aa\u3044\u3066\u3099\u3059\u3002-female.mp3",
+                "word_prompt": null,
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 2,
+                "validation_status": "validated",
+                "level": "N5",
+                "has_tts_audio": true,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "<strong>Eating</strong> sweets late at night is bad for your health.",
+                "nuance_translation": "To chew and then swallow something as a source of nourishment.",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1077,
+                "reviewable_type": "vocab"
+            }
+        },
+        {
+            "id": "178507",
+            "type": "study_question",
+            "attributes": {
+                "id": 178507,
+                "content": "<span class='vocab-popout' data-vocab-id='656'>\u6669\uff08\u3070\u3093\uff09</span>\u5fa1\u98ef\uff08\u3054\u306f\u3093\uff09\u306f<span class='vocab-popout' data-vocab-id='458'>\u5916\uff08\u305d\u3068\uff09</span>\u306b<strong>\u98df\uff08\u305f\uff09\u3079</strong>\u306b\u3044\u304d\u307e\u3057\u3087\u3046\u3002",
+                "answer": null,
+                "alternate_grammar": [],
+                "kanji_answer": null,
+                "kanji_alt_grammar": [],
+                "nuance": null,
+                "tense": "",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u6669\u5fa1\u98ef\u306f\u5916\u306b\u98df\u3078\u3099\u306b\u3044\u304d\u307e\u3057\u3087\u3046\u3002-male.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u6669\u5fa1\u98ef\u306f\u5916\u306b\u98df\u3078\u3099\u306b\u3044\u304d\u307e\u3057\u3087\u3046\u3002-female.mp3",
+                "word_prompt": null,
+                "used_in": "examples",
+                "question_type": "readonly",
+                "sentence_order": 5,
+                "validation_status": "validated",
+                "level": "N4",
+                "has_tts_audio": true,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "Let's go out <strong>to eat</strong>.",
+                "nuance_translation": null,
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1077,
+                "reviewable_type": "vocab"
+            }
+        },
+        {
+            "id": "174233",
+            "type": "study_question",
+            "attributes": {
+                "id": 174233,
+                "content": "\u30ab\u30e9\u30b9\u306f\u306a\u3093<span class='vocab-popout' data-vocab-id='166'>\u3067\u3082</span><span class='gp-popout vocab-popout' data-gp-id='12' data-vocab-id='1077'><strong>\u98df\uff08\u305f\uff09\u3079\u308b</strong></span>\u3053\u3068\u304c\u51fa\u6765\uff08\u3067\u304d\uff09\u308b<span class='vocab-popout' data-vocab-id='142'>\u305d\u3046\u3067\u3059</span>\u3002",
+                "answer": null,
+                "alternate_grammar": [],
+                "kanji_answer": null,
+                "kanji_alt_grammar": [],
+                "nuance": null,
+                "tense": "",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u30ab\u30e9\u30b9\u306f\u306a\u3093\u3066\u3099\u3082\u98df\u3078\u3099\u308b\u3053\u3068\u304b\u3099\u51fa\u6765\u308b\u305d\u3046\u3066\u3099\u3059\u3002-male.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u30ab\u30e9\u30b9\u306f\u306a\u3093\u3066\u3099\u3082\u98df\u3078\u3099\u308b\u3053\u3068\u304b\u3099\u51fa\u6765\u308b\u305d\u3046\u3066\u3099\u3059\u3002-female.mp3",
+                "word_prompt": null,
+                "used_in": "examples",
+                "question_type": "readonly",
+                "sentence_order": 6,
+                "validation_status": "validated",
+                "level": "N3",
+                "has_tts_audio": true,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "They say crows can <strong>eat</strong> anything.",
+                "nuance_translation": null,
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1077,
+                "reviewable_type": "vocab"
+            }
+        },
+        {
+            "id": "20043",
+            "type": "study_question",
+            "attributes": {
+                "id": 20043,
+                "content": "\u79c1\uff08\u308f\u305f\u3057\uff09\u306f\u30d1\u30f3\u3088\u308a\u3082\u3054\u98ef\uff08\u306f\u3093\uff09\u3092<span class='study-area-input'>____</span>\u4e8b\uff08\u3053\u3068\uff09\u306e\u65b9\uff08\u307b\u3046\uff09\u304c\u591a\uff08\u304a\u304a\uff09\u3044\u3002",
+                "answer": "\u305f\u3079\u308b",
+                "alternate_grammar": [],
+                "kanji_answer": "\u98df\uff08\u305f\uff09\u3079\u308b",
+                "kanji_alt_grammar": [],
+                "nuance": "\u6804\u990a\uff08\u3048\u3044\u3088\u3046\uff09\u6442\u53d6\uff08\u305b\u3063\u3057\u3085\uff09\u306e\u305f\u3081\u306b\u4f55\uff08\u306a\u306b\uff09\u304b\u3092\u565b\uff08\u304b\uff09\u3093\u3067\u98f2\uff08\u306e\uff09\u307f\u8fbc\uff08\u3053\uff09\u3080\u3053\u3068\u3002",
+                "tense": "",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u79c1\u306f\u30cf\u309a\u30f3\u3088\u308a\u3082\u3053\u3099\u98ef\u3092\u98df\u3078\u3099\u308b\u4e8b\u306e\u65b9\u304b\u3099\u591a\u3044\u3002-male.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u79c1\u306f\u30cf\u309a\u30f3\u3088\u308a\u3082\u3053\u3099\u98ef\u3092\u98df\u3078\u3099\u308b\u4e8b\u306e\u65b9\u304b\u3099\u591a\u3044\u3002-female.mp3",
+                "word_prompt": null,
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 3,
+                "validation_status": "validated",
+                "level": "N5",
+                "has_tts_audio": true,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "I <strong>eat</strong> more rice than bread.",
+                "nuance_translation": "To chew and then swallow something as a source of nourishment.",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1077,
+                "reviewable_type": "vocab"
+            }
+        },
+        {
+            "id": "20049",
+            "type": "study_question",
+            "attributes": {
+                "id": 20049,
+                "content": "<span class='vocab-popout' data-vocab-id='309'>\u4eca\u65e5\uff08\u304d\u3087\u3046\uff09</span>\u306f<span class='vocab-popout' data-vocab-id='336'>\u4f55\uff08\u306a\u306b\uff09\u3082</span><span class='study-area-input'>____</span>\u3089\u308c\u307e\u305b\u3093\u3002",
+                "answer": "\u305f\u3079",
+                "alternate_grammar": [
+                    "\u305f\u3079",
+                    "\u305f\u3079\u308b"
+                ],
+                "kanji_answer": "\u98df\uff08\u305f\uff09\u3079",
+                "kanji_alt_grammar": [
+                    "\u98df\uff08\u305f\uff09\u3079",
+                    "\u98df\uff08\u305f\uff09\u3079\u308b"
+                ],
+                "nuance": "\u6804\u990a\uff08\u3048\u3044\u3088\u3046\uff09\u6442\u53d6\uff08\u305b\u3063\u3057\u3085\uff09\u306e\u305f\u3081\u306b\u4f55\uff08\u306a\u306b\uff09\u304b\u3092\u565b\uff08\u304b\uff09\u3093\u3067\u98f2\uff08\u306e\uff09\u307f\u8fbc\uff08\u3053\uff09\u3080\u3053\u3068\u3002",
+                "tense": "",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u4eca\u65e5\u306f\u4f55\u3082\u98df\u3078\u3099\u3089\u308c\u307e\u305b\u3093\u3002-male.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u4eca\u65e5\u306f\u4f55\u3082\u98df\u3078\u3099\u3089\u308c\u307e\u305b\u3093\u3002-female.mp3",
+                "word_prompt": null,
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 1,
+                "validation_status": "validated",
+                "level": "N5",
+                "has_tts_audio": true,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "I can't <strong>eat</strong> anything today.",
+                "nuance_translation": "To chew and then swallow something as a source of nourishment.",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1077,
+                "reviewable_type": "vocab"
+            }
+        },
+        {
+            "id": "174237",
+            "type": "study_question",
+            "attributes": {
+                "id": 174237,
+                "content": "<span class='vocab-popout' data-vocab-id='849'>\u79c1\uff08\u308f\u305f\u3057\uff09</span>\u306e<span class='vocab-popout' data-vocab-id='353'>\u5144\uff08\u3042\u306b\uff09</span>\u306f<span class='vocab-popout' data-vocab-id='307'>\u4eca\u5e74\uff08\u3053\u3068\u3057\uff09</span>\u3067\uff13\uff10\uff08\u3055\u3093\u3058\u3085\u3063\uff09<span class='vocab-popout' data-vocab-id='727'>\u6b73\uff08\u3055\u3044\uff09</span>\u306b\u306a\u308b\u306e\u306b\u3082\u95a2\uff08\u304b\u304b\uff09\u308f\u3089\u305a\u89aa\uff08\u304a\u3084\uff09\u306b<strong>\u98df\uff08\u305f\uff09\u3079\u3055\u305b\u3066\u3082\u3089\u3063\u3066\u3044\u3066</strong>\u307f\u3063\u3068\u3082\u306a\u3044\u3067\u3059\u3002",
+                "answer": "",
+                "alternate_grammar": [],
+                "kanji_answer": "",
+                "kanji_alt_grammar": [],
+                "nuance": "",
+                "tense": "",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u79c1\u306e\u5144\u306f\u4eca\u5e74\u3066\u309930\u6b73\u306b\u306a\u308b\u306e\u306b\u3082\u95a2\u308f\u3089\u3059\u3099\u89aa\u306b\u98df\u3078\u3099\u3055\u305b\u3066\u3082\u3089\u3063\u3066\u3044\u3066\u307f\u3063\u3068\u3082\u306a\u3044\u3066\u3099\u3059\u3002-male.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u79c1\u306e\u5144\u306f\u4eca\u5e74\u3066\u309930\u6b73\u306b\u306a\u308b\u306e\u306b\u3082\u95a2\u308f\u3089\u3059\u3099\u89aa\u306b\u98df\u3078\u3099\u3055\u305b\u3066\u3082\u3089\u3063\u3066\u3044\u3066\u307f\u3063\u3068\u3082\u306a\u3044\u3066\u3099\u3059\u3002-female.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "readonly",
+                "sentence_order": 8,
+                "validation_status": "validated",
+                "level": "N2",
+                "has_tts_audio": true,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "My brother is 30 years old this year, and he is still <strong>being fed</strong> by his parents, which is disgraceful.",
+                "nuance_translation": "",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1077,
+                "reviewable_type": "vocab"
+            }
+        },
+        {
+            "id": "178508",
+            "type": "study_question",
+            "attributes": {
+                "id": 178508,
+                "content": "<span class='gp-popout vocab-popout' data-gp-id='12' data-vocab-id='1077'><strong>\u98df\uff08\u305f\uff09\u3079\u308b</strong></span>\u3068\u304d\u306f<span class='vocab-popout' data-vocab-id='237'>\u3086\u3063\u304f\u308a</span>\u565b\uff08\u304b\uff09\u3093\u3067\u98df\uff08\u305f\uff09\u3079\u307e\u3057\u3087\u3046\u3002",
+                "answer": null,
+                "alternate_grammar": [],
+                "kanji_answer": null,
+                "kanji_alt_grammar": [],
+                "nuance": null,
+                "tense": "",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u98df\u3078\u3099\u308b\u3068\u304d\u306f\u3086\u3063\u304f\u308a\u565b\u3093\u3066\u3099\u98df\u3078\u3099\u307e\u3057\u3087\u3046\u3002-male.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u98df\u3078\u3099\u308b\u3068\u304d\u306f\u3086\u3063\u304f\u308a\u565b\u3093\u3066\u3099\u98df\u3078\u3099\u307e\u3057\u3087\u3046\u3002-female.mp3",
+                "word_prompt": null,
+                "used_in": "examples",
+                "question_type": "readonly",
+                "sentence_order": 4,
+                "validation_status": "validated",
+                "level": "N4",
+                "has_tts_audio": true,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "Chew your food slowly when <strong>eating</strong>.",
+                "nuance_translation": null,
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1077,
+                "reviewable_type": "vocab"
+            }
+        },
+        {
+            "id": "178509",
+            "type": "study_question",
+            "attributes": {
+                "id": 178509,
+                "content": "<span class='vocab-popout' data-vocab-id='305'>\u4eca\uff08\u3044\u307e\uff09</span>\u306e\u5b89\uff08\u3084\u3059\uff09\u6708\u7d66\uff08\u3052\u3063\u304d\u3085\u3046\uff09\u3067\u306f<span class='vocab-popout' data-vocab-id='178'>\u3068\u3066\u3082</span><strong>\u98df\uff08\u305f\uff09\u3079\u3066\u3044\u3051\u307e\u305b\u3093</strong>\u3002",
+                "answer": null,
+                "alternate_grammar": [],
+                "kanji_answer": null,
+                "kanji_alt_grammar": [],
+                "nuance": null,
+                "tense": "",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u4eca\u306e\u5b89\u6708\u7d66\u3066\u3099\u306f\u3068\u3066\u3082\u98df\u3078\u3099\u3066\u3044\u3051\u307e\u305b\u3093\u3002-male.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u4eca\u306e\u5b89\u6708\u7d66\u3066\u3099\u306f\u3068\u3066\u3082\u98df\u3078\u3099\u3066\u3044\u3051\u307e\u305b\u3093\u3002-female.mp3",
+                "word_prompt": null,
+                "used_in": "examples",
+                "question_type": "readonly",
+                "sentence_order": 7,
+                "validation_status": "validated",
+                "level": "N3",
+                "has_tts_audio": true,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "My current cheap salary <strong>doesn't pay the rent</strong>.",
+                "nuance_translation": null,
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1077,
+                "reviewable_type": "vocab"
+            }
+        },
+        {
+            "id": "179853",
+            "type": "study_question",
+            "attributes": {
+                "id": 179853,
+                "content": "\u30c9\u30ad\u30e5\u30e1\u30f3\u30bf\u30ea\u30fc\u756a\u7d44\uff08\u3070\u3093\u3050\u307f\uff09\uff1a\u300c\u30b3\u30a2\u30e9\u306f\u30e6\u30fc\u30ab\u30ea\u306e\u68ee\u6797\u5730\uff08\u3057\u3093\u308a\u3093\u3061\uff09\u306e\u307f\u306b\u751f\u606f\uff08\u305b\u3044\u305d\u304f\uff09<span class='vocab-popout' data-vocab-id='138'>\u3059\u308b</span><span class='vocab-popout' data-vocab-id='399'>\u52d5\u7269\uff08\u3069\u3046\u3076\u3064\uff09</span>\u3067\u3042\u308a\u3001\uff16\uff10\uff10\uff08\u308d\u3063\u3074\u3083\u304f\uff09\u7a2e\u985e\uff08\u3057\u3085\u308b\u3044\uff09\u307b\u3069\u3082<span class='vocab-popout' data-vocab-id='676'>\u3042\u308b</span>\u30e6\u30fc\u30ab\u30ea\u985e\uff08\u308b\u3044\uff09\u304b\u3089\uff13\uff15\uff08\u3055\u3093\u3058\u3085\u3046\u3054\uff09\u7a2e\u985e\uff08\u3057\u3085\u308b\u3044\uff09\u307b\u3069\u3092\u9078\uff08\u3048\u3089\uff09\u3093\u3067<span class='gp-popout vocab-popout' data-gp-id='11' data-vocab-id='149'>\u305d\u308c</span><span class='gp-popout vocab-popout' data-gp-id='43' data-vocab-id='259'>\u3060\u3051</span>\u3092<span class='vocab-popout' data-vocab-id='464'>\u591c\uff08\u3088\u308b\uff09</span>\u306b<strong>\u98df\uff08\u305f\uff09\u3079\u3066\u3044\u307e\u3059</strong>\u3002\u300d",
+                "answer": "",
+                "alternate_grammar": [],
+                "kanji_answer": "",
+                "kanji_alt_grammar": [],
+                "nuance": "",
+                "tense": "",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u30c8\u3099\u30ad\u30e5\u30e1\u30f3\u30bf\u30ea\u30fc\u756a\u7d44\uff1a\u300c\u30b3\u30a2\u30e9\u306f\u30e6\u30fc\u30ab\u30ea\u306e\u68ee\u6797\u5730\u306e\u307f\u306b\u751f\u606f\u3059\u308b\u52d5\u7269\u3066\u3099\u3042\u308a\u3001600\u7a2e\u985e\u307b\u3068\u3099\u3082\u3042\u308b\u30e6\u30fc\u30ab\u30ea\u985e\u304b\u308935\u7a2e\u985e\u307b\u3068\u3099\u3092\u9078\u3093\u3066\u3099\u305d\u308c\u305f\u3099\u3051\u3092\u591c\u306b\u98df\u3078\u3099\u3066\u3044\u307e\u3059\u3002\u300d-male.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/vocab/tts/\u30c8\u3099\u30ad\u30e5\u30e1\u30f3\u30bf\u30ea\u30fc\u756a\u7d44\uff1a\u300c\u30b3\u30a2\u30e9\u306f\u30e6\u30fc\u30ab\u30ea\u306e\u68ee\u6797\u5730\u306e\u307f\u306b\u751f\u606f\u3059\u308b\u52d5\u7269\u3066\u3099\u3042\u308a\u3001600\u7a2e\u985e\u307b\u3068\u3099\u3082\u3042\u308b\u30e6\u30fc\u30ab\u30ea\u985e\u304b\u308935\u7a2e\u985e\u307b\u3068\u3099\u3092\u9078\u3093\u3066\u3099\u305d\u308c\u305f\u3099\u3051\u3092\u591c\u306b\u98df\u3078\u3099\u3066\u3044\u307e\u3059\u3002\u300d-female.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "readonly",
+                "sentence_order": 9,
+                "validation_status": "validated",
+                "level": "N2",
+                "has_tts_audio": true,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "Documentary: 'The koala is an animal that lives only in eucalyptus woodlands, and <strong>eats</strong> only 35 species of the 600 or so species of eucalyptus trees at night.'",
+                "nuance_translation": "",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1077,
+                "reviewable_type": "vocab"
+            }
+        }
+    ]
+}

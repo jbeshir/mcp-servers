@@ -1,0 +1,76 @@
+{
+    "object": "collection",
+    "url": "https://api.wanikani.com/v2/review_statistics?subject_ids=1%2C2%2C3",
+    "pages": {
+        "per_page": 500,
+        "next_url": null,
+        "previous_url": null
+    },
+    "total_count": 3,
+    "data_updated_at": "2026-03-12T00:43:49.932243Z",
+    "data": [
+        {
+            "id": 679060565,
+            "object": "review_statistic",
+            "url": "https://api.wanikani.com/v2/review_statistics/679060565",
+            "data_updated_at": "2026-03-03T16:10:09.162778Z",
+            "data": {
+                "created_at": "2026-02-07T18:55:43.468560Z",
+                "subject_id": 1,
+                "subject_type": "radical",
+                "meaning_correct": 6,
+                "meaning_incorrect": 0,
+                "meaning_max_streak": 6,
+                "meaning_current_streak": 6,
+                "reading_correct": 6,
+                "reading_incorrect": 0,
+                "reading_max_streak": 6,
+                "reading_current_streak": 6,
+                "percentage_correct": 100,
+                "hidden": false
+            }
+        },
+        {
+            "id": 679060571,
+            "object": "review_statistic",
+            "url": "https://api.wanikani.com/v2/review_statistics/679060571",
+            "data_updated_at": "2026-03-12T00:43:49.932243Z",
+            "data": {
+                "created_at": "2026-02-07T18:55:45.670566Z",
+                "subject_id": 2,
+                "subject_type": "radical",
+                "meaning_correct": 8,
+                "meaning_incorrect": 1,
+                "meaning_max_streak": 5,
+                "meaning_current_streak": 3,
+                "reading_correct": 8,
+                "reading_incorrect": 0,
+                "reading_max_streak": 8,
+                "reading_current_streak": 8,
+                "percentage_correct": 94,
+                "hidden": false
+            }
+        },
+        {
+            "id": 679060582,
+            "object": "review_statistic",
+            "url": "https://api.wanikani.com/v2/review_statistics/679060582",
+            "data_updated_at": "2026-03-03T16:10:39.358588Z",
+            "data": {
+                "created_at": "2026-02-07T18:55:52.079538Z",
+                "subject_id": 3,
+                "subject_type": "radical",
+                "meaning_correct": 7,
+                "meaning_incorrect": 1,
+                "meaning_max_streak": 7,
+                "meaning_current_streak": 7,
+                "reading_correct": 7,
+                "reading_incorrect": 0,
+                "reading_max_streak": 7,
+                "reading_current_streak": 7,
+                "percentage_correct": 93,
+                "hidden": false
+            }
+        }
+    ]
+}

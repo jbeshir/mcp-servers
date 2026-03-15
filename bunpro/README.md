@@ -1,6 +1,6 @@
 # bunpro-mcp
 
-An MCP server that provides read-only access to [Bunpro](https://bunpro.jp), a Japanese grammar and vocabulary SRS (spaced repetition system) platform. It exposes 11 tools for querying a user's profile, study statistics, review forecasts, JLPT progress, SRS stage details, and individual grammar point or vocabulary data. Authentication is handled via Bunpro's Rails Devise login flow or a pre-obtained API token.
+An MCP server that provides read-only access to [Bunpro](https://bunpro.jp), a Japanese grammar and vocabulary SRS (spaced repetition system) platform. It exposes 12 tools for querying a user's profile, study statistics, review forecasts, JLPT progress, SRS stage details, and individual grammar point or vocabulary data. Authentication is handled automatically via Bunpro's Rails Devise login flow using your email and password.
 
 ## Key Concepts
 
@@ -18,7 +18,7 @@ The server has four layers: an entry point that reads configuration and obtains 
 ```mermaid
 graph TD
     MCP["MCP Client<br/>(Claude, etc.)"]
-    SRV["MCP Server<br/>11 read-only tools"]
+    SRV["MCP Server<br/>12 read-only tools"]
     CLI["HTTP Client<br/>Bearer token auth"]
     API["Bunpro Frontend API<br/>api.bunpro.jp"]
 
@@ -37,7 +37,7 @@ graph TD
     LOGIN -.->|"token"| CLI
 ```
 
-Authentication happens once at startup. If `BUNPRO_EMAIL` and `BUNPRO_PASSWORD` are set, the auth module fetches a CSRF token from the login page, submits form-encoded credentials, and extracts the `frontend_api_token` cookie. If `BUNPRO_API_TOKEN` is set, the token is used directly. The token has approximately a 2-day lifetime.
+Authentication happens once at startup. The auth module fetches a CSRF token from the login page, submits form-encoded credentials, and extracts the `frontend_api_token` cookie. The token has approximately a 2-day lifetime — long enough for any single MCP session.
 
 ## Data Flow
 
@@ -52,16 +52,12 @@ sequenceDiagram
     participant API as api.bunpro.jp
 
     Note over Client,API: Startup: Token Acquisition
-    alt Email + password provided
-        Server->>Auth: Login(email, password)
-        Auth->>Site: GET /login
-        Site-->>Auth: HTML with CSRF token
-        Auth->>Site: POST /users/sign_in (form-encoded)
-        Site-->>Auth: frontend_api_token cookie
-        Auth-->>Server: token
-    else BUNPRO_API_TOKEN set
-        Note over Server: Use token directly
-    end
+    Server->>Auth: Login(email, password)
+    Auth->>Site: GET /login
+    Site-->>Auth: HTML with CSRF token
+    Auth->>Site: POST /users/sign_in (form-encoded)
+    Site-->>Auth: frontend_api_token cookie
+    Auth-->>Server: token
 
     Note over Client,API: Runtime: Tool Calls
     Client->>Server: get_grammar_point(id)
@@ -98,13 +94,10 @@ make build
 
 | Variable | Required | Description |
 |---|---|---|
-| `BUNPRO_EMAIL` | Yes (unless `BUNPRO_API_TOKEN` set) | Bunpro account email |
-| `BUNPRO_PASSWORD` | Yes (unless `BUNPRO_API_TOKEN` set) | Bunpro account password |
-| `BUNPRO_API_TOKEN` | Yes (unless email+password set) | Pre-obtained `frontend_api_token` cookie value (~2 day lifetime) |
+| `BUNPRO_EMAIL` | Yes | Bunpro account email |
+| `BUNPRO_PASSWORD` | Yes | Bunpro account password |
 | `BUNPRO_API_URL` | No | API base URL (default: `https://api.bunpro.jp`) |
 | `BUNPRO_LOGIN_URL` | No | Login page URL (default: `https://bunpro.jp`) |
-
-Either `BUNPRO_API_TOKEN` or both `BUNPRO_EMAIL` and `BUNPRO_PASSWORD` must be provided.
 
 #### Claude Desktop
 
@@ -142,6 +135,7 @@ All tools are read-only. No tool modifies Bunpro data.
 | `get_review_forecast` | `granularity` (optional): `"daily"` or `"hourly"` | Upcoming review forecast split by grammar and vocabulary |
 | `get_srs_overview` | -- | Aggregate SRS level counts (beginner through master, plus ghost and self-study) |
 | `get_review_activity` | -- | Daily review counts for the past ~30 days |
-| `get_srs_details` | `level` (required): `beginner`, `adept`, `seasoned`, `expert`, or `master`; `reviewableType` (required): `grammar` or `vocab`; `page` (optional) | Paginated review items at a specific SRS level |
+| `get_grammar_srs_details` | `level` (required): `beginner`, `adept`, `seasoned`, `expert`, or `master`; `page` (optional) | Paginated grammar review items at a specific SRS level |
+| `get_vocab_srs_details` | `level` (required): `beginner`, `adept`, `seasoned`, `expert`, or `master`; `page` (optional) | Paginated vocabulary review items at a specific SRS level |
 | `get_grammar_point` | `id` (required) | Grammar point details: meaning, structure, nuance, study questions |
 | `get_vocab` | `slugOrId` (required): slug (e.g. "食べる") or numeric ID | Vocabulary details: readings, pitch accent, frequency, JMDict entries |

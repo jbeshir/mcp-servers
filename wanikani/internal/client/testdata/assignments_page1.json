@@ -1,0 +1,70 @@
+{
+  "object": "collection",
+  "url": "https://api.wanikani.com/v2/assignments?levels=1",
+  "pages": {
+    "per_page": 3,
+    "next_url": "NEXT_URL_PLACEHOLDER",
+    "previous_url": null
+  },
+  "total_count": 5,
+  "data_updated_at": "2026-03-14T17:34:33.677085Z",
+  "data": [
+    {
+      "id": 737072502,
+      "object": "assignment",
+      "url": "https://api.wanikani.com/v2/assignments/737072502",
+      "data_updated_at": "2026-03-06T18:24:06.520868Z",
+      "data": {
+        "created_at": "2026-02-07T18:54:26.090009Z",
+        "subject_id": 6,
+        "subject_type": "radical",
+        "srs_stage": 6,
+        "unlocked_at": "2026-02-07T18:54:26.084393Z",
+        "started_at": "2026-02-07T18:55:41.089266Z",
+        "passed_at": "2026-02-10T17:53:08.063875Z",
+        "burned_at": null,
+        "available_at": "2026-03-20T17:00:00.000000Z",
+        "resurrected_at": null,
+        "hidden": false
+      }
+    },
+    {
+      "id": 737072503,
+      "object": "assignment",
+      "url": "https://api.wanikani.com/v2/assignments/737072503",
+      "data_updated_at": "2026-03-12T00:45:07.176748Z",
+      "data": {
+        "created_at": "2026-02-07T18:54:26.097805Z",
+        "subject_id": 5,
+        "subject_type": "radical",
+        "srs_stage": 6,
+        "unlocked_at": "2026-02-07T18:54:26.093119Z",
+        "started_at": "2026-02-07T18:55:48.429849Z",
+        "passed_at": "2026-02-10T17:52:50.726536Z",
+        "burned_at": null,
+        "available_at": "2026-03-25T23:00:00.000000Z",
+        "resurrected_at": null,
+        "hidden": false
+      }
+    },
+    {
+      "id": 737072504,
+      "object": "assignment",
+      "url": "https://api.wanikani.com/v2/assignments/737072504",
+      "data_updated_at": "2026-03-03T16:10:07.165236Z",
+      "data": {
+        "created_at": "2026-02-07T18:54:26.107081Z",
+        "subject_id": 8762,
+        "subject_type": "radical",
+        "srs_stage": 7,
+        "unlocked_at": "2026-02-07T18:54:26.101068Z",
+        "started_at": "2026-02-08T02:20:18.505639Z",
+        "passed_at": "2026-02-10T17:53:19.259419Z",
+        "burned_at": null,
+        "available_at": "2026-04-02T15:00:00.000000Z",
+        "resurrected_at": null,
+        "hidden": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+    "data": [
+        {
+            "id": "1876624",
+            "type": "deck_setting",
+            "attributes": {
+                "id": 1876624,
+                "user_id": 256763,
+                "deck_id": 1,
+                "batch_size": 1,
+                "default_srs_level": 0,
+                "sorting_order": "default",
+                "default_input_type_grammar": "Cloze",
+                "default_input_type_vocab": "Cloze",
+                "complete_grammar_count": 76,
+                "complete_vocab_count": 0,
+                "last_learned_at": "2026-03-14T00:00:00.000Z",
+                "daily_goal": 1,
+                "daily_goal_count_grammar": 1,
+                "daily_goal_count_vocab": 0,
+                "is_bookmarked": false
+            },
+            "relationships": {
+                "deck": {
+                    "data": {
+                        "id": "1",
+                        "type": "deck"
+                    }
+                }
+            }
+        },
+        {
+            "id": "1876625",
+            "type": "deck_setting",
+            "attributes": {
+                "id": 1876625,
+                "user_id": 256763,
+                "deck_id": 5,
+                "batch_size": 2,
+                "default_srs_level": 0,
+                "sorting_order": "default",
+                "default_input_type_grammar": "Cloze",
+                "default_input_type_vocab": "Cloze",
+                "complete_grammar_count": 0,
+                "complete_vocab_count": 392,
+                "last_learned_at": "2026-03-14T00:00:00.000Z",
+                "daily_goal": 9,
+                "daily_goal_count_grammar": 0,
+                "daily_goal_count_vocab": 9,
+                "is_bookmarked": false
+            },
+            "relationships": {
+                "deck": {
+                    "data": {
+                        "id": "5",
+                        "type": "deck"
+                    }
+                }
+            }
+        }
+    ],
+    "included": [
+        {
+            "id": "1",
+            "type": "deck",
+            "attributes": {
+                "id": 1,
+                "user_id": null,
+                "slug": "Bunpro-N5-Grammar",
+                "deck_code": "nn10ai",
+                "vocab_count": 0,
+                "grammar_count": 130,
+                "is_bunpro_deck": true,
+                "used_by_user_count": 119914,
+                "cover_image_url": "https://d2o2t59m50yv2e.cloudfront.net/public/decks/cover_images/1/ff3a8fa4941?1642802784",
+                "title": "Bunpro N5 [Grammar]",
+                "description": "This deck includes all of the most common JLPT N5 grammar, arranged in Bunpro's custom order."
+            },
+            "relationships": {}
+        },
+        {
+            "id": "5",
+            "type": "deck",
+            "attributes": {
+                "id": 5,
+                "user_id": null,
+                "slug": "Bunpro-N5-Vocab",
+                "deck_code": "resqiy",
+                "vocab_count": 1100,
+                "grammar_count": 0,
+                "is_bunpro_deck": true,
+                "used_by_user_count": 61558,
+                "cover_image_url": "https://d2o2t59m50yv2e.cloudfront.net/public/decks/cover_images/5/78957c5d258?1642800885",
+                "title": "Bunpro N5 [Vocab]",
+                "description": "This deck includes all of the most common JLPT N5 vocab, ordered alphabetically."
+            },
+            "relationships": {}
+        }
+    ]
+}

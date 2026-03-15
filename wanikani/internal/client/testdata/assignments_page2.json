@@ -1,0 +1,51 @@
+{
+  "object": "collection",
+  "url": "https://api.wanikani.com/v2/assignments?levels=1&page_after_id=3",
+  "pages": {
+    "per_page": 3,
+    "next_url": null,
+    "previous_url": null
+  },
+  "total_count": 5,
+  "data_updated_at": "2026-03-14T17:34:33.677085Z",
+  "data": [
+    {
+      "id": 737072505,
+      "object": "assignment",
+      "url": "https://api.wanikani.com/v2/assignments/737072505",
+      "data_updated_at": "2026-03-03T16:09:40.909555Z",
+      "data": {
+        "created_at": "2026-02-07T18:54:26.112423Z",
+        "subject_id": 14,
+        "subject_type": "radical",
+        "srs_stage": 7,
+        "unlocked_at": "2026-02-07T18:54:26.109849Z",
+        "started_at": "2026-02-07T19:14:29.568496Z",
+        "passed_at": "2026-02-10T17:52:54.024724Z",
+        "burned_at": null,
+        "available_at": "2026-04-02T15:00:00.000000Z",
+        "resurrected_at": null,
+        "hidden": false
+      }
+    },
+    {
+      "id": 737072506,
+      "object": "assignment",
+      "url": "https://api.wanikani.com/v2/assignments/737072506",
+      "data_updated_at": "2026-03-03T16:09:28.600928Z",
+      "data": {
+        "created_at": "2026-02-07T18:54:26.121165Z",
+        "subject_id": 25,
+        "subject_type": "radical",
+        "srs_stage": 7,
+        "unlocked_at": "2026-02-07T18:54:26.114788Z",
+        "started_at": "2026-02-08T02:19:47.950135Z",
+        "passed_at": "2026-02-10T17:53:23.669576Z",
+        "burned_at": null,
+        "available_at": "2026-04-02T15:00:00.000000Z",
+        "resurrected_at": null,
+        "hidden": false
+      }
+    }
+  ]
+}

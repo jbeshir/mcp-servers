@@ -1,0 +1,324 @@
+{
+    "type": "regular",
+    "reviews": {
+        "data": [
+            {
+                "id": "52576307",
+                "type": "review",
+                "attributes": {
+                    "id": 52576307,
+                    "streak": 2,
+                    "next_review": "2026-03-15T01:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-01T00:00:00.000Z",
+                    "reviewable_id": 48,
+                    "reviewable_type": "GrammarPoint",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-01T00:08:18.687Z",
+                    "updated_at": "2026-03-14T17:48:36.894Z",
+                    "accuracy": 48,
+                    "times_studied": 37,
+                    "ghost_count": 1
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "1891",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "48",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53444169",
+                "type": "review",
+                "attributes": {
+                    "id": 53444169,
+                    "streak": 2,
+                    "next_review": "2026-03-14T23:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-14T01:00:00.000Z",
+                    "reviewable_id": 950,
+                    "reviewable_type": "GrammarPoint",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-14T01:15:19.168Z",
+                    "updated_at": "2026-03-14T15:20:57.287Z",
+                    "accuracy": 100,
+                    "times_studied": 2,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "10103",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "950",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "52462659",
+                "type": "review",
+                "attributes": {
+                    "id": 52462659,
+                    "streak": 3,
+                    "next_review": "2026-03-15T02:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-02-27T00:00:00.000Z",
+                    "reviewable_id": 27,
+                    "reviewable_type": "GrammarPoint",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-02-27T00:24:26.326Z",
+                    "updated_at": "2026-03-14T15:32:03.988Z",
+                    "accuracy": 52,
+                    "times_studied": 25,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "1697",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "27",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53286161",
+                "type": "review",
+                "attributes": {
+                    "id": 53286161,
+                    "streak": 3,
+                    "next_review": "2026-03-15T14:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-12T00:00:00.000Z",
+                    "reviewable_id": 356,
+                    "reviewable_type": "GrammarPoint",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-12T00:37:43.780Z",
+                    "updated_at": "2026-03-14T15:09:19.297Z",
+                    "accuracy": 45,
+                    "times_studied": 11,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "1283",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "356",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "53346014",
+                "type": "review",
+                "attributes": {
+                    "id": 53346014,
+                    "streak": 3,
+                    "next_review": "2026-03-15T14:00:00.000Z",
+                    "complete": true,
+                    "is_fsrs": false,
+                    "is_recurring_mastered": false,
+                    "review_misses": 0,
+                    "started_studying_at": "2026-03-13T00:00:00.000Z",
+                    "reviewable_id": 358,
+                    "reviewable_type": "GrammarPoint",
+                    "default_input_type": "Cloze",
+                    "user_synonyms": "",
+                    "created_at": "2026-03-13T00:44:37.408Z",
+                    "updated_at": "2026-03-14T15:25:06.185Z",
+                    "accuracy": 80,
+                    "times_studied": 5,
+                    "ghost_count": 0
+                },
+                "relationships": {
+                    "study_question": {
+                        "data": {
+                            "id": "2040",
+                            "type": "study_question"
+                        }
+                    },
+                    "reviewable": {
+                        "data": {
+                            "id": "358",
+                            "type": "reviewable_base_attribute_mixed"
+                        }
+                    }
+                }
+            }
+        ],
+        "included": [
+            {
+                "id": "48",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 48,
+                    "slug": "verb-\u306b\u3044\u304f",
+                    "title": "Verb + \u306b\u3044\u304f",
+                    "meaning": "To go ~, To go in order to ~",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                }
+            },
+            {
+                "id": "950",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 950,
+                    "slug": "verb-non-past",
+                    "title": "Verbs (Non-past)",
+                    "meaning": "(Non-past)",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                }
+            },
+            {
+                "id": "27",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 27,
+                    "slug": "\u3066\u3044\u308b1",
+                    "title": "\u3066\u3044\u308b\u2460",
+                    "meaning": "Is, Am, Are (~ing)",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                }
+            },
+            {
+                "id": "356",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 356,
+                    "slug": "\u3068",
+                    "title": "\u3068",
+                    "meaning": "Quotation",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                }
+            },
+            {
+                "id": "358",
+                "type": "reviewable_base_attribute_mixed",
+                "attributes": {
+                    "id": 358,
+                    "slug": "\u3063\u3066",
+                    "title": "\u3063\u3066",
+                    "meaning": "Casual quotation",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                }
+            }
+        ]
+    },
+    "pagy": {
+        "scaffold_url": "/api/frontend/user_stats/srs_level_details?level=beginner&reviewable_type=grammar&page=__pagy_page__",
+        "first_url": "/api/frontend/user_stats/srs_level_details?level=beginner&reviewable_type=grammar&page=1",
+        "prev_url": "/api/frontend/user_stats/srs_level_details?level=beginner&reviewable_type=grammar&page=",
+        "page_url": "/api/frontend/user_stats/srs_level_details?level=beginner&reviewable_type=grammar&page=1",
+        "next_url": "/api/frontend/user_stats/srs_level_details?level=beginner&reviewable_type=grammar&page=",
+        "last_url": "/api/frontend/user_stats/srs_level_details?level=beginner&reviewable_type=grammar&page=1",
+        "count": 5,
+        "page": 1,
+        "items": 200,
+        "vars": {
+            "page": 1,
+            "items": 200,
+            "outset": 0,
+            "size": [
+                1,
+                4,
+                4,
+                1
+            ],
+            "page_param": "page",
+            "params": {},
+            "fragment": "",
+            "link_extra": "",
+            "i18n_key": "pagy.item_name",
+            "cycle": false,
+            "headers": {
+                "page": "Current-Page",
+                "items": "Page-Items",
+                "count": "Total-Count",
+                "pages": "Total-Pages"
+            },
+            "metadata": [
+                "scaffold_url",
+                "first_url",
+                "prev_url",
+                "page_url",
+                "next_url",
+                "last_url",
+                "count",
+                "page",
+                "items",
+                "vars",
+                "pages",
+                "last",
+                "in",
+                "from",
+                "to",
+                "prev",
+                "next",
+                "series"
+            ],
+            "count": 5
+        },
+        "pages": 1,
+        "last": 1,
+        "in": 5,
+        "from": 1,
+        "to": 5,
+        "prev": null,
+        "next": null,
+        "series": [
+            "1"
+        ]
+    }
+}

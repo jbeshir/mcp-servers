@@ -154,8 +154,23 @@ type SRSOverviewCounts struct {
 
 // SRSLevelDetailsResponse is the response from GET /user_stats/srs_level_details.
 type SRSLevelDetailsResponse struct {
-	Type    string                     `json:"type"`
-	Reviews CollectionEnvelope[Review] `json:"reviews"`
+	Type    string         `json:"type"`
+	Reviews ReviewsWithInc `json:"reviews"`
+	Pagy    Pagy           `json:"pagy"`
+}
+
+// ReviewsWithInc holds reviews and their associated reviewable metadata.
+type ReviewsWithInc struct {
+	Data     []Resource[Review]              `json:"data"`
+	Included []Resource[ReviewableBaseAttrs] `json:"included"`
+}
+
+// Pagy contains pagination metadata from the Bunpro API.
+type Pagy struct {
+	Count int  `json:"count"`
+	Page  int  `json:"page"`
+	Pages int  `json:"pages"`
+	Next  *int `json:"next"`
 }
 
 // Review represents a single review item.
@@ -172,9 +187,19 @@ type Review struct {
 	GhostCount        int    `json:"ghost_count"`
 }
 
-// GrammarPointResponse wraps a grammar point resource.
+// ReviewableBaseAttrs are the summary fields included alongside reviews.
+type ReviewableBaseAttrs struct {
+	ID      int    `json:"id"`
+	Slug    string `json:"slug"`
+	Title   string `json:"title"`
+	Meaning string `json:"meaning"`
+	Level   string `json:"level"`
+}
+
+// GrammarPointResponse wraps a grammar point resource with included study questions.
 type GrammarPointResponse struct {
-	Data Resource[GrammarPointAttributes] `json:"data"`
+	Data     Resource[GrammarPointAttributes] `json:"data"`
+	Included []Resource[StudyQuestion]        `json:"included"`
 }
 
 // GrammarPointAttributes contains grammar point fields.
@@ -200,9 +225,10 @@ type GrammarPointAttributes struct {
 	DiscourseLink           string `json:"discourse_link"`
 }
 
-// VocabResponse wraps a vocab resource.
+// VocabResponse wraps a vocab resource with included study questions.
 type VocabResponse struct {
-	Data Resource[VocabAttributes] `json:"data"`
+	Data     Resource[VocabAttributes] `json:"data"`
+	Included []Resource[StudyQuestion] `json:"included"`
 }
 
 // VocabAttributes contains vocabulary fields.
@@ -246,4 +272,16 @@ type JMDictSense struct {
 type JMDictGloss struct {
 	Lang string `json:"lang"`
 	Text string `json:"text"`
+}
+
+// StudyQuestion is a review sentence included with grammar/vocab detail.
+// The included array may also contain other types (writeups, related_content);
+// non-study_question items will have zero-value fields.
+type StudyQuestion struct {
+	ID           int    `json:"id"`
+	Content      string `json:"content"`
+	Answer       string `json:"answer"`
+	KanjiAnswer  string `json:"kanji_answer"`
+	Translation  string `json:"translation"`
+	QuestionType string `json:"question_type"`
 }

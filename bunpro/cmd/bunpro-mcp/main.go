@@ -20,19 +20,15 @@ func main() {
 		loginURL = "https://bunpro.jp"
 	}
 
-	token := os.Getenv("BUNPRO_API_TOKEN")
-	if token == "" {
-		email := os.Getenv("BUNPRO_EMAIL")
-		password := os.Getenv("BUNPRO_PASSWORD")
-		if email == "" || password == "" {
-			log.Fatal("Either BUNPRO_API_TOKEN or both BUNPRO_EMAIL and BUNPRO_PASSWORD are required")
-		}
+	email := os.Getenv("BUNPRO_EMAIL")
+	password := os.Getenv("BUNPRO_PASSWORD")
+	if email == "" || password == "" {
+		log.Fatal("BUNPRO_EMAIL and BUNPRO_PASSWORD environment variables are required")
+	}
 
-		var err error
-		token, err = auth.Login(loginURL, email, password)
-		if err != nil {
-			log.Fatalf("Failed to login to Bunpro: %v", err)
-		}
+	token, err := auth.Login(loginURL, email, password)
+	if err != nil {
+		log.Fatalf("Failed to login to Bunpro: %v", err)
 	}
 
 	apiClient := client.NewClient(apiURL, token)

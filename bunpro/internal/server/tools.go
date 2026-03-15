@@ -51,20 +51,31 @@ func (s *Server) registerTools() {
 		mcp.WithDescription("Get daily review counts for the past ~30 days, split by grammar and vocabulary."),
 	), s.handleGetReviewActivity)
 
-	s.mcpServer.AddTool(mcp.NewTool("get_srs_details",
-		mcp.WithDescription("Get paginated review items at a specific SRS level."),
+	s.mcpServer.AddTool(mcp.NewTool("get_grammar_srs_details",
+		mcp.WithDescription(
+			"Get paginated grammar review items at a specific SRS level. "+
+				"Use lookup_id with get_grammar_point for full details."),
 		mcp.WithString("level",
 			mcp.Required(),
 			mcp.Description("SRS level: beginner, adept, seasoned, expert, or master"),
 		),
-		mcp.WithString("reviewableType",
+		mcp.WithNumber("page",
+			mcp.Description("Page number (default: 1)"),
+		),
+	), s.handleGetGrammarSRSDetails)
+
+	s.mcpServer.AddTool(mcp.NewTool("get_vocab_srs_details",
+		mcp.WithDescription(
+			"Get paginated vocabulary review items at a specific SRS level. "+
+				"Use lookup_id with get_vocab for full details."),
+		mcp.WithString("level",
 			mcp.Required(),
-			mcp.Description("Item type: grammar or vocab"),
+			mcp.Description("SRS level: beginner, adept, seasoned, expert, or master"),
 		),
 		mcp.WithNumber("page",
 			mcp.Description("Page number (default: 1)"),
 		),
-	), s.handleGetSRSDetails)
+	), s.handleGetVocabSRSDetails)
 
 	s.mcpServer.AddTool(mcp.NewTool("get_grammar_point",
 		mcp.WithDescription(
@@ -184,20 +195,30 @@ func (s *Server) handleGetReviewActivity(
 	return formatJSON(activity)
 }
 
-func (s *Server) handleGetSRSDetails(
+func (s *Server) handleGetGrammarSRSDetails(
 	ctx context.Context,
 	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	return s.handleSRSDetails(ctx, request, "GrammarPoint")
+}
+
+func (s *Server) handleGetVocabSRSDetails(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	return s.handleSRSDetails(ctx, request, "Vocab")
+}
+
+func (s *Server) handleSRSDetails(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+	reviewableType string,
 ) (*mcp.CallToolResult, error) {
 	args := request.Params.Arguments
 
 	level, ok := args["level"].(string)
 	if !ok || level == "" {
 		return mcp.NewToolResultError("level is required"), nil
-	}
-
-	reviewableType, ok := args["reviewableType"].(string)
-	if !ok || reviewableType == "" {
-		return mcp.NewToolResultError("reviewableType is required"), nil
 	}
 
 	page := 1
@@ -209,7 +230,10 @@ func (s *Server) handleGetSRSDetails(
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to get SRS details: %v", err)), nil
 	}
-	return formatJSON(details)
+	if len(details.Reviews.Data) == 0 {
+		return mcp.NewToolResultText("No items at this SRS level."), nil
+	}
+	return formatSRSDetails(details)
 }
 
 func (s *Server) handleGetGrammarPoint(
@@ -225,7 +249,7 @@ func (s *Server) handleGetGrammarPoint(
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to get grammar point: %v", err)), nil
 	}
-	return formatJSON(gp)
+	return formatGrammarPoint(gp)
 }
 
 func (s *Server) handleGetVocab(
@@ -241,5 +265,5 @@ func (s *Server) handleGetVocab(
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to get vocab: %v", err)), nil
 	}
-	return formatJSON(vocab)
+	return formatVocab(vocab)
 }

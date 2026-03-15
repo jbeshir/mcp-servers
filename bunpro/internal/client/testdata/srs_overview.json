@@ -1,0 +1,20 @@
+{
+    "grammar": {
+        "beginner": 5,
+        "adept": 35,
+        "seasoned": 36,
+        "expert": 0,
+        "master": 0,
+        "ghost": 2,
+        "self_study": 0
+    },
+    "vocab": {
+        "beginner": 32,
+        "adept": 196,
+        "seasoned": 258,
+        "expert": 0,
+        "master": 0,
+        "self_study": 0,
+        "ghost": 0
+    }
+}

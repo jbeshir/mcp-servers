@@ -1,0 +1,29 @@
+{
+    "object": "user",
+    "url": "https://api.wanikani.com/v2/user",
+    "data_updated_at": "2026-03-14T00:53:54.285848Z",
+    "data": {
+        "id": "fc3908f5-bd15-420c-a762-89be808ed895",
+        "username": "JBeshir",
+        "level": 4,
+        "profile_url": "https://www.wanikani.com/users/JBeshir",
+        "started_at": "2026-02-07T18:54:26.004017Z",
+        "subscription": {
+            "active": true,
+            "type": "lifetime",
+            "max_level_granted": 60,
+            "period_ends_at": null
+        },
+        "current_vacation_started_at": null,
+        "preferences": {
+            "lessons_autoplay_audio": true,
+            "lessons_batch_size": 5,
+            "reviews_autoplay_audio": true,
+            "reviews_display_srs_indicator": true,
+            "extra_study_autoplay_audio": false,
+            "reviews_presentation_order": "shuffled",
+            "lessons_presentation_order": "ascending_level_then_subject",
+            "default_voice_actor_id": 1
+        }
+    }
+}

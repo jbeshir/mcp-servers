@@ -57,7 +57,8 @@
     { "name": "get_review_forecast", "description": "Get upcoming review forecast (daily or hourly)" },
     { "name": "get_srs_overview", "description": "Get aggregate SRS level counts" },
     { "name": "get_review_activity", "description": "Get daily review counts for the past month" },
-    { "name": "get_srs_details", "description": "Get review items at a specific SRS level" },
+    { "name": "get_grammar_srs_details", "description": "Get grammar review items at a specific SRS level" },
+    { "name": "get_vocab_srs_details", "description": "Get vocabulary review items at a specific SRS level" },
     { "name": "get_grammar_point", "description": "Get grammar point details by ID" },
     { "name": "get_vocab", "description": "Get vocabulary details by slug or ID" }
   ],

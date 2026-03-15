@@ -1,0 +1,1226 @@
+{
+    "data": {
+        "id": "1",
+        "type": "grammar_point",
+        "attributes": {
+            "id": 1,
+            "level": "JLPT5",
+            "lesson_id": 1,
+            "part_of_speech": "\u52a9\u52d5\u8a5e",
+            "register": "\u4e00\u822c",
+            "word_type": "\u4ed8\u5c5e\u8a9e",
+            "slug": "\u3060",
+            "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+            "grammar_order": 1,
+            "coverage_vocab_ids_all": [],
+            "coverage_vocab_ids_introduced": [],
+            "type_snake": "grammar_point",
+            "type_pascal": "GrammarPoint",
+            "next_grammar_point": {
+                "id": 2,
+                "title": "\u3067\u3059",
+                "slug": "\u3067\u3059"
+            },
+            "previous_grammar_point": null,
+            "lesson_count": "1/12",
+            "title": "\u3060",
+            "furigana": "\u3060",
+            "meaning": "To be, Is",
+            "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>.",
+            "rare_kanji_warning": "",
+            "caution": " \u3060 cannot be used with \u3044-Adjectives ",
+            "polite_structure": "",
+            "casual_structure": "Noun + <strong>\u3060</strong><br><span class='gp-popout' data-gp-id='28'>\uff3b\u306a\uff3dAdjective </span> + <strong>\u3060</strong>",
+            "part_of_speech_translation": "Auxiliary Verb",
+            "register_translation": "Standard",
+            "word_type_translation": "Dependent Word",
+            "discourse_link": "https://community.bunpro.jp/t/discussion-topic/473",
+            "metadata": "\u3060, da, auxiliary verb, casual, copula"
+        },
+        "relationships": {
+            "study_questions": {
+                "data": [
+                    {
+                        "id": "598",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "146359",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "146361",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "183745",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "183746",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "146362",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "146360",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "1470",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "1159",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "1476",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "597",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "1",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "599",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "1469",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "1471",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "1472",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "1473",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "1474",
+                        "type": "study_question"
+                    },
+                    {
+                        "id": "1475",
+                        "type": "study_question"
+                    }
+                ]
+            },
+            "writeups": {
+                "data": [
+                    {
+                        "id": "1",
+                        "type": "writeup"
+                    }
+                ]
+            },
+            "offline_resources": {
+                "data": [
+                    {
+                        "id": "1231",
+                        "type": "offline_resource"
+                    },
+                    {
+                        "id": "732",
+                        "type": "offline_resource"
+                    },
+                    {
+                        "id": "723",
+                        "type": "offline_resource"
+                    }
+                ]
+            },
+            "related_contents": {
+                "data": [
+                    {
+                        "id": "19",
+                        "type": "related_content"
+                    },
+                    {
+                        "id": "51",
+                        "type": "related_content"
+                    },
+                    {
+                        "id": "1333",
+                        "type": "related_content"
+                    },
+                    {
+                        "id": "18",
+                        "type": "related_content"
+                    },
+                    {
+                        "id": "121",
+                        "type": "related_content"
+                    },
+                    {
+                        "id": "55",
+                        "type": "related_content"
+                    },
+                    {
+                        "id": "20",
+                        "type": "related_content"
+                    }
+                ]
+            },
+            "supplemental_links": {
+                "data": [
+                    {
+                        "id": "725",
+                        "type": "supplemental_link"
+                    },
+                    {
+                        "id": "1172",
+                        "type": "supplemental_link"
+                    },
+                    {
+                        "id": "1",
+                        "type": "supplemental_link"
+                    }
+                ]
+            },
+            "vocabs": {
+                "data": []
+            }
+        }
+    },
+    "included": [
+        {
+            "id": "598",
+            "type": "study_question",
+            "attributes": {
+                "id": 598,
+                "content": "\u732b\uff08\u306d\u3053\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/10-\u732b\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u732b\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 2,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {
+                    "\u307e\u3059": {
+                        "en": "Use casual form like \u3060.",
+                        "es": "Use casual form like \u3060.",
+                        "fr": "Use casual form like \u3060."
+                    }
+                },
+                "translation": "(It) <strong>is</strong> a cat. ",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>. ",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "146359",
+            "type": "study_question",
+            "attributes": {
+                "id": 146359,
+                "content": "\u30a2\u30a4\u30b9\u30af\u30ea\u30fc\u30e0<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "",
+                "tense": "",
+                "male_audio_url": "",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u30a2\u30a4\u30b9\u30af\u30ea\u30fc\u30e0\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "writeups",
+                "question_type": "readonly",
+                "sentence_order": 0,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> ice cream.",
+                "nuance_translation": "",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "146361",
+            "type": "study_question",
+            "attributes": {
+                "id": 146361,
+                "content": "\u5371\u967a\uff08\u304d\u3051\u3093\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "",
+                "tense": "",
+                "male_audio_url": "",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u5371\u967a\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "writeups",
+                "question_type": "readonly",
+                "sentence_order": 0,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> dangerous.",
+                "nuance_translation": "",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "183745",
+            "type": "study_question",
+            "attributes": {
+                "id": 183745,
+                "content": "\u5927\uff08\u304a\u304a\uff09\u304d\u3044<span class=\"gp-popout\" data-gp-id=\"1\">\u3060</span>\u3002",
+                "answer": "",
+                "alternate_grammar": [],
+                "kanji_answer": "",
+                "kanji_alt_grammar": [],
+                "nuance": "",
+                "tense": "",
+                "male_audio_url": "",
+                "female_audio_url": "",
+                "word_prompt": "",
+                "used_in": "writeups",
+                "question_type": "readonly",
+                "sentence_order": 13,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> big. (Unnatural Japanese)",
+                "nuance_translation": "",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "183746",
+            "type": "study_question",
+            "attributes": {
+                "id": 183746,
+                "content": "\u5927\uff08\u304a\u304a\uff09\u304d\u3044<span class=\"gp-popout\" data-gp-id=\"2\">\u3067\u3059</span>\u3002",
+                "answer": "",
+                "alternate_grammar": [],
+                "kanji_answer": "",
+                "kanji_alt_grammar": [],
+                "nuance": "",
+                "tense": "",
+                "male_audio_url": "",
+                "female_audio_url": "",
+                "word_prompt": "",
+                "used_in": "writeups",
+                "question_type": "readonly",
+                "sentence_order": 14,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> big. (Natural Japanese)",
+                "nuance_translation": "",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "146362",
+            "type": "study_question",
+            "attributes": {
+                "id": 146362,
+                "content": "\u5927\u5207\uff08\u305f\u3044\u305b\u3064\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "",
+                "tense": "",
+                "male_audio_url": "",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u5927\u5207\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "writeups",
+                "question_type": "readonly",
+                "sentence_order": 0,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> important.",
+                "nuance_translation": "",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "146360",
+            "type": "study_question",
+            "attributes": {
+                "id": 146360,
+                "content": "\u304a\u5bfa\uff08\u3066\u3089\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "",
+                "tense": "",
+                "male_audio_url": "",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u304a\u5bfa\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "writeups",
+                "question_type": "readonly",
+                "sentence_order": 0,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {},
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> a temple.",
+                "nuance_translation": "",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "1470",
+            "type": "study_question",
+            "attributes": {
+                "id": 1470,
+                "content": "\u6620\u753b\uff08\u3048\u3044\u304c\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Non-past, Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/06-\u6620\u753b\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u6620\u753b\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 6,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> a movie.",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>. ",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "1159",
+            "type": "study_question",
+            "attributes": {
+                "id": 1159,
+                "content": "\u7dba\u9e97\uff08\u304d\u308c\u3044\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/12-\u7dba\u9e97\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u7dba\u9e97\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 4,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> beautiful. ",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>. ",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "1476",
+            "type": "study_question",
+            "attributes": {
+                "id": 1476,
+                "content": "\u8cea\u554f\uff08\u3057\u3064\u3082\u3093\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Non-past, Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/13-\u8cea\u554f\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u8cea\u554f\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 12,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> a question. ",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>. ",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "597",
+            "type": "study_question",
+            "attributes": {
+                "id": 597,
+                "content": "\u79c1\uff08\u308f\u305f\u3057\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/11-\u79c1\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u79c1\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 0,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> me.",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>. ",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "1",
+            "type": "study_question",
+            "attributes": {
+                "id": 1,
+                "content": "\u672c\uff08\u307b\u3093\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/07-\u672c\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u672c\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 1,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> a book.",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>.",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "599",
+            "type": "study_question",
+            "attributes": {
+                "id": 599,
+                "content": "\u5b66\u751f\uff08\u304c\u304f\u305b\u3044\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/04-\u5b66\u751f\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u5b66\u751f\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 3,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {},
+                "translation": "(I) <strong>am</strong> a student. ",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>. ",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "1469",
+            "type": "study_question",
+            "attributes": {
+                "id": 1469,
+                "content": "\u6d77\uff08\u3046\u307f\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Non-past, Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/09-\u6d77\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u6d77\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 5,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> the sea.",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>. ",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "1471",
+            "type": "study_question",
+            "attributes": {
+                "id": 1471,
+                "content": "<span class='gp-popout' data-gp-id='716'>\u597d\uff08\u3059\uff09\u304d</span><span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Non-past, Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/03-\u597d\u304d\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u597d\u304d\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 7,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> liked.",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>. ",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "1472",
+            "type": "study_question",
+            "attributes": {
+                "id": 1472,
+                "content": "\u5bb6\uff08\u3044\u3048\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Non-past, Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/05-\u5bb6\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u5bb6\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 8,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> a house. ",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>. ",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "1473",
+            "type": "study_question",
+            "attributes": {
+                "id": 1473,
+                "content": "\u6c34\uff08\u307f\u305a\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Non-past, Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/08-\u6c34\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u6c34\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 9,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> water. ",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>. ",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "1474",
+            "type": "study_question",
+            "attributes": {
+                "id": 1474,
+                "content": "\u540c\uff08\u304a\u306a\uff09\u3058<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Non-past, Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/01-\u540c\u3058\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u540c\u3058\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 10,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> the same. ",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>. ",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "1475",
+            "type": "study_question",
+            "attributes": {
+                "id": 1475,
+                "content": "\u5927\u5909\uff08\u305f\u3044\u3078\u3093\uff09<span class='study-area-input'>____</span>\u3002",
+                "answer": "\u3060",
+                "alternate_grammar": [],
+                "kanji_answer": "\u3060",
+                "kanji_alt_grammar": [],
+                "nuance": "\u4f55\uff08\u306a\u306b\uff09\u304b\u304c\u4f55\uff08\u306a\u306b\uff09\u3067\u3042\u308b\u304b\u3092<strong>\u30ab\u30b8\u30e5\u30a2\u30eb</strong>\u306b\u9650\u5b9a\uff08\u3052\u3093\u3066\u3044\uff09\u3059\u308b<strong>\u54c1\u8a5e\uff08\u3072\u3093\u3057\uff09</strong>\u3002",
+                "tense": "Non-past, Standard",
+                "male_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/N5/Lesson1/1/male_audio/02-\u5927\u5909\u3060.mp3",
+                "female_audio_url": "https://dk3kgylsgq3k1.cloudfront.net/audio/grammar/n5/\u5927\u5909\u3060\u3002.mp3",
+                "word_prompt": "",
+                "used_in": "examples",
+                "question_type": "cloze",
+                "sentence_order": 11,
+                "validation_status": "validated",
+                "level": "",
+                "has_tts_audio": false,
+                "alternate_answers": {
+                    "\u3067\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    },
+                    "\u3067\u3054\u3056\u3044\u307e\u3059": {
+                        "en": "Could you try a grammar point that is more casual here?",
+                        "es": "Prueba con un tono m\u00e1s informal.",
+                        "fr": "Pouvez-vous essayer une structure grammaticale plus famili\u00e8re ici ?",
+                        "id": "Mungkin kamu bisa coba poin tata bahasa yang lebih kasual di sini?"
+                    }
+                },
+                "wrong_answers": {},
+                "translation": "It <strong>is</strong> terrible.",
+                "nuance_translation": "A <strong>casual determiner</strong> of what something <strong>is</strong>. ",
+                "extra_info": "",
+                "has_been_translated": true,
+                "reviewable_id": 1,
+                "reviewable_type": "grammar_point"
+            }
+        },
+        {
+            "id": "1",
+            "type": "writeup",
+            "attributes": {
+                "id": 1,
+                "body_ja": "",
+                "body": "<p>For the most part, <span class=\"gp-popout\" data-gp-id=\"1\">\u3060</span> is the equivalent of 'is' in English. Its role is to strongly express determination or assertion. It is a casual grammar structure, which means that you won't see it in polite sentences.</p>\r\n\r\n<p>Technically, <span class=\"gp-popout\" data-gp-id=\"1\">\u3060</span> is an <span class=\"info-highlight\" data-term=\"\u52a9\u52d5\u8a5e\u30fb\u3058\u3087\u3069\u3046\u3057\">auxiliary verb</span>, a group of words that attach themselves to other words to give them meaning. <span class=\"gp-popout\" data-gp-id=\"2\">\u3067\u3059</span> has the same role as <span class=\"gp-popout\" data-gp-id=\"1\">\u3060</span>, but <span class=\"gp-popout\" data-gp-id=\"2\">\u3067\u3059</span> is the one that will be used in polite sentences, and is also one of the first Japanese grammar patterns many people are exposed to.</p>\r\n\r\n<p><span class=\"gp-popout\" data-gp-id=\"1\">\u3060</span> will always follow nouns, or words that behave like nouns, such as <span class=\"gp-popout\" data-gp-id=\"28\">\u306a-Adjectives</span>.</p>\r\n\r\n<ul class=\"writeup-examples--holder\">\r\n<li data-study-question=\"146359\"></li>\r\n<li data-study-question=\"146360\"></li>\r\n<li data-study-question=\"146361\"></li>\r\n<li data-study-question=\"146362\"></li></ul>\r\n\r\n<section class='caution'><h4>Caution</h4>\r\n<p>Although <span class=\"gp-popout\" data-gp-id=\"2\">\u3067\u3059</span>, the polite equivalent of <span class=\"gp-popout\" data-gp-id=\"1\">\u3060</span>, can be seen following <span class=\"gp-popout\" data-gp-id=\"24\">\u3044-Adjectives</span>, <span class=\"gp-popout\" data-gp-id=\"1\">\u3060</span> itself will never be used directly after an <span class=\"gp-popout\" data-gp-id=\"24\">\u3044-Adjective</span>.</p>\r\n\r\n<ul class=\"writeup-examples--holder\">\r\n<li data-study-question=\"183745\">\r\n<li data-study-question=\"183746\"></ul></section>\r\n\r\n<section class='caution'><h4>Caution</h4>\r\n<p>While <span class=\"gp-popout\" data-gp-id=\"1\">\u3060</span> is often thought of as the 'casual form' of <span class=\"gp-popout\" data-gp-id=\"2\">\u3067\u3059</span>, that is actually not entirely true. <span class=\"gp-popout\" data-gp-id=\"2\">\u3067\u3059</span> is a <span class=\"info-highlight\" data-term=\"\u4e01\u5be7\u8a9e\u30fb\u3066\u3044\u306d\u3044\u3054\">polite speech</span> word. The official 'formal version' of <span class=\"gp-popout\" data-gp-id=\"1\">\u3060</span> is <span class=\"gp-popout\" data-gp-id=\"436\">\u3067\u3042\u308b</span>. We will learn this grammar point a bit later. <span class=\"gp-popout\" data-gp-id=\"436\">\u3067\u3042\u308b</span> can often be seen in articles, and formal writing, while <span class=\"gp-popout\" data-gp-id=\"2\">\u3067\u3059</span> is more common in <span class=\"info-highlight\" data-term=\"\u4e01\u5be7\u8a9e\u30fb\u3066\u3044\u306d\u3044\u3054\">polite speech</span>.</p></section>",
+                "has_been_translated": true
+            }
+        },
+        {
+            "id": "1231",
+            "type": "offline_resource",
+            "attributes": {
+                "id": 1231,
+                "source": "Tae Kim's Japanese Grammar Guide",
+                "location": "Page 29",
+                "type": "OfflineResource"
+            }
+        },
+        {
+            "id": "732",
+            "type": "offline_resource",
+            "attributes": {
+                "id": 732,
+                "source": "\u307f\u3093\u306a\u306e\u65e5\u672c\u8a9e I",
+                "location": "Page 14 [CH 1]",
+                "type": "OfflineResource"
+            }
+        },
+        {
+            "id": "723",
+            "type": "offline_resource",
+            "attributes": {
+                "id": 723,
+                "source": "\u307f\u3093\u306a\u306e\u65e5\u672c\u8a9e I",
+                "location": "Page 128 [CH 20]",
+                "type": "OfflineResource"
+            }
+        },
+        {
+            "id": "725",
+            "type": "supplemental_link",
+            "attributes": {
+                "id": 725,
+                "site": "Tae Kim",
+                "description": "\u3060 cannot be used with \u3044-Adjectives",
+                "link": "https://guidetojapanese.org/learn/grammar/adjectives",
+                "type": "SupplementalLink"
+            }
+        },
+        {
+            "id": "1172",
+            "type": "supplemental_link",
+            "attributes": {
+                "id": 1172,
+                "site": "An Introduction to Japanese",
+                "description": "The copula \u3060",
+                "link": "https://pomax.github.io/nrGrammar/#section-2-3-2-Inflection",
+                "type": "SupplementalLink"
+            }
+        },
+        {
+            "id": "1",
+            "type": "supplemental_link",
+            "attributes": {
+                "id": 1,
+                "site": "Tae Kim",
+                "description": "Declaring something is so and so using \u300c\u3060\u300d",
+                "link": "https://guidetojapanese.org/learn/grammar/stateofbeing",
+                "type": "SupplementalLink"
+            }
+        },
+        {
+            "id": "19",
+            "type": "related_content",
+            "attributes": {
+                "id": 19,
+                "relationship_type": "antonym",
+                "body": "\u3060 follows nouns and \u306a-adjectives, with a meaning similar to the English 'is.' For instance, \u3053\u308c\u306f\u30da\u30f3\u3060 translates to 'This is a pen.' On the other hand, \u3058\u3083\u306a\u3044 (a contraction of \u3067\u306f\u306a\u3044) is used to create the negative of such expressions. For example, \u3053\u308c\u306f\u30da\u30f3\u3058\u3083\u306a\u3044 translates to 'This isn't a pen.'",
+                "first_relatable": {
+                    "id": 1,
+                    "slug": "\u3060",
+                    "title": "\u3060",
+                    "meaning": "To be, Is",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                },
+                "second_relatable": {
+                    "id": 49,
+                    "slug": "\u3058\u3083\u306a\u3044",
+                    "title": "\u3058\u3083\u306a\u3044",
+                    "meaning": "Is not, Isn't",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                }
+            }
+        },
+        {
+            "id": "51",
+            "type": "related_content",
+            "attributes": {
+                "id": 51,
+                "relationship_type": "related",
+                "body": "\u304c\u3042\u308b indicates the existence or possession of something. For example, \u30da\u30f3\u304c\u3042\u308b means 'There is a pen (on the table, etc.)' or 'I have a pen.' On the other hand, \u3060 expresses assertion or determination similar to 'is/are' in English. In contrast to the \u304c\u3042\u308b example, \u30da\u30f3\u3060 would mean 'It (=the thing we are looking at) is a pen.'",
+                "first_relatable": {
+                    "id": 13,
+                    "slug": "\u304c\u3042\u308b",
+                    "title": "\u304c\u3042\u308b",
+                    "meaning": "To be, There is",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                },
+                "second_relatable": {
+                    "id": 1,
+                    "slug": "\u3060",
+                    "title": "\u3060",
+                    "meaning": "To be, Is",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                }
+            }
+        },
+        {
+            "id": "1333",
+            "type": "related_content",
+            "attributes": {
+                "id": 1333,
+                "relationship_type": "related",
+                "body": "\u3088 is a common sentence-ending particle used to add emphasis, often indicating the speaker is sharing new information (e.g., \u9762\u767d\u3044\u3088 = 'It's interesting, I'm telling you!'). \u3060 is a grammatical form expressing assertion, similar to 'is' or 'am.' These two are often combined, especially in casual or masculine speech (\u5143\u6c17\u3060\u3088 = 'I'm feeling good!'). In softer or more feminine speech, the \u3060 is frequently omitted (e.g., \u5143\u6c17\u3088).",
+                "first_relatable": {
+                    "id": 78,
+                    "slug": "\u3088",
+                    "title": "\u3088",
+                    "meaning": "Emphasis (Sentence ending particle)",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                },
+                "second_relatable": {
+                    "id": 1,
+                    "slug": "\u3060",
+                    "title": "\u3060",
+                    "meaning": "To be, Is",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                }
+            }
+        },
+        {
+            "id": "18",
+            "type": "related_content",
+            "attributes": {
+                "id": 18,
+                "relationship_type": "synonym",
+                "body": "\u3060 and \u3067\u3059 both function like the English 'is.' The main difference is politeness: \u3060 is casual and used in plain speech, while \u3067\u3059 is polite. \u3060 can't be used after \u3044-adjectives, but \u3067\u3059 can, acting as a general politeness marker. You may still see \u3060 in set expressions like \uff5e\u3060\u3068\u601d\u3044\u307e\u3059, even in polite sentences.",
+                "first_relatable": {
+                    "id": 1,
+                    "slug": "\u3060",
+                    "title": "\u3060",
+                    "meaning": "To be, Is",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                },
+                "second_relatable": {
+                    "id": 2,
+                    "slug": "\u3067\u3059",
+                    "title": "\u3067\u3059",
+                    "meaning": "To be, Is",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                }
+            }
+        },
+        {
+            "id": "121",
+            "type": "related_content",
+            "attributes": {
+                "id": 121,
+                "relationship_type": "related",
+                "body": "\u3060\u3063\u305f\u30fb\u3067\u3057\u305f and \u3060 are all used to assert or identify something. The difference among them is in formality and tense. \u3060 is casual and present tense (similar to the English 'is'/'am'), while \u3060\u3063\u305f\u30fb\u3067\u3057\u305f is past tense ('was'), with \u3060\u3063\u305f being casual (the past tense of \u3060) and \u3067\u3057\u305f being polite (the past tense of \u3067\u3059).",
+                "first_relatable": {
+                    "id": 40,
+                    "slug": "\u3060\u3063\u305f-\u3067\u3057\u305f",
+                    "title": "\u3060\u3063\u305f\u30fb\u3067\u3057\u305f",
+                    "meaning": "Was, Were (Past tense) ",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                },
+                "second_relatable": {
+                    "id": 1,
+                    "slug": "\u3060",
+                    "title": "\u3060",
+                    "meaning": "To be, Is",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                }
+            }
+        },
+        {
+            "id": "55",
+            "type": "related_content",
+            "attributes": {
+                "id": 55,
+                "relationship_type": "synonym",
+                "body": "The main difference between \u3060 and \u3067\u3042\u308b is formality. \u3060 is casual and common in conversation, while \u3067\u3042\u308b is more formal and mainly used in writing. Both \u3060 and \u3067\u3042\u308b follow nouns or noun phrases, but \u3067\u3042\u308b has a more literary tone. \u3067\u3042\u308b slight differs from the verb \u3042\u308b (to exist) in that \u3067\u3042\u308b is a fixed connector.",
+                "first_relatable": {
+                    "id": 1,
+                    "slug": "\u3060",
+                    "title": "\u3060",
+                    "meaning": "To be, Is",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                },
+                "second_relatable": {
+                    "id": 436,
+                    "slug": "\u3067\u3042\u308b",
+                    "title": "\u3067\u3042\u308b",
+                    "meaning": "Formal or literary \u3060, Authoritative, Copula",
+                    "level": "JLPT3",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                }
+            }
+        },
+        {
+            "id": "20",
+            "type": "related_content",
+            "attributes": {
+                "id": 20,
+                "relationship_type": "synonym",
+                "body": "\u3060 conveys a casual, informal, or blunt tone, except when required by certain grammatical patterns. In contrast, \u3067\u3054\u3056\u3044\u307e\u3059 is a highly polite form, primarily used in business settings or when addressing someone of higher social status such as a boss or customer.",
+                "first_relatable": {
+                    "id": 1,
+                    "slug": "\u3060",
+                    "title": "\u3060",
+                    "meaning": "To be, Is",
+                    "level": "JLPT5",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                },
+                "second_relatable": {
+                    "id": 188,
+                    "slug": "\u3067\u3054\u3056\u3044\u307e\u3059",
+                    "title": "\u3067\u3054\u3056\u3044\u307e\u3059",
+                    "meaning": "To be, Polite copula",
+                    "level": "JLPT4",
+                    "type_pascal": "GrammarPoint",
+                    "type_snake": "grammar_point"
+                }
+            }
+        }
+    ]
+}
