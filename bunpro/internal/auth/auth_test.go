@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -81,7 +82,7 @@ func TestLogin(t *testing.T) {
 	srv := httptest.NewServer(loginHandler(t, loginPage))
 	t.Cleanup(srv.Close)
 
-	token, err := Login(srv.URL, "test@example.com", "correct-password")
+	token, err := Login(context.Background(), srv.URL, "test@example.com", "correct-password")
 	if err != nil {
 		t.Fatalf("Login: %v", err)
 	}
@@ -105,7 +106,7 @@ func TestLoginWrongPassword(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 
-	_, err := Login(srv.URL, "test@example.com", "wrong-password")
+	_, err := Login(context.Background(), srv.URL, "test@example.com", "wrong-password")
 	if err == nil {
 		t.Fatal("expected error for wrong password")
 	}
@@ -125,7 +126,7 @@ func TestLoginMissingCSRF(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 
-	_, err := Login(srv.URL, "test@example.com", "password")
+	_, err := Login(context.Background(), srv.URL, "test@example.com", "password")
 	if err == nil {
 		t.Fatal("expected error for missing CSRF token")
 	}

@@ -26,7 +26,7 @@ type SRSDetailsSummaryItem struct {
 	Meaning           string `json:"meaning"`
 	Level             string `json:"level"`
 	Streak            int    `json:"streak"`
-	Acc               int    `json:"accuracy_pct"`
+	AccuracyPct       int    `json:"accuracy_pct"`
 	TimesStudied      int    `json:"times_studied"`
 	StartedStudyingAt string `json:"started_studying_at"`
 	NextReview        string `json:"next_review"`
@@ -38,7 +38,7 @@ func formatSRSDetails(
 	resp *client.SRSLevelDetailsResponse,
 ) (*mcp.CallToolResult, error) {
 	// Build a lookup from reviewable ID to included metadata.
-	lookup := make(map[string]client.ReviewableBaseAttrs, len(resp.Reviews.Included))
+	lookup := make(map[string]client.ReviewableBaseAttributes, len(resp.Reviews.Included))
 	for _, inc := range resp.Reviews.Included {
 		lookup[strconv.Itoa(inc.Attributes.ID)] = inc.Attributes
 	}
@@ -60,7 +60,7 @@ func formatSRSDetails(
 			Meaning:           base.Meaning,
 			Level:             base.Level,
 			Streak:            rev.Streak,
-			Acc:               rev.Accuracy,
+			AccuracyPct:       rev.Accuracy,
 			TimesStudied:      rev.TimesStudied,
 			StartedStudyingAt: rev.StartedStudyingAt,
 			NextReview:        rev.NextReview,

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
+	"time"
 
 	"github.com/jbeshir/mcp-servers/bunpro/internal/auth"
 	"github.com/jbeshir/mcp-servers/bunpro/internal/client"
@@ -26,7 +28,9 @@ func main() {
 		log.Fatal("BUNPRO_EMAIL and BUNPRO_PASSWORD environment variables are required")
 	}
 
-	token, err := auth.Login(loginURL, email, password)
+	loginCtx, loginCancel := context.WithTimeout(context.Background(), 30*time.Second)
+	token, err := auth.Login(loginCtx, loginURL, email, password)
+	loginCancel()
 	if err != nil {
 		log.Fatalf("Failed to login to Bunpro: %v", err)
 	}

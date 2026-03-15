@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jbeshir/mcp-servers/bunpro/internal/client"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -92,7 +93,7 @@ func (s *Server) registerTools() {
 			"Get details of a vocabulary item by slug or ID, "+
 				"including readings, pitch accent, frequency data, "+
 				"and JMDict entries."),
-		mcp.WithString("slugOrId",
+		mcp.WithString("slug_or_id",
 			mcp.Required(),
 			mcp.Description("Vocabulary slug (e.g. \"食べる\") or numeric ID"),
 		),
@@ -159,14 +160,14 @@ func (s *Server) handleGetReviewForecast(
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	granularity, _ := request.Params.Arguments["granularity"].(string)
-
-	var err error
-	var result any
 	if granularity == "hourly" {
-		result, err = s.client.GetForecastHourly(ctx)
-	} else {
-		result, err = s.client.GetForecastDaily(ctx)
+		result, err := s.client.GetForecastHourly(ctx)
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("failed to get review forecast: %v", err)), nil
+		}
+		return formatJSON(result)
 	}
+	result, err := s.client.GetForecastDaily(ctx)
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to get review forecast: %v", err)), nil
 	}
@@ -199,26 +200,38 @@ func (s *Server) handleGetGrammarSRSDetails(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	return s.handleSRSDetails(ctx, request, "GrammarPoint")
+	return s.handleSRSDetails(ctx, request, client.ReviewableTypeGrammarPoint)
 }
 
 func (s *Server) handleGetVocabSRSDetails(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	return s.handleSRSDetails(ctx, request, "Vocab")
+	return s.handleSRSDetails(ctx, request, client.ReviewableTypeVocab)
+}
+
+var validSRSLevels = map[string]client.SRSLevel{
+	"beginner": client.SRSLevelBeginner,
+	"adept":    client.SRSLevelAdept,
+	"seasoned": client.SRSLevelSeasoned,
+	"expert":   client.SRSLevelExpert,
+	"master":   client.SRSLevelMaster,
 }
 
 func (s *Server) handleSRSDetails(
 	ctx context.Context,
 	request mcp.CallToolRequest,
-	reviewableType string,
+	reviewableType client.ReviewableType,
 ) (*mcp.CallToolResult, error) {
 	args := request.Params.Arguments
 
-	level, ok := args["level"].(string)
-	if !ok || level == "" {
+	levelStr, ok := args["level"].(string)
+	if !ok || levelStr == "" {
 		return mcp.NewToolResultError("level is required"), nil
+	}
+	level, ok := validSRSLevels[levelStr]
+	if !ok {
+		return mcp.NewToolResultError("level must be one of: beginner, adept, seasoned, expert, master"), nil
 	}
 
 	page := 1
@@ -256,7 +269,7 @@ func (s *Server) handleGetVocab(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	slugOrID, ok := request.Params.Arguments["slugOrId"].(string)
+	slugOrID, ok := request.Params.Arguments["slug_or_id"].(string)
 	if !ok || slugOrID == "" {
 		return mcp.NewToolResultError("slugOrId is required"), nil
 	}

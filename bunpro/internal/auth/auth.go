@@ -25,7 +25,7 @@ const browserUA = "Mozilla/5.0 (X11; Linux x86_64) " +
 //  1. GET /login to obtain a CSRF token and session cookie
 //  2. POST /users/sign_in with form-encoded credentials and CSRF token
 //  3. Extract the frontend_api_token cookie from the response
-func Login(baseURL, email, password string) (string, error) {
+func Login(ctx context.Context, baseURL, email, password string) (string, error) {
 	jar, err := cookiejar.New(nil)
 	if err != nil {
 		return "", fmt.Errorf("creating cookie jar: %w", err)
@@ -37,18 +37,11 @@ func Login(baseURL, email, password string) (string, error) {
 		},
 	}
 
-	ctx := context.Background()
-
 	csrf, err := fetchCSRF(ctx, httpClient, baseURL)
 	if err != nil {
 		return "", err
 	}
-
-	token, err := submitLogin(ctx, httpClient, baseURL, email, password, csrf)
-	if err != nil {
-		return "", err
-	}
-	return token, nil
+	return submitLogin(ctx, httpClient, baseURL, email, password, csrf)
 }
 
 func fetchCSRF(ctx context.Context, httpClient *http.Client, baseURL string) (string, error) {

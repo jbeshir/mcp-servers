@@ -2,6 +2,34 @@ package client
 
 import "time"
 
+// SubjectType identifies the kind of WaniKani subject.
+type SubjectType string
+
+const (
+	SubjectTypeRadical        SubjectType = "radical"
+	SubjectTypeKanji          SubjectType = "kanji"
+	SubjectTypeVocabulary     SubjectType = "vocabulary"
+	SubjectTypeKanaVocabulary SubjectType = "kana_vocabulary"
+)
+
+// SubscriptionType identifies the kind of WaniKani subscription.
+type SubscriptionType string
+
+const (
+	SubscriptionTypeFree      SubscriptionType = "free"
+	SubscriptionTypeRecurring SubscriptionType = "recurring"
+	SubscriptionTypeLifetime  SubscriptionType = "lifetime"
+)
+
+// ReadingType identifies the reading type for kanji and vocabulary.
+type ReadingType string
+
+const (
+	ReadingTypeOnyomi  ReadingType = "onyomi"
+	ReadingTypeKunyomi ReadingType = "kunyomi"
+	ReadingTypeNanori  ReadingType = "nanori"
+)
+
 // Resource wraps a WaniKani API resource with its metadata envelope.
 type Resource[T any] struct {
 	ID            int       `json:"id"`
@@ -41,10 +69,10 @@ type User struct {
 
 // Subscription describes a user's WaniKani subscription.
 type Subscription struct {
-	Active          bool       `json:"active"`
-	Type            string     `json:"type"`
-	MaxLevelGranted int        `json:"max_level_granted"`
-	PeriodEndsAt    *time.Time `json:"period_ends_at"`
+	Active          bool             `json:"active"`
+	Type            SubscriptionType `json:"type"`
+	MaxLevelGranted int              `json:"max_level_granted"`
+	PeriodEndsAt    *time.Time       `json:"period_ends_at"`
 }
 
 // Summary contains upcoming lesson and review availability.
@@ -61,18 +89,18 @@ type SummaryEntry struct {
 
 // Assignment tracks a user's progress on a specific subject.
 type Assignment struct {
-	AvailableAt   *time.Time `json:"available_at"`
-	BurnedAt      *time.Time `json:"burned_at"`
-	CreatedAt     time.Time  `json:"created_at"`
-	Level         int        `json:"level"`
-	PassedAt      *time.Time `json:"passed_at"`
-	ResurrectedAt *time.Time `json:"resurrected_at"`
-	SRSStage      int        `json:"srs_stage"`
-	SRSStageName  string     `json:"srs_stage_name"`
-	StartedAt     *time.Time `json:"started_at"`
-	SubjectID     int        `json:"subject_id"`
-	SubjectType   string     `json:"subject_type"`
-	UnlockedAt    *time.Time `json:"unlocked_at"`
+	AvailableAt   *time.Time  `json:"available_at"`
+	BurnedAt      *time.Time  `json:"burned_at"`
+	CreatedAt     time.Time   `json:"created_at"`
+	Level         int         `json:"level"`
+	PassedAt      *time.Time  `json:"passed_at"`
+	ResurrectedAt *time.Time  `json:"resurrected_at"`
+	SRSStage      int         `json:"srs_stage"`
+	SRSStageName  string      `json:"srs_stage_name"`
+	StartedAt     *time.Time  `json:"started_at"`
+	SubjectID     int         `json:"subject_id"`
+	SubjectType   SubjectType `json:"subject_type"`
+	UnlockedAt    *time.Time  `json:"unlocked_at"`
 }
 
 // Subject represents a kanji, vocabulary, or radical.
@@ -99,26 +127,26 @@ type Meaning struct {
 
 // Reading is a reading entry for a subject (kanji/vocab).
 type Reading struct {
-	Reading        string `json:"reading"`
-	Primary        bool   `json:"primary"`
-	AcceptedAnswer bool   `json:"accepted_answer"`
-	Type           string `json:"type,omitempty"`
+	Reading        string      `json:"reading"`
+	Primary        bool        `json:"primary"`
+	AcceptedAnswer bool        `json:"accepted_answer"`
+	Type           ReadingType `json:"type,omitempty"`
 }
 
 // ReviewStatistic tracks review accuracy for a subject.
 type ReviewStatistic struct {
-	CreatedAt            time.Time `json:"created_at"`
-	MeaningCorrect       int       `json:"meaning_correct"`
-	MeaningIncorrect     int       `json:"meaning_incorrect"`
-	MeaningMaxStreak     int       `json:"meaning_max_streak"`
-	MeaningCurrentStreak int       `json:"meaning_current_streak"`
-	ReadingCorrect       int       `json:"reading_correct"`
-	ReadingIncorrect     int       `json:"reading_incorrect"`
-	ReadingMaxStreak     int       `json:"reading_max_streak"`
-	ReadingCurrentStreak int       `json:"reading_current_streak"`
-	PercentageCorrect    int       `json:"percentage_correct"`
-	SubjectID            int       `json:"subject_id"`
-	SubjectType          string    `json:"subject_type"`
+	CreatedAt            time.Time   `json:"created_at"`
+	MeaningCorrect       int         `json:"meaning_correct"`
+	MeaningIncorrect     int         `json:"meaning_incorrect"`
+	MeaningMaxStreak     int         `json:"meaning_max_streak"`
+	MeaningCurrentStreak int         `json:"meaning_current_streak"`
+	ReadingCorrect       int         `json:"reading_correct"`
+	ReadingIncorrect     int         `json:"reading_incorrect"`
+	ReadingMaxStreak     int         `json:"reading_max_streak"`
+	ReadingCurrentStreak int         `json:"reading_current_streak"`
+	PercentageCorrect    int         `json:"percentage_correct"`
+	SubjectID            int         `json:"subject_id"`
+	SubjectType          SubjectType `json:"subject_type"`
 }
 
 // LevelProgression tracks progress through a WaniKani level.

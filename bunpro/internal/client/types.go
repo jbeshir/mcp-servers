@@ -1,6 +1,24 @@
 package client
 
-// UserResponse is the top-level response from GET /user.
+// ReviewableType identifies the kind of reviewable item in SRS detail requests.
+type ReviewableType string
+
+const (
+	ReviewableTypeGrammarPoint ReviewableType = "GrammarPoint"
+	ReviewableTypeVocab        ReviewableType = "Vocab"
+)
+
+// SRSLevel is a valid SRS stage name accepted by the Bunpro API.
+type SRSLevel string
+
+const (
+	SRSLevelBeginner SRSLevel = "beginner"
+	SRSLevelAdept    SRSLevel = "adept"
+	SRSLevelSeasoned SRSLevel = "seasoned"
+	SRSLevelExpert   SRSLevel = "expert"
+	SRSLevelMaster   SRSLevel = "master"
+)
+
 type UserResponse struct {
 	User            ResourceEnvelope[UserAttributes] `json:"user"`
 	ActiveCosmetics CollectionEnvelope[CosmeticItem] `json:"active_cosmetics"`
@@ -24,7 +42,6 @@ type Resource[T any] struct {
 	Attributes T      `json:"attributes"`
 }
 
-// UserAttributes contains user profile fields.
 type UserAttributes struct {
 	ID                    int     `json:"id"`
 	Username              string  `json:"username"`
@@ -77,13 +94,11 @@ type DeckSetting struct {
 	IsBookmarked          bool   `json:"is_bookmarked"`
 }
 
-// BaseStats is the response from GET /user_stats/base_stats.
 type BaseStats struct {
-	Facts  Facts                         `json:"facts"`
-	Badges CollectionEnvelope[BadgeAttr] `json:"badges"`
+	Facts  Facts                               `json:"facts"`
+	Badges CollectionEnvelope[BadgeAttributes] `json:"badges"`
 }
 
-// Facts are the core user statistics.
 type Facts struct {
 	DaysStudied    int           `json:"days_studied"`
 	Streak         int           `json:"streak"`
@@ -96,12 +111,11 @@ type Facts struct {
 
 // StreakEntry is a single day in the weekly streak.
 type StreakEntry struct {
-	Day string `json:"day"`
-	Val bool   `json:"val"`
+	Day     string `json:"day"`
+	Studied bool   `json:"val"`
 }
 
-// BadgeAttr represents a badge.
-type BadgeAttr struct {
+type BadgeAttributes struct {
 	ID                   int     `json:"id"`
 	BadgeImage           string  `json:"badge_image"`
 	PercentOfUsersEarned float64 `json:"percent_of_users_earned"`
@@ -119,7 +133,6 @@ type GrammarVocabMap struct {
 	Vocab   map[string]int `json:"vocab"`
 }
 
-// JLPTProgress is the response from GET /user_stats/jlpt_progress_mixed.
 type JLPTProgress struct {
 	Grammar map[string]SRSLevelCount `json:"grammar"`
 	Vocab   map[string]SRSLevelCount `json:"vocab"`
@@ -152,7 +165,6 @@ type SRSOverviewCounts struct {
 	SelfStudy int `json:"self_study"`
 }
 
-// SRSLevelDetailsResponse is the response from GET /user_stats/srs_level_details.
 type SRSLevelDetailsResponse struct {
 	Type    string         `json:"type"`
 	Reviews ReviewsWithInc `json:"reviews"`
@@ -161,8 +173,8 @@ type SRSLevelDetailsResponse struct {
 
 // ReviewsWithInc holds reviews and their associated reviewable metadata.
 type ReviewsWithInc struct {
-	Data     []Resource[Review]              `json:"data"`
-	Included []Resource[ReviewableBaseAttrs] `json:"included"`
+	Data     []Resource[Review]                   `json:"data"`
+	Included []Resource[ReviewableBaseAttributes] `json:"included"`
 }
 
 // Pagy contains pagination metadata from the Bunpro API.
@@ -173,7 +185,6 @@ type Pagy struct {
 	Next  *int `json:"next"`
 }
 
-// Review represents a single review item.
 type Review struct {
 	ID                int    `json:"id"`
 	Streak            int    `json:"streak"`
@@ -187,8 +198,8 @@ type Review struct {
 	GhostCount        int    `json:"ghost_count"`
 }
 
-// ReviewableBaseAttrs are the summary fields included alongside reviews.
-type ReviewableBaseAttrs struct {
+// ReviewableBaseAttributes are the summary fields included alongside reviews.
+type ReviewableBaseAttributes struct {
 	ID      int    `json:"id"`
 	Slug    string `json:"slug"`
 	Title   string `json:"title"`
@@ -202,7 +213,6 @@ type GrammarPointResponse struct {
 	Included []Resource[StudyQuestion]        `json:"included"`
 }
 
-// GrammarPointAttributes contains grammar point fields.
 type GrammarPointAttributes struct {
 	ID                      int    `json:"id"`
 	Title                   string `json:"title"`
@@ -231,7 +241,6 @@ type VocabResponse struct {
 	Included []Resource[StudyQuestion] `json:"included"`
 }
 
-// VocabAttributes contains vocabulary fields.
 type VocabAttributes struct {
 	ID                int         `json:"id"`
 	Title             string      `json:"title"`
@@ -248,7 +257,6 @@ type VocabAttributes struct {
 	JMDictData        *JMDictData `json:"jmdict_data"`
 }
 
-// JMDictData contains dictionary data for a vocab entry.
 type JMDictData struct {
 	ID    string        `json:"id"`
 	Kanji []JMDictForm  `json:"kanji"`
@@ -264,7 +272,7 @@ type JMDictForm struct {
 
 // JMDictSense is a meaning/sense entry.
 type JMDictSense struct {
-	PartOfSpeech []string      `json:"partOfSpeech"`
+	PartOfSpeech []string      `json:"partOfSpeech"` // camelCase: mirrors the JMDict API field name
 	Gloss        []JMDictGloss `json:"gloss"`
 }
 

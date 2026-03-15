@@ -9,6 +9,16 @@ import (
 	"net/url"
 )
 
+// APIError is returned when the WaniKani API responds with a non-2xx status code.
+type APIError struct {
+	StatusCode int
+	Body       string
+}
+
+func (e *APIError) Error() string {
+	return fmt.Sprintf("API error (status %d): %s", e.StatusCode, e.Body)
+}
+
 // Client is an HTTP client for the WaniKani API.
 type Client struct {
 	baseURL    string
@@ -16,7 +26,6 @@ type Client struct {
 	httpClient *http.Client
 }
 
-// NewClient creates a new WaniKani API client.
 func NewClient(baseURL, apiKey string) *Client {
 	return &Client{
 		baseURL:    baseURL,
@@ -42,7 +51,7 @@ func (c *Client) do(ctx context.Context, path string, result any) error {
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		respBody, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(respBody))
+		return &APIError{StatusCode: resp.StatusCode, Body: string(respBody)}
 	}
 
 	if result != nil {
@@ -52,7 +61,7 @@ func (c *Client) do(ctx context.Context, path string, result any) error {
 }
 
 // doCollection fetches a paginated collection, auto-following next_url up to limit items.
-func doCollection[T any](c *Client, ctx context.Context, path string, limit int) ([]Resource[T], int, error) {
+func doCollection[T any](ctx context.Context, c *Client, path string, limit int) ([]Resource[T], int, error) {
 	if limit <= 0 {
 		limit = 500
 	}
@@ -92,7 +101,6 @@ func doCollection[T any](c *Client, ctx context.Context, path string, limit int)
 	return all, totalCount, nil
 }
 
-// GetUser retrieves the authenticated user's profile.
 func (c *Client) GetUser(ctx context.Context) (*Resource[User], error) {
 	var r Resource[User]
 	if err := c.do(ctx, "/v2/user", &r); err != nil {
@@ -101,7 +109,6 @@ func (c *Client) GetUser(ctx context.Context) (*Resource[User], error) {
 	return &r, nil
 }
 
-// GetSummary retrieves the lesson/review summary.
 func (c *Client) GetSummary(ctx context.Context) (*Resource[Summary], error) {
 	var r Resource[Summary]
 	if err := c.do(ctx, "/v2/summary", &r); err != nil {
@@ -110,7 +117,6 @@ func (c *Client) GetSummary(ctx context.Context) (*Resource[Summary], error) {
 	return &r, nil
 }
 
-// GetAssignments retrieves assignments with optional filters.
 func (c *Client) GetAssignments(
 	ctx context.Context, params url.Values, limit int,
 ) ([]Resource[Assignment], int, error) {
@@ -118,27 +124,25 @@ func (c *Client) GetAssignments(
 	if len(params) > 0 {
 		path += "?" + params.Encode()
 	}
-	items, total, err := doCollection[Assignment](c, ctx, path, limit)
+	items, total, err := doCollection[Assignment](ctx, c, path, limit)
 	if err != nil {
 		return nil, 0, fmt.Errorf("getting assignments: %w", err)
 	}
 	return items, total, nil
 }
 
-// GetSubjects retrieves subjects with optional filters.
 func (c *Client) GetSubjects(ctx context.Context, params url.Values, limit int) ([]Resource[Subject], int, error) {
 	path := "/v2/subjects"
 	if len(params) > 0 {
 		path += "?" + params.Encode()
 	}
-	items, total, err := doCollection[Subject](c, ctx, path, limit)
+	items, total, err := doCollection[Subject](ctx, c, path, limit)
 	if err != nil {
 		return nil, 0, fmt.Errorf("getting subjects: %w", err)
 	}
 	return items, total, nil
 }
 
-// GetReviewStatistics retrieves review statistics with optional filters.
 func (c *Client) GetReviewStatistics(
 	ctx context.Context, params url.Values, limit int,
 ) ([]Resource[ReviewStatistic], int, error) {
@@ -146,16 +150,15 @@ func (c *Client) GetReviewStatistics(
 	if len(params) > 0 {
 		path += "?" + params.Encode()
 	}
-	items, total, err := doCollection[ReviewStatistic](c, ctx, path, limit)
+	items, total, err := doCollection[ReviewStatistic](ctx, c, path, limit)
 	if err != nil {
 		return nil, 0, fmt.Errorf("getting review statistics: %w", err)
 	}
 	return items, total, nil
 }
 
-// GetLevelProgressions retrieves level progressions.
 func (c *Client) GetLevelProgressions(ctx context.Context, limit int) ([]Resource[LevelProgression], int, error) {
-	items, total, err := doCollection[LevelProgression](c, ctx, "/v2/level_progressions", limit)
+	items, total, err := doCollection[LevelProgression](ctx, c, "/v2/level_progressions", limit)
 	if err != nil {
 		return nil, 0, fmt.Errorf("getting level progressions: %w", err)
 	}
