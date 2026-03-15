@@ -102,14 +102,6 @@ func (s *Server) registerTools() {
 	), s.handleGetLevelProgressions)
 }
 
-// setCSVParam sets a query parameter from a comma-separated string arg,
-// converting the MCP camelCase key to the WaniKani snake_case API param.
-func setCSVParam(params url.Values, args map[string]any, argKey, apiKey string) {
-	if v, ok := args[argKey].(string); ok && v != "" {
-		params.Set(apiKey, v)
-	}
-}
-
 func setOptionalString(params url.Values, args map[string]any, argKey, apiKey string) {
 	if v, ok := args[argKey].(string); ok && v != "" {
 		params.Set(apiKey, v)
@@ -143,7 +135,7 @@ func (s *Server) handleGetUser(
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to get user: %v", err)), nil
 	}
-	return formatResource(user)
+	return formatResource(user), nil
 }
 
 func (s *Server) handleGetSummary(
@@ -154,7 +146,7 @@ func (s *Server) handleGetSummary(
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to get summary: %v", err)), nil
 	}
-	return formatResource(summary)
+	return formatResource(summary), nil
 }
 
 func (s *Server) handleGetAssignments(
@@ -164,9 +156,9 @@ func (s *Server) handleGetAssignments(
 	args := request.Params.Arguments
 	params := url.Values{}
 
-	setCSVParam(params, args, "subjectTypes", "subject_types")
-	setCSVParam(params, args, "levels", "levels")
-	setCSVParam(params, args, "srsStages", "srs_stages")
+	setOptionalString(params, args, "subjectTypes", "subject_types")
+	setOptionalString(params, args, "levels", "levels")
+	setOptionalString(params, args, "srsStages", "srs_stages")
 	setOptionalString(params, args, "availableBefore", "available_before")
 	setOptionalString(params, args, "availableAfter", "available_after")
 	setOptionalBool(params, args, "immediatelyAvailableForReview", "immediately_available_for_review")
@@ -176,7 +168,7 @@ func (s *Server) handleGetAssignments(
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to get assignments: %v", err)), nil
 	}
-	return formatCollection("assignment", items, total)
+	return formatCollection("assignment", items, total), nil
 }
 
 func (s *Server) handleGetSubjects(
@@ -186,12 +178,12 @@ func (s *Server) handleGetSubjects(
 	args := request.Params.Arguments
 	params := url.Values{}
 
-	setCSVParam(params, args, "types", "types")
-	setCSVParam(params, args, "levels", "levels")
-	setCSVParam(params, args, "slugs", "slugs")
+	setOptionalString(params, args, "types", "types")
+	setOptionalString(params, args, "levels", "levels")
+	setOptionalString(params, args, "slugs", "slugs")
 
 	if ids, ok := args["ids"].(string); ok && ids != "" {
-		// WaniKani expects ids as a comma-separated list.
+		// Strip spaces: WaniKani requires bare comma-separated integers with no whitespace.
 		params.Set("ids", strings.ReplaceAll(ids, " ", ""))
 	}
 
@@ -199,7 +191,7 @@ func (s *Server) handleGetSubjects(
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to get subjects: %v", err)), nil
 	}
-	return formatCollection("subject", items, total)
+	return formatCollection("subject", items, total), nil
 }
 
 func (s *Server) handleGetReviewStatistics(
@@ -209,8 +201,8 @@ func (s *Server) handleGetReviewStatistics(
 	args := request.Params.Arguments
 	params := url.Values{}
 
-	setCSVParam(params, args, "subjectTypes", "subject_types")
-	setCSVParam(params, args, "subjectIds", "subject_ids")
+	setOptionalString(params, args, "subjectTypes", "subject_types")
+	setOptionalString(params, args, "subjectIds", "subject_ids")
 	setOptionalNumber(params, args, "percentagesGreaterThan", "percentages_greater_than")
 	setOptionalNumber(params, args, "percentagesLessThan", "percentages_less_than")
 
@@ -218,7 +210,7 @@ func (s *Server) handleGetReviewStatistics(
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to get review statistics: %v", err)), nil
 	}
-	return formatCollection("review statistic", items, total)
+	return formatCollection("review statistic", items, total), nil
 }
 
 func (s *Server) handleGetLevelProgressions(
@@ -229,5 +221,5 @@ func (s *Server) handleGetLevelProgressions(
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to get level progressions: %v", err)), nil
 	}
-	return formatCollection("level progression", items, total)
+	return formatCollection("level progression", items, total), nil
 }
