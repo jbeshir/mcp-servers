@@ -224,7 +224,7 @@ func TestGetSRSLevelDetailsGrammar(t *testing.T) {
 	})
 	c := NewClient(srv.URL, "test-token")
 
-	details, err := c.GetSRSLevelDetails(context.Background(), "beginner", "GrammarPoint", 1)
+	details, err := c.GetSRSLevelDetails(context.Background(), SRSLevelBeginner, ReviewableTypeGrammarPoint, 1)
 	if err != nil {
 		t.Fatalf("GetSRSLevelDetails: %v", err)
 	}
@@ -263,7 +263,7 @@ func TestGetSRSLevelDetailsVocab(t *testing.T) {
 	})
 	c := NewClient(srv.URL, "test-token")
 
-	details, err := c.GetSRSLevelDetails(context.Background(), "beginner", "Vocab", 1)
+	details, err := c.GetSRSLevelDetails(context.Background(), SRSLevelBeginner, ReviewableTypeVocab, 1)
 	if err != nil {
 		t.Fatalf("GetSRSLevelDetails(Vocab): %v", err)
 	}

@@ -138,4 +138,4 @@ All tools are read-only. No tool modifies Bunpro data.
 | `get_grammar_srs_details` | `level` (required): `beginner`, `adept`, `seasoned`, `expert`, or `master`; `page` (optional) | Paginated grammar review items at a specific SRS level |
 | `get_vocab_srs_details` | `level` (required): `beginner`, `adept`, `seasoned`, `expert`, or `master`; `page` (optional) | Paginated vocabulary review items at a specific SRS level |
 | `get_grammar_point` | `id` (required) | Grammar point details: meaning, structure, nuance, study questions |
-| `get_vocab` | `slugOrId` (required): slug (e.g. "食べる") or numeric ID | Vocabulary details: readings, pitch accent, frequency, JMDict entries |
+| `get_vocab` | `slug_or_id` (required): slug (e.g. "食べる") or numeric ID | Vocabulary details: readings, pitch accent, frequency, JMDict entries |
