@@ -19,8 +19,10 @@ var xapiKey = "TvOSZJHlEk0pjniDGQFAc9Q59WGAR4dA" //nolint:gosec // Public API ke
 
 const trolleyURL = baseURL + "/groceries/en-GB/trolley"
 
-// trolleyWaitSelector waits for product list items to render.
-const trolleyWaitSelector = `[data-testid="product-list-item"]`
+// trolleyWaitSelector waits for the basket summary to render.
+// This is present on both empty and non-empty trolley pages, unlike
+// product-list-item which only appears when the basket has items.
+const trolleyWaitSelector = `[data-testid="basket-summary"]`
 
 const updateBasketMutation = `mutation UpdateBasket($items: [BasketLineItemInputType], $orderId: ID) {
   basket(items: $items, orderId: $orderId) {
