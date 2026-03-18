@@ -1,0 +1,605 @@
+{
+  "hits": [
+    {
+      "ID": "1000383235387",
+      "STATUS": "I",
+      "PHARMACY_RESTRICTED": false,
+      "CIN": "9134260",
+      "DISPLAY_ONLINE": true,
+      "START_DATE": 1758542400.0,
+      "END_DATE": 1766577600.0,
+      "NAME": "Alcohol Free Christmas Pudding 400g",
+      "KEYWORDS": "christmas pudding,christmas pud,xmas pudding,xmas pud,christmas cake,christmas dessert,xmas cake,xmas dessert",
+      "CS_YES": false,
+      "SHOW_PRICE_CS": true,
+      "SALES_TYPE": "Each",
+      "IMAGE_ID": "5063089610411",
+      "BRAND": "ASDA",
+      "IS_BWS": false,
+      "IS_FROZEN": false,
+      "IS_HFSS": true,
+      "IS_SPONSORED": false,
+      "CPC": 0.0,
+      "LABEL": "New",
+      "LABEL_START_DATE": 1727136000.0,
+      "LABEL_END_DATE": 1734825600.0,
+      "HFSS_RESTRICTED": true,
+      "NUTRITIONAL_INFO": {
+        "Halal": 0,
+        "Vegetarian": 1,
+        "Vegan": 0,
+        "SourceofFibre": 1,
+        "Ofaday": 0,
+        "NoSoya": 1,
+        "NoShellfish": 1,
+        "NoSesame": 1,
+        "NoPeanuts": 1,
+        "NoNuts": 0,
+        "NoMustard": 1,
+        "NoMilk": 1,
+        "NoLupin": 1,
+        "NoLactose": 1,
+        "NoGluten": 0,
+        "NoFish": 1,
+        "NoEgg": 0,
+        "NoCeleryincludingceleriac": 1,
+        "LowSugar": 0,
+        "LowSaturatedFat": 0,
+        "LowSalt": 1,
+        "LowFat": 0,
+        "HighFibre": 1,
+        "Kosher": 0
+      },
+      "PRICES": {
+        "EN": {
+          "OFFER": "List",
+          "PRICE": 2.0,
+          "PRICEPERUOM": 5.0,
+          "PRICEPERUOMFORMATTED": "\u00a35.00/KG"
+        },
+        "NI": {
+          "OFFER": "List",
+          "PRICE": 2.0,
+          "PRICEPERUOM": 5.0,
+          "PRICEPERUOMFORMATTED": "\u00a35.00/KG"
+        },
+        "SC": {
+          "OFFER": "List",
+          "PRICE": 2.0,
+          "PRICEPERUOM": 5.0,
+          "PRICEPERUOMFORMATTED": "\u00a35.00/KG"
+        },
+        "WA": {
+          "OFFER": "List",
+          "PRICE": 2.0,
+          "PRICEPERUOM": 5.0,
+          "PRICEPERUOMFORMATTED": "\u00a35.00/KG"
+        }
+      },
+      "PRIMARY_TAXONOMY": {
+        "CAT_ID": "1215686354843",
+        "CAT_NAME": "Bakery",
+        "DEPT_ID": "1215686354844",
+        "DEPT_NAME": "Christmas Bakery",
+        "AISLE_ID": "1215686354856",
+        "AISLE_NAME": "Christmas Puddings & Desserts",
+        "SHELF_ID": "1215684251709",
+        "SHELF_NAME": "Christmas Puddings & Desserts"
+      },
+      "SECONDARY_TAXONOMY": {
+        "CAT_ID": [
+          "1215684243334",
+          "1215686354843"
+        ],
+        "DEPT_ID": [
+          "1215684243335",
+          "1215686354845",
+          "1215685671109"
+        ],
+        "AISLE_ID": [
+          "1215685201223",
+          "1215686354863",
+          "1215686354864",
+          "1215685671376"
+        ],
+        "SHELF_ID": [
+          "1215686061271",
+          "1215686354841",
+          "1215686354842",
+          "1215686356191"
+        ]
+      },
+      "FLAVOUR": "ALCFRE",
+      "ADDITIVES": [
+        "Free From Artificial Flavours",
+        "Free From Artificial Colours"
+      ],
+      "COUNTRY": [
+        "Packed In : United Kingdom"
+      ],
+      "LIFESTYLES": [
+        "Suitable for Vegetarians"
+      ],
+      "PAGE_TAXONOMY": [
+        "Bakery",
+        "Bakery > Christmas Bakery",
+        "Bakery > Christmas Bakery > Christmas Puddings & Desserts",
+        "Bakery > Christmas Bakery > Christmas Puddings & Desserts > Christmas Puddings & Desserts",
+        "Christmas",
+        "Christmas > Christmas Dinner",
+        "Christmas > Christmas Dinner > Christmas Puddings, Desserts & Toppings",
+        "Christmas > Christmas Dinner > Christmas Puddings, Desserts & Toppings > Christmas Puddings",
+        "Bakery > Exceptional Bakery",
+        "Bakery > Exceptional Bakery > Exceptional Cookies, Cake & Desserts",
+        "Bakery > Exceptional Bakery > Exceptional Cookies, Cake & Desserts > Exceptional Cookies, Cake & Desserts",
+        "Bakery > Exceptional Bakery > View All Exceptional Bakery",
+        "Bakery > Exceptional Bakery > View All Exceptional Bakery > View All Exceptional Bakery",
+        "Christmas > Christmas Bakery & Mince Pies",
+        "Christmas > Christmas Bakery & Mince Pies > Christmas Cakes & Puddings",
+        "Christmas > Christmas Bakery & Mince Pies > Christmas Cakes & Puddings > Christmas Cakes & Puddings"
+      ],
+      "HFSS_CAT_ID": 9,
+      "HFSS_CAT_NAME": "Desserts and Puddings",
+      "GPR": 0.0,
+      "IS_FTO": false,
+      "SKU_TYPE_IDENTIFIER": "GROCERY",
+      "PRODUCT_TYPE": "STANDARD",
+      "AVG_RATING": 5.0,
+      "RATING_COUNT": 1.0,
+      "ICONS": [
+        {
+          "ID": "51000002",
+          "ICON_NAME": "801_NoShellfish",
+          "CLICKABLE": false,
+          "IMAGE_URL": "https://ui.assets-asda.com/dm/_000_Icon?&$Icon-wapp$",
+          "START_DATE": 1551700800,
+          "END_DATE": 1551873600,
+          "PRIORITY": 10440.0
+        },
+        {
+          "ID": "1215429145947",
+          "ICON_NAME": "Serves 4",
+          "CLICKABLE": true,
+          "IMAGE_URL": "https://ui.assets-asda.com/dm/icon_serves?$serves=4",
+          "PRIORITY": 868.0
+        }
+      ],
+      "PACK_SIZE": "400G",
+      "MAX_QTY": 10,
+      "MAX_QTY_HSC": 10,
+      "objectID": "9134260"
+    },
+    {
+      "ID": "1000282577351",
+      "STATUS": "I",
+      "PHARMACY_RESTRICTED": false,
+      "CIN": "6978154",
+      "DISPLAY_ONLINE": true,
+      "START_DATE": 1758542400.0,
+      "END_DATE": 1766577600.0,
+      "NAME": "Classic Christmas Pudding 400g",
+      "KEYWORDS": "Christmas,vegetarian christmas,christmas cake,christmas dessert,xmas cake,xmas dessert",
+      "CS_YES": false,
+      "SHOW_PRICE_CS": true,
+      "SALES_TYPE": "Each",
+      "IMAGE_ID": "5057172599776_T1",
+      "BRAND": "The BAKERY at ASDA",
+      "IS_BWS": false,
+      "IS_FROZEN": false,
+      "IS_HFSS": true,
+      "IS_SPONSORED": false,
+      "CPC": 0.0,
+      "LABEL": "",
+      "HFSS_RESTRICTED": true,
+      "NUTRITIONAL_INFO": {
+        "Halal": 0,
+        "Vegetarian": 1,
+        "Vegan": 1,
+        "SourceofFibre": 1,
+        "Ofaday": 0,
+        "NoSoya": 1,
+        "NoShellfish": 1,
+        "NoSesame": 1,
+        "NoPeanuts": 1,
+        "NoNuts": 0,
+        "NoMustard": 1,
+        "NoMilk": 1,
+        "NoLupin": 1,
+        "NoLactose": 1,
+        "NoGluten": 0,
+        "NoFish": 1,
+        "NoEgg": 1,
+        "NoCeleryincludingceleriac": 1,
+        "LowSugar": 0,
+        "LowSaturatedFat": 0,
+        "LowSalt": 1,
+        "LowFat": 0,
+        "HighFibre": 0,
+        "Kosher": 0
+      },
+      "PRICES": {
+        "EN": {
+          "OFFER": "List",
+          "PRICE": 2.38,
+          "PRICEPERUOM": 0.595,
+          "PRICEPERUOMFORMATTED": "59.5p/100GR"
+        },
+        "NI": {
+          "OFFER": "List",
+          "PRICE": 2.38,
+          "PRICEPERUOM": 0.595,
+          "PRICEPERUOMFORMATTED": "59.5p/100GR"
+        },
+        "SC": {
+          "OFFER": "List",
+          "PRICE": 2.38,
+          "PRICEPERUOM": 0.595,
+          "PRICEPERUOMFORMATTED": "59.5p/100GR"
+        },
+        "WA": {
+          "OFFER": "List",
+          "PRICE": 2.38,
+          "PRICEPERUOM": 0.595,
+          "PRICEPERUOMFORMATTED": "59.5p/100GR"
+        }
+      },
+      "PRIMARY_TAXONOMY": {
+        "CAT_ID": "1215686354843",
+        "CAT_NAME": "Bakery",
+        "DEPT_ID": "1215686354844",
+        "DEPT_NAME": "Christmas Bakery",
+        "AISLE_ID": "1215686354856",
+        "AISLE_NAME": "Christmas Puddings & Desserts",
+        "SHELF_ID": "1215684251709",
+        "SHELF_NAME": "Christmas Puddings & Desserts"
+      },
+      "SECONDARY_TAXONOMY": {
+        "CAT_ID": [
+          "1215684243334",
+          "1215684421135",
+          "1215685991655",
+          "1215686354843"
+        ],
+        "DEPT_ID": [
+          "1215684243335",
+          "1215684421136",
+          "1215685991691",
+          "1215686354844",
+          "1215686354851",
+          "1215685671109",
+          "1215684421138"
+        ],
+        "AISLE_ID": [
+          "1215685201223",
+          "1215684431428",
+          "1215685991702",
+          "1215686354923",
+          "1215686354903",
+          "1215685671376",
+          "1215686356222",
+          "1215686356274",
+          "1215684431268"
+        ],
+        "SHELF_ID": [
+          "1215684201613",
+          "1215684431429",
+          "1215685991703",
+          "1215686021239",
+          "1215686061271",
+          "1215686354924",
+          "1215686354930",
+          "1215686356191",
+          "1215686356223",
+          "1215686356275",
+          "1215686356944"
+        ]
+      },
+      "FLAVOUR": "FRUIT",
+      "ADDITIVES": [
+        "Free From Artificial Flavours",
+        "Free From Artificial Colours"
+      ],
+      "COUNTRY": [
+        "Packed In : United Kingdom"
+      ],
+      "LIFESTYLES": [
+        "Suitable for Vegans"
+      ],
+      "PAGE_TAXONOMY": [
+        "Bakery",
+        "Bakery > Christmas Bakery",
+        "Bakery > Christmas Bakery > Christmas Puddings & Desserts",
+        "Bakery > Christmas Bakery > Christmas Puddings & Desserts > Christmas Puddings & Desserts",
+        "Christmas",
+        "Christmas > Christmas Dinner",
+        "Christmas > Christmas Dinner > Christmas Puddings, Desserts & Toppings",
+        "Christmas > Christmas Dinner > Christmas Puddings, Desserts & Toppings > Desserts",
+        "Rollback",
+        "Rollback > View All RollBack",
+        "Rollback > View All RollBack > View All RollBack",
+        "Rollback > View All RollBack > View All RollBack > View All RollBack",
+        "Big Night In",
+        "Big Night In > Sweet Treats & Snacks",
+        "Big Night In > Sweet Treats & Snacks > View All",
+        "Big Night In > Sweet Treats & Snacks > View All > View All",
+        "Christmas > Christmas Dinner > Christmas Puddings, Desserts & Toppings > View All Christmas Puddings, Desserts & Toppings",
+        "Christmas > Christmas Dinner > Christmas Puddings, Desserts & Toppings > Christmas Puddings",
+        "Bakery > Christmas Bakery > View All Christmas Bakery",
+        "Bakery > Christmas Bakery > View All Christmas Bakery > View All Christmas Bakery",
+        "Bakery > Cakes",
+        "Bakery > Cakes > View All Cakes",
+        "Bakery > Cakes > View All Cakes > View All Cakes",
+        "Christmas > Christmas Bakery & Mince Pies",
+        "Christmas > Christmas Bakery & Mince Pies > Christmas Cakes & Puddings",
+        "Christmas > Christmas Bakery & Mince Pies > Christmas Cakes & Puddings > Christmas Cakes & Puddings",
+        "Christmas > Christmas Bakery & Mince Pies > View All Christmas Bakery",
+        "Christmas > Christmas Bakery & Mince Pies > View All Christmas Bakery > View All Christmas Bakery",
+        "Christmas > Christmas Dinner > View All Christmas Dinner",
+        "Christmas > Christmas Dinner > View All Christmas Dinner > View All Christmas Dinner",
+        "Rollback > Food & Drink",
+        "Rollback > Food & Drink > Food",
+        "Rollback > Food & Drink > Food > Bakery"
+      ],
+      "HFSS_CAT_ID": 9,
+      "HFSS_CAT_NAME": "Desserts and Puddings",
+      "GPR": 0.0,
+      "IS_FTO": false,
+      "SKU_TYPE_IDENTIFIER": "GROCERY",
+      "PRODUCT_TYPE": "STANDARD",
+      "AVG_RATING": 4.6667,
+      "RATING_COUNT": 33.0,
+      "ICONS": [
+        {
+          "ID": "51000002",
+          "ICON_NAME": "801_NoShellfish",
+          "CLICKABLE": false,
+          "IMAGE_URL": "https://ui.assets-asda.com/dm/_000_Icon?&$Icon-wapp$",
+          "START_DATE": 1551700800,
+          "END_DATE": 1551873600,
+          "PRIORITY": 10440.0
+        },
+        {
+          "ID": "59600014",
+          "ICON_NAME": "The Vegan Society",
+          "CLICKABLE": true,
+          "IMAGE_URL": "https://ui.assets-asda.com/dm/_010_VeganSociety?&$icon-wapp$",
+          "START_DATE": 1616587200,
+          "PRIORITY": 1315.0
+        },
+        {
+          "ID": "1215429145947",
+          "ICON_NAME": "Serves 4",
+          "CLICKABLE": true,
+          "IMAGE_URL": "https://ui.assets-asda.com/dm/icon_serves?$serves=4",
+          "PRIORITY": 868.0
+        }
+      ],
+      "PACK_SIZE": "400G",
+      "MAX_QTY": 10,
+      "MAX_QTY_HSC": 10,
+      "objectID": "6978154"
+    },
+    {
+      "ID": "1000282577220",
+      "STATUS": "I",
+      "PHARMACY_RESTRICTED": false,
+      "CIN": "6978156",
+      "DISPLAY_ONLINE": true,
+      "START_DATE": 1758542400.0,
+      "END_DATE": 1766577600.0,
+      "NAME": "Classic Christmas Pudding 800g",
+      "KEYWORDS": "christmas cake,christmas dessert,xmas cake,xmas dessert",
+      "CS_YES": false,
+      "SHOW_PRICE_CS": true,
+      "SALES_TYPE": "Each",
+      "IMAGE_ID": "5057172599783_T1",
+      "BRAND": "The BAKERY at ASDA",
+      "IS_BWS": false,
+      "IS_FROZEN": false,
+      "IS_HFSS": true,
+      "IS_SPONSORED": false,
+      "CPC": 0.0,
+      "LABEL": "",
+      "HFSS_RESTRICTED": true,
+      "NUTRITIONAL_INFO": {
+        "Halal": 0,
+        "Vegetarian": 1,
+        "Vegan": 1,
+        "SourceofFibre": 1,
+        "Ofaday": 0,
+        "NoSoya": 1,
+        "NoShellfish": 1,
+        "NoSesame": 1,
+        "NoPeanuts": 1,
+        "NoNuts": 0,
+        "NoMustard": 1,
+        "NoMilk": 1,
+        "NoLupin": 1,
+        "NoLactose": 1,
+        "NoGluten": 0,
+        "NoFish": 1,
+        "NoEgg": 1,
+        "NoCeleryincludingceleriac": 1,
+        "LowSugar": 0,
+        "LowSaturatedFat": 0,
+        "LowSalt": 1,
+        "LowFat": 0,
+        "HighFibre": 0,
+        "Kosher": 0
+      },
+      "PRICES": {
+        "EN": {
+          "OFFER": "List",
+          "PRICE": 4.0,
+          "PRICEPERUOM": 0.5,
+          "PRICEPERUOMFORMATTED": "50.0p/100GR"
+        },
+        "NI": {
+          "OFFER": "List",
+          "PRICE": 4.0,
+          "PRICEPERUOM": 0.5,
+          "PRICEPERUOMFORMATTED": "50.0p/100GR"
+        },
+        "SC": {
+          "OFFER": "List",
+          "PRICE": 4.0,
+          "PRICEPERUOM": 0.5,
+          "PRICEPERUOMFORMATTED": "50.0p/100GR"
+        },
+        "WA": {
+          "OFFER": "List",
+          "PRICE": 4.0,
+          "PRICEPERUOM": 0.5,
+          "PRICEPERUOMFORMATTED": "50.0p/100GR"
+        }
+      },
+      "PRIMARY_TAXONOMY": {
+        "CAT_ID": "1215686354843",
+        "CAT_NAME": "Bakery",
+        "DEPT_ID": "1215686354844",
+        "DEPT_NAME": "Christmas Bakery",
+        "AISLE_ID": "1215686354856",
+        "AISLE_NAME": "Christmas Puddings & Desserts",
+        "SHELF_ID": "1215684251709",
+        "SHELF_NAME": "Christmas Puddings & Desserts"
+      },
+      "SECONDARY_TAXONOMY": {
+        "CAT_ID": [
+          "1215684243334",
+          "1215685991655",
+          "1215686354843"
+        ],
+        "DEPT_ID": [
+          "1215684243335",
+          "1215685991691",
+          "1215686354844",
+          "1215686354851",
+          "1215685671109"
+        ],
+        "AISLE_ID": [
+          "1215685201223",
+          "1215685991702",
+          "1215686354923",
+          "1215686354903",
+          "1215685671376",
+          "1215686356222",
+          "1215686356274"
+        ],
+        "SHELF_ID": [
+          "1215684201613",
+          "1215685991703",
+          "1215686021239",
+          "1215686061271",
+          "1215686354924",
+          "1215686354930",
+          "1215686356191",
+          "1215686356223",
+          "1215686356275"
+        ]
+      },
+      "FLAVOUR": "FRUIT",
+      "ADDITIVES": [
+        "Free From Artificial Flavours",
+        "Free From Artificial Colours"
+      ],
+      "COUNTRY": [
+        "Packed In : United Kingdom"
+      ],
+      "LIFESTYLES": [
+        "Suitable for Vegans"
+      ],
+      "PAGE_TAXONOMY": [
+        "Bakery",
+        "Bakery > Christmas Bakery",
+        "Bakery > Christmas Bakery > Christmas Puddings & Desserts",
+        "Bakery > Christmas Bakery > Christmas Puddings & Desserts > Christmas Puddings & Desserts",
+        "Christmas",
+        "Christmas > Christmas Dinner",
+        "Christmas > Christmas Dinner > Christmas Puddings, Desserts & Toppings",
+        "Christmas > Christmas Dinner > Christmas Puddings, Desserts & Toppings > Desserts",
+        "Big Night In",
+        "Big Night In > Sweet Treats & Snacks",
+        "Big Night In > Sweet Treats & Snacks > View All",
+        "Big Night In > Sweet Treats & Snacks > View All > View All",
+        "Christmas > Christmas Dinner > Christmas Puddings, Desserts & Toppings > View All Christmas Puddings, Desserts & Toppings",
+        "Christmas > Christmas Dinner > Christmas Puddings, Desserts & Toppings > Christmas Puddings",
+        "Bakery > Christmas Bakery > View All Christmas Bakery",
+        "Bakery > Christmas Bakery > View All Christmas Bakery > View All Christmas Bakery",
+        "Bakery > Cakes",
+        "Bakery > Cakes > View All Cakes",
+        "Bakery > Cakes > View All Cakes > View All Cakes",
+        "Christmas > Christmas Bakery & Mince Pies",
+        "Christmas > Christmas Bakery & Mince Pies > Christmas Cakes & Puddings",
+        "Christmas > Christmas Bakery & Mince Pies > Christmas Cakes & Puddings > Christmas Cakes & Puddings",
+        "Christmas > Christmas Bakery & Mince Pies > View All Christmas Bakery",
+        "Christmas > Christmas Bakery & Mince Pies > View All Christmas Bakery > View All Christmas Bakery",
+        "Christmas > Christmas Dinner > View All Christmas Dinner",
+        "Christmas > Christmas Dinner > View All Christmas Dinner > View All Christmas Dinner"
+      ],
+      "HFSS_CAT_ID": 9,
+      "HFSS_CAT_NAME": "Desserts and Puddings",
+      "GPR": 0.0,
+      "IS_FTO": false,
+      "SKU_TYPE_IDENTIFIER": "GROCERY",
+      "PRODUCT_TYPE": "STANDARD",
+      "AVG_RATING": 4.4286,
+      "RATING_COUNT": 21.0,
+      "ICONS": [
+        {
+          "ID": "51000002",
+          "ICON_NAME": "801_NoShellfish",
+          "CLICKABLE": false,
+          "IMAGE_URL": "https://ui.assets-asda.com/dm/_000_Icon?&$Icon-wapp$",
+          "START_DATE": 1551700800,
+          "END_DATE": 1551873600,
+          "PRIORITY": 10440.0
+        },
+        {
+          "ID": "59600014",
+          "ICON_NAME": "The Vegan Society",
+          "CLICKABLE": true,
+          "IMAGE_URL": "https://ui.assets-asda.com/dm/_010_VeganSociety?&$icon-wapp$",
+          "START_DATE": 1616587200,
+          "PRIORITY": 1315.0
+        },
+        {
+          "ID": "59600320",
+          "ICON_NAME": "Serves 8",
+          "CLICKABLE": false,
+          "IMAGE_URL": "https://ui.assets-asda.com/dm/Serves-8-Icon?",
+          "PRIORITY": 3184.0
+        },
+        {
+          "ID": "1215429151317",
+          "ICON_NAME": "_060_Serves8",
+          "CLICKABLE": true,
+          "IMAGE_URL": "https://ui.assets-asda.com/dm/icon_serves?$serves=8",
+          "END_DATE": 1682510400,
+          "PRIORITY": 906.0
+        }
+      ],
+      "PACK_SIZE": "800G",
+      "MAX_QTY": 10,
+      "MAX_QTY_HSC": 10,
+      "objectID": "6978156"
+    }
+  ],
+  "queryAfterRemoval": "christmas pudding",
+  "extensions": {
+    "queryCategorization": {
+      "autofiltering": {
+        "enabled": true,
+        "maxDepth": 5,
+        "facetFilters": [],
+        "optionalFilters": [
+          "PRIMARY_TAXONOMY.CAT_NAME:Bakery",
+          "PRIMARY_TAXONOMY.DEPT_NAME:Christmas Bakery",
+          "PRIMARY_TAXONOMY.AISLE_NAME:Christmas Puddings & Desserts",
+          "PRIMARY_TAXONOMY.SHELF_NAME:Christmas Puddings & Desserts"
+        ]
+      },
+      "count": 199,
+      "normalizedQuery": "christmas pudding"
+    }
+  }
+}

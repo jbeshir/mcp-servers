@@ -23,6 +23,18 @@ func TestParseMorrisonsSearchResults(t *testing.T) {
 	assert.Equal(t, datasource.Morrisons, p.Supermarket)
 }
 
+func TestParseMorrisonsSearchResults_Unavailable(t *testing.T) {
+	products := testutil.ParseSearchFile(t, "testdata/morrisons_search_unavailable.html", osp.ParseMorrisonsSearchResults)
+
+	require.Len(t, products, 2)
+
+	assert.True(t, *products[0].Available, "in-stock product should be available")
+	assert.Equal(t, "Yo! Sushi Chicken Katsu Dragon Rolls", products[0].Name)
+
+	assert.False(t, *products[1].Available, "out-of-stock product should be unavailable")
+	assert.Equal(t, "FTO Sushi Platter (40 Pieces) - Eat On Same Day", products[1].Name)
+}
+
 func TestParseMorrisonsCategories(t *testing.T) {
 	categories := testutil.ParseCategoryFile(t, "testdata/morrisons_categories.html", osp.ParseMorrisonsCategories)
 

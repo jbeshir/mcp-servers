@@ -10,7 +10,7 @@ import (
 )
 
 func TestParseProductPage(t *testing.T) {
-	p := testutil.ParseProductFile(t, "testdata/tesco_product.html", parseProductPage)
+	p := testutil.ParseProductFile(t, "testdata/tesco_product.html", ParseProductPage)
 
 	assert.Equal(t, "Tesco British Semi Skimmed Milk 2.272L, 4 Pints", p.Name)
 	assert.InDelta(t, 1.65, p.Price, 0.001)

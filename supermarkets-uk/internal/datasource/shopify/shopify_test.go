@@ -36,13 +36,13 @@ func TestSearchProducts(t *testing.T) {
 	assert.Equal(t, "golden-bowl-thai-hom-mali-rice-1kg", p.ID)
 	assert.Equal(t, datasource.Hiyou, p.Supermarket)
 	assert.Equal(t, "GBP", p.Currency)
-	assert.True(t, p.Available)
+	assert.True(t, *p.Available)
 	assert.NotEmpty(t, p.ImageURL)
 	assert.True(t, strings.HasPrefix(p.URL, srv.URL))
 
 	// Second product: unavailable, image falls back to featured_image.
 	p2 := products[1]
-	assert.False(t, p2.Available)
+	assert.False(t, *p2.Available)
 	assert.NotEmpty(t, p2.ImageURL)
 }
 

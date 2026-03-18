@@ -27,11 +27,37 @@ func TestParseSearchResults(t *testing.T) {
 	assert.Equal(t, datasource.Tesco, p.Supermarket)
 	assert.Equal(t, "123456789", p.ID)
 	assert.Equal(t, "GBP", p.Currency)
+	assert.True(t, *p.Available)
 
 	p2 := products[1]
 	assert.Equal(t, "Cravendale Semi Skimmed Milk 2L", p2.Name)
 	assert.InDelta(t, 1.95, p2.Price, 0.001)
 	assert.Equal(t, "987654321", p2.ID)
+	assert.True(t, *p2.Available)
+}
+
+func TestParseSearchResults_Unavailable(t *testing.T) {
+	products := testutil.ParseSearchFile(t, "testdata/tesco_search_unavailable.html", tesco.ParseSearchResults)
+	require.NotEmpty(t, products)
+
+	// First product is "Tesco Japanese Style Chicken Sushi" which is out of stock.
+	p := products[0]
+	assert.Equal(t, "Tesco Japanese Style Chicken Sushi 135g", p.Name)
+	assert.False(t, *p.Available, "out-of-stock product should have Available=false")
+
+	// Second product should be available.
+	if len(products) > 1 {
+		assert.True(t, *products[1].Available, "in-stock product should have Available=true")
+	}
+}
+
+func TestParseProductPage_Unavailable(t *testing.T) {
+	f := testutil.OpenTestFile(t, "testdata/tesco_product_unavailable.html")
+	p, err := tesco.ParseProductPage(f)
+	require.NoError(t, err)
+
+	assert.Equal(t, "Tesco Japanese Style Chicken Sushi 135g", p.Name)
+	assert.False(t, *p.Available, "out-of-stock product page should have Available=false")
 }
 
 func TestParseCategories(t *testing.T) {

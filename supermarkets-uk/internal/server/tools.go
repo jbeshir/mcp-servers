@@ -14,7 +14,8 @@ func (s *Server) registerTools() {
 	s.mcpServer.AddTool(mcp.NewTool("search_products",
 		mcp.WithDescription(
 			"Search for grocery products across UK supermarkets. "+
-				"Returns products with prices, availability, and promotions."),
+				"Returns products with prices, promotions, and availability. "+
+				"The 'available' field is true/false when known, or omitted when unknown."),
 		mcp.WithString("query",
 			mcp.Required(),
 			mcp.Description("Search term for products (e.g. 'milk', 'bread', 'chicken breast')"),
@@ -48,8 +49,8 @@ func (s *Server) registerTools() {
 	s.mcpServer.AddTool(mcp.NewTool("get_product_details",
 		mcp.WithDescription(
 			"Get detailed information about a specific product including price, "+
-				"availability, description, ingredients, and nutritional information "+
-				"where available."),
+				"description, ingredients, and nutritional information where available. "+
+				"The 'available' field is true/false when known, or omitted when unknown."),
 		mcp.WithString("supermarket",
 			mcp.Required(),
 			mcp.Description("Supermarket ID. Use list_supermarkets to see all available IDs."),

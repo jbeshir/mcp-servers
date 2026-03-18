@@ -116,7 +116,7 @@ func (d *Datasource) convertSearchProduct(p searchProduct) datasource.Product {
 		Currency:    "GBP",
 		ImageURL:    imageURL,
 		URL:         productURL,
-		Available:   p.Available,
+		Available:   datasource.BoolPtr(p.Available),
 	}
 }
 
@@ -192,8 +192,8 @@ func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*
 		Currency:    "GBP",
 		ImageURL:    imageURL,
 		URL:         d.cfg.BaseURL + "/products/" + p.Handle,
-		Available:   true,
-		Weight:      weight,
+		// Shopify product detail API does not expose availability.
+		Weight: weight,
 	}
 	if p.BodyHTML != "" {
 		result.Description = stripHTML(p.BodyHTML)

@@ -67,6 +67,7 @@ type algoliaHit struct {
 	Name            string                  `json:"NAME"`
 	ImageID         string                  `json:"IMAGE_ID"`
 	PackSize        string                  `json:"PACK_SIZE"`
+	Status          string                  `json:"STATUS"` // "A" = active/available, "I" = inactive/unavailable
 	Prices          map[string]algoliaPrice `json:"PRICES"`
 	NutritionalInfo map[string]int          `json:"NUTRITIONAL_INFO"`
 }
@@ -235,7 +236,7 @@ func convertHit(hit algoliaHit) datasource.Product {
 		Supermarket: datasource.Asda,
 		Name:        hit.Name,
 		Currency:    "GBP",
-		Available:   true,
+		Available:   datasource.BoolPtr(hit.Status == "A"),
 		URL:         baseURL + "/groceries/product/" + url.PathEscape(hit.ObjectID),
 	}
 

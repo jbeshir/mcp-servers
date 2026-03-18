@@ -249,7 +249,7 @@ func convertProduct(ap apiProduct) datasource.Product {
 		Name:        ap.Name,
 		Price:       ap.RetailPrice.Price,
 		Currency:    "GBP",
-		Available:   ap.IsAvailable,
+		Available:   datasource.BoolPtr(ap.IsAvailable),
 		ImageURL:    ap.ImageURL,
 		Description: string(ap.Description),
 		Ingredients: string(ap.Ingredients),

@@ -30,6 +30,16 @@ func TestParseSearchResults(t *testing.T) {
 	assert.NotContains(t, strings.ToLower(p.Name), "price per unit")
 }
 
+func TestParseSearchResults_Unavailable(t *testing.T) {
+	products := testutil.ParseSearchFile(t, "testdata/waitrose_search_unavailable.html", waitrose.ParseSearchResults)
+	require.NotEmpty(t, products)
+
+	// Both products in this fixture are "Sold out online".
+	for _, p := range products {
+		assert.False(t, *p.Available, "%s should be unavailable", p.Name)
+	}
+}
+
 func TestParsePencePrice(t *testing.T) {
 	products := testutil.ParseSearchFile(t, "testdata/waitrose_search.html", waitrose.ParseSearchResults)
 

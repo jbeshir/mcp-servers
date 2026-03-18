@@ -35,6 +35,7 @@ func TestSearchProducts(t *testing.T) {
 	assert.InDelta(t, 1.45, p.Price, 0.001)
 	assert.Equal(t, datasource.Sainsburys, p.Supermarket)
 	assert.Equal(t, "7878921", p.ID)
+	assert.True(t, *p.Available, "is_available=true products should be available")
 	assert.Equal(t, "Nectar Price £1.70", products[1].Promotion)
 }
 

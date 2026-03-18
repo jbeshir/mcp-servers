@@ -31,6 +31,18 @@ func TestParseSearchResults(t *testing.T) {
 	assert.NotEmpty(t, p.PricePerUnit)
 	assert.NotEmpty(t, p.DietaryInfo, "expected dietary info from NUTRITIONAL_INFO flags")
 	assert.Contains(t, p.DietaryInfo, "Vegetarian")
+	assert.True(t, *p.Available, "STATUS=A products should be available")
+}
+
+func TestParseSearchResults_Unavailable(t *testing.T) {
+	f := testutil.OpenTestFile(t, "testdata/asda_search_unavailable.json")
+	products, err := asda.ParseSearchResults(f)
+	require.NoError(t, err)
+	require.GreaterOrEqual(t, len(products), 1)
+
+	for _, p := range products {
+		assert.False(t, *p.Available, "%s should be unavailable (STATUS=I)", p.Name)
+	}
 }
 
 func TestParseCategories(t *testing.T) {

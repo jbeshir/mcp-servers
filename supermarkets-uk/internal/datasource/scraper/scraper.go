@@ -63,6 +63,7 @@ type ProductSelectors struct {
 	Promo       ElemSel
 	Image       ElemSel
 	Weight      ElemSel
+	Unavailable ElemSel // optional: if present in container, marks product as unavailable
 	Description ElemSel // product page only
 	Ingredients ElemSel // product page only
 }
@@ -124,7 +125,7 @@ func ParseProductFields(doc *html.Node, sel ProductSelectors, id datasource.Supe
 	p := &datasource.Product{
 		Supermarket: id,
 		Currency:    "GBP",
-		Available:   true,
+		Available:   datasource.BoolPtr(true),
 	}
 	matchers := pageMatchers(sel)
 
@@ -176,7 +177,7 @@ func ExtractProduct(
 	p := datasource.Product{
 		Supermarket: sid,
 		Currency:    "GBP",
-		Available:   true,
+		Available:   datasource.BoolPtr(true),
 	}
 	matchers := searchMatchers(sel, baseURL)
 
@@ -249,6 +250,16 @@ func searchMatchers(sel ProductSelectors, baseURL string) []fieldMatcher {
 			p.Weight = TextContent(n)
 		}})
 	}
+	if sel.Unavailable != (ElemSel{}) {
+		m = append(m, fieldMatcher{sel.Unavailable, func(n *html.Node, p *datasource.Product) {
+			text := strings.ToLower(TextContent(n))
+			if strings.Contains(text, "out of stock") ||
+				strings.Contains(text, "unavailable") ||
+				strings.Contains(text, "sold out") {
+				p.Available = datasource.BoolPtr(false)
+			}
+		}})
+	}
 	return m
 }
 
@@ -285,6 +296,16 @@ func pageMatchers(sel ProductSelectors) []fieldMatcher {
 	if sel.Ingredients != (ElemSel{}) {
 		m = append(m, fieldMatcher{sel.Ingredients, func(n *html.Node, p *datasource.Product) {
 			p.Ingredients = TextContent(n)
+		}})
+	}
+	if sel.Unavailable != (ElemSel{}) {
+		m = append(m, fieldMatcher{sel.Unavailable, func(n *html.Node, p *datasource.Product) {
+			text := strings.ToLower(TextContent(n))
+			if strings.Contains(text, "out of stock") ||
+				strings.Contains(text, "unavailable") ||
+				strings.Contains(text, "sold out") {
+				p.Available = datasource.BoolPtr(false)
+			}
 		}})
 	}
 	return m

@@ -32,18 +32,20 @@ var selectors = scraper.Config{
 	Container:   scraper.ElemSel{Tag: "li", Att: "data-testid"},
 	CategorySel: scraper.ElemSel{Tag: "a", Cls: "ddsweb-local-navigation__submenu-link"},
 	SearchSel: scraper.ProductSelectors{
-		Title: scraper.ElemSel{Tag: "a", Cls: "titleLink"},
-		Price: scraper.ElemSel{Tag: "p", Cls: "priceText"},
-		Unit:  scraper.ElemSel{Tag: "p", Cls: "subtext"},
-		Promo: scraper.ElemSel{Tag: "span", Cls: "promotionText"},
-		Image: scraper.ElemSel{Tag: "img", Cls: "baseImage"},
+		Title:       scraper.ElemSel{Tag: "a", Cls: "titleLink"},
+		Price:       scraper.ElemSel{Tag: "p", Cls: "priceText"},
+		Unit:        scraper.ElemSel{Tag: "p", Cls: "subtext"},
+		Promo:       scraper.ElemSel{Tag: "span", Cls: "promotionText"},
+		Image:       scraper.ElemSel{Tag: "img", Cls: "baseImage"},
+		Unavailable: scraper.ElemSel{Tag: "div", Cls: "ddsweb-messaging__message-container"},
 	},
 	ProductSel: scraper.ProductSelectors{
-		Title: scraper.ElemSel{Tag: "h1", Att: "data-auto", Val: "pdp-product-title"},
-		Price: scraper.ElemSel{Tag: "p", Cls: "priceText"},
-		Unit:  scraper.ElemSel{Tag: "p", Cls: "subtext"},
-		Promo: scraper.ElemSel{Tag: "span", Cls: "promotionText"},
-		Image: scraper.ElemSel{Tag: "img", Cls: "baseImage"},
+		Title:       scraper.ElemSel{Tag: "h1", Att: "data-auto", Val: "pdp-product-title"},
+		Price:       scraper.ElemSel{Tag: "p", Cls: "priceText"},
+		Unit:        scraper.ElemSel{Tag: "p", Cls: "subtext"},
+		Promo:       scraper.ElemSel{Tag: "span", Cls: "promotionText"},
+		Image:       scraper.ElemSel{Tag: "img", Cls: "baseImage"},
+		Unavailable: scraper.ElemSel{Tag: "div", Cls: "ddsweb-messaging__message-container"},
 	},
 }
 
@@ -97,7 +99,7 @@ func (d *Datasource) GetProductDetails(ctx context.Context, productID string) (*
 	}
 	defer body.Close() //nolint:errcheck // Best-effort close.
 
-	p, err := parseProductPage(body)
+	p, err := ParseProductPage(body)
 	if err != nil {
 		return nil, err
 	}
@@ -122,9 +124,9 @@ func ParseSearchResults(r io.Reader) ([]datasource.Product, error) {
 	return scraper.ParseSearchResults(r, selectors)
 }
 
-// parseProductPage parses a Tesco product detail page.
+// ParseProductPage parses a Tesco product detail page.
 // The returned Product does not have ID or URL set.
-func parseProductPage(r io.Reader) (*datasource.Product, error) {
+func ParseProductPage(r io.Reader) (*datasource.Product, error) {
 	doc, err := html.Parse(r)
 	if err != nil {
 		return nil, fmt.Errorf("tesco: parse product HTML: %w", err)

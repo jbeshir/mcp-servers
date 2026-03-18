@@ -51,7 +51,7 @@ type Product struct {
 	Currency     string         `json:"currency"`
 	ImageURL     string         `json:"imageURL,omitempty"`
 	URL          string         `json:"url"`
-	Available    bool           `json:"available"`
+	Available    *bool          `json:"available,omitempty"`
 	Weight       string         `json:"weight,omitempty"`
 	Promotion    string         `json:"promotion,omitempty"`
 	Description  string         `json:"description,omitempty"`
@@ -106,6 +106,9 @@ type AuthProductSource interface {
 	// When no cookies have been set, it returns true (no session to validate).
 	CheckSession(ctx context.Context) bool
 }
+
+// BoolPtr returns a pointer to the given bool value.
+func BoolPtr(b bool) *bool { return &b }
 
 // ErrSessionExpired signals that a datasource's session has expired
 // and re-authentication is needed.
