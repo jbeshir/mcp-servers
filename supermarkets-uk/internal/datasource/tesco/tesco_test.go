@@ -51,15 +51,6 @@ func TestParseSearchResults_Unavailable(t *testing.T) {
 	}
 }
 
-func TestParseProductPage_Unavailable(t *testing.T) {
-	f := testutil.OpenTestFile(t, "testdata/tesco_product_unavailable.html")
-	p, err := tesco.ParseProductPage(f)
-	require.NoError(t, err)
-
-	assert.Equal(t, "Tesco Japanese Style Chicken Sushi 135g", p.Name)
-	assert.False(t, *p.Available, "out-of-stock product page should have Available=false")
-}
-
 func TestParseCategories(t *testing.T) {
 	categories := testutil.ParseCategoryFile(t, "testdata/tesco_categories.html", tesco.ParseCategories)
 

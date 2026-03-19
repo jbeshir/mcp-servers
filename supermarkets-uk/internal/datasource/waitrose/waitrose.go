@@ -30,6 +30,7 @@ var (
 	sessionCheckQuery     = scraper.ElemSel{Tag: "a", Att: "data-test", Val: "signOut"}
 	nutritionContainerSel = scraper.ElemSel{Tag: "div", Cls: "ProductNutrientsTable_nutrition"}
 	nutritionTableSel     = scraper.ElemSel{Tag: "table"}
+	productOOSSel         = scraper.ElemSel{Tag: "div", Cls: "OutOfStock_outOfStock__"}
 )
 
 var selectors = scraper.Config{
@@ -48,10 +49,9 @@ var selectors = scraper.Config{
 		Unavailable: scraper.ElemSel{Tag: "div", Cls: "outOfStock___"},
 	},
 	ProductSel: scraper.ProductSelectors{
-		Title:       scraper.ElemSel{Tag: "span", Att: "data-testid", Val: "product-name"},
-		Price:       scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-pod-price"},
-		Unit:        scraper.ElemSel{Tag: "span", Cls: "ProductPricing_pricePerUnit"},
-		Unavailable: scraper.ElemSel{Tag: "div", Cls: "OutOfStock_outOfStock__"},
+		Title: scraper.ElemSel{Tag: "span", Att: "data-testid", Val: "product-name"},
+		Price: scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-pod-price"},
+		Unit:  scraper.ElemSel{Tag: "span", Cls: "ProductPricing_pricePerUnit"},
 	},
 }
 
@@ -150,6 +150,15 @@ func parseProductPage(r io.Reader) (*datasource.Product, error) {
 	}
 	p := scraper.ParseProductFields(doc, selectors.ProductSel, datasource.Waitrose)
 	extractWaitroseProductDetails(doc, p)
+
+	// Check for "Sold out online" within the product page.
+	if el := scraper.FindElement(doc, productOOSSel); el != nil {
+		text := strings.ToLower(scraper.TextContent(el))
+		if strings.Contains(text, "sold out") {
+			p.Available = datasource.BoolPtr(false)
+		}
+	}
+
 	return p, nil
 }
 

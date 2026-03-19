@@ -298,16 +298,6 @@ func pageMatchers(sel ProductSelectors) []fieldMatcher {
 			p.Ingredients = TextContent(n)
 		}})
 	}
-	if sel.Unavailable != (ElemSel{}) {
-		m = append(m, fieldMatcher{sel.Unavailable, func(n *html.Node, p *datasource.Product) {
-			text := strings.ToLower(TextContent(n))
-			if strings.Contains(text, "out of stock") ||
-				strings.Contains(text, "unavailable") ||
-				strings.Contains(text, "sold out") {
-				p.Available = datasource.BoolPtr(false)
-			}
-		}})
-	}
 	return m
 }
 

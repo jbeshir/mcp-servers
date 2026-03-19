@@ -31,10 +31,9 @@ var morrisonsCfg = ospConfig{
 			Unavailable: scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-card-out-of-stock-badge"},
 		},
 		ProductSel: scraper.ProductSelectors{
-			Title:       scraper.ElemSel{Tag: "h1"},
-			Price:       scraper.ElemSel{Tag: "div", Att: "data-test", Val: "price-container"},
-			Promo:       scraper.ElemSel{Tag: "a", Att: "data-test", Val: "offer-card-promotion"},
-			Unavailable: scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-card-out-of-stock-badge"},
+			Title: scraper.ElemSel{Tag: "h1"},
+			Price: scraper.ElemSel{Tag: "div", Att: "data-test", Val: "price-container"},
+			Promo: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "offer-card-promotion"},
 		},
 	},
 	sessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "logout-button"},

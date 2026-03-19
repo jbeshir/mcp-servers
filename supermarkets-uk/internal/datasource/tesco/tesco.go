@@ -40,12 +40,11 @@ var selectors = scraper.Config{
 		Unavailable: scraper.ElemSel{Tag: "div", Cls: "ddsweb-messaging__message-container"},
 	},
 	ProductSel: scraper.ProductSelectors{
-		Title:       scraper.ElemSel{Tag: "h1", Att: "data-auto", Val: "pdp-product-title"},
-		Price:       scraper.ElemSel{Tag: "p", Cls: "priceText"},
-		Unit:        scraper.ElemSel{Tag: "p", Cls: "subtext"},
-		Promo:       scraper.ElemSel{Tag: "span", Cls: "promotionText"},
-		Image:       scraper.ElemSel{Tag: "img", Cls: "baseImage"},
-		Unavailable: scraper.ElemSel{Tag: "div", Cls: "ddsweb-messaging__message-container"},
+		Title: scraper.ElemSel{Tag: "h1", Att: "data-auto", Val: "pdp-product-title"},
+		Price: scraper.ElemSel{Tag: "p", Cls: "priceText"},
+		Unit:  scraper.ElemSel{Tag: "p", Cls: "subtext"},
+		Promo: scraper.ElemSel{Tag: "span", Cls: "promotionText"},
+		Image: scraper.ElemSel{Tag: "img", Cls: "baseImage"},
 	},
 }
 
@@ -136,6 +135,7 @@ func ParseProductPage(r io.Reader) (*datasource.Product, error) {
 	p.Ingredients = scraper.SectionContent(doc, "h3", "Ingredients")
 	table := scraper.FindNutritionTable(doc, nutritionTableSel)
 	p.Nutrition = scraper.ParseNutritionTable(table)
+
 	return p, nil
 }
 

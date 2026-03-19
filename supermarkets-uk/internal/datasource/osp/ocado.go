@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"golang.org/x/net/html"
 
@@ -106,6 +107,18 @@ func parseOSPProductPage(r io.Reader, cfg ospConfig) (*datasource.Product, error
 	p.Ingredients = scraper.SectionContent(doc, "h2", "Ingredients")
 	table := scraper.FindNutritionTable(doc, cfg.nutritionTableSel)
 	p.Nutrition = scraper.ParseNutritionTable(table)
+
+	// Check for OOS badge on the product page.
+	if cfg.selectors.ProductSel.Unavailable != (scraper.ElemSel{}) {
+		if el := scraper.FindElement(doc, cfg.selectors.ProductSel.Unavailable); el != nil {
+			text := strings.ToLower(scraper.TextContent(el))
+			if strings.Contains(text, "out of stock") ||
+				strings.Contains(text, "unavailable") {
+				p.Available = datasource.BoolPtr(false)
+			}
+		}
+	}
+
 	return p, nil
 }
 
@@ -133,10 +146,9 @@ var ocadoCfg = ospConfig{
 			Unavailable: scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-card-out-of-stock-badge"},
 		},
 		ProductSel: scraper.ProductSelectors{
-			Title:       scraper.ElemSel{Tag: "h1"},
-			Price:       scraper.ElemSel{Tag: "div", Att: "data-test", Val: "price-container"},
-			Promo:       scraper.ElemSel{Tag: "a", Att: "data-test", Val: "offer-card-promotion"},
-			Unavailable: scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-card-out-of-stock-badge"},
+			Title: scraper.ElemSel{Tag: "h1"},
+			Price: scraper.ElemSel{Tag: "div", Att: "data-test", Val: "price-container"},
+			Promo: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "offer-card-promotion"},
 		},
 	},
 	sessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "logout-button"},
