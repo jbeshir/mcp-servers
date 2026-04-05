@@ -1,6 +1,6 @@
 # Manifold Markets MCP Server
 
-An MCP server for interacting with [Manifold Markets](https://manifold.markets), a prediction market platform. Provides 16 tools covering market discovery, trading (bets and limit orders), and market management (creation, resolution, comments, liquidity). Communicates over stdio and works with any MCP-compatible client such as Claude Desktop or Claude Code.
+An MCP server for interacting with [Manifold Markets](https://manifold.markets), a prediction market platform. Provides 18 tools covering market discovery, trading (bets and limit orders), market management (creation, resolution, comments, liquidity), and portfolio analytics. Communicates over stdio and works with any MCP-compatible client such as Claude Desktop or Claude Code.
 
 ## Getting Started
 
@@ -86,6 +86,13 @@ claude mcp add manifold -- env MANIFOLD_API_KEY=<your-key> /path/to/manifold-mcp
 | `add_liquidity` | Add mana liquidity to a market |
 | `send_mana` | Send mana to other users |
 
+### Analytics
+
+| Tool | Description |
+|---|---|
+| `get_baseline` | Get deterministic baseline probability for a market at a past time (default: 24h) |
+| `get_portfolio_pnl` | Get full portfolio P&L summary with 24h changes for all positions |
+
 ## Key Concepts
 
 - **Markets** -- Questions that users trade on. Each market has a type (binary yes/no, multiple choice, pseudo-numeric, etc.), a probability or set of answer probabilities, and a closing time after which no new bets are accepted.
@@ -115,7 +122,7 @@ graph LR
 The server has three internal layers:
 
 - **`cmd/manifold-mcp`** -- Entry point. Reads configuration from environment variables, creates the HTTP client and MCP server, and starts the stdio transport.
-- **`internal/server`** -- Registers all 16 MCP tools, routes incoming requests to handlers, and formats responses. Tool definitions are split across `tools.go` (read operations), `tools_trading.go` (trading), and `tools_manage.go` (market management).
+- **`internal/server`** -- Registers all 18 MCP tools, routes incoming requests to handlers, and formats responses. Tool definitions are split across `tools.go` (read operations), `tools_trading.go` (trading), and `tools_manage.go` (market management).
 - **`internal/client`** -- REST client for the Manifold Markets API. Handles authentication (API key in the `Authorization` header), JSON serialization, and error handling.
 
 ## Data Flow

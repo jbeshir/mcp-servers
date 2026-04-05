@@ -57,7 +57,9 @@
     { "name": "close_market", "description": "Close a market or change its closing time" },
     { "name": "add_comment", "description": "Comment on a market" },
     { "name": "add_liquidity", "description": "Add mana liquidity to a market" },
-    { "name": "send_mana", "description": "Send mana to other users" }
+    { "name": "send_mana", "description": "Send mana to other users" },
+    { "name": "get_baseline", "description": "Get deterministic baseline probability for a market at a past time" },
+    { "name": "get_portfolio_pnl", "description": "Get full portfolio P&L summary with 24h changes" }
   ],
   "compatibility": {
     "platforms": ["darwin", "win32", "linux"]

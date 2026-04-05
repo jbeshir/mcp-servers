@@ -113,6 +113,22 @@ func (c *Client) ListBets(ctx context.Context, params url.Values) ([]Bet, error)
 	return bets, nil
 }
 
+// GetUserMetricsWithContracts fetches a user's positions and their associated
+// market data in a single paginated call.
+func (c *Client) GetUserMetricsWithContracts(
+	ctx context.Context, params url.Values,
+) (*UserMetricsWithContracts, error) {
+	path := "/v0/get-user-contract-metrics-with-contracts"
+	if len(params) > 0 {
+		path += "?" + params.Encode()
+	}
+	var result UserMetricsWithContracts
+	if err := c.do(ctx, http.MethodGet, path, nil, &result); err != nil {
+		return nil, fmt.Errorf("getting user metrics with contracts: %w", err)
+	}
+	return &result, nil
+}
+
 // GetComments retrieves comments with the given query parameters.
 func (c *Client) GetComments(ctx context.Context, params url.Values) ([]Comment, error) {
 	path := "/v0/comments"

@@ -132,16 +132,51 @@ type Comment struct {
 
 // ContractMetric represents a user's position in a market.
 type ContractMetric struct {
-	ContractID   string  `json:"contractId"`
-	UserID       string  `json:"userId"`
-	UserName     string  `json:"userName"`
-	UserUsername string  `json:"userUsername"`
-	HasShares    bool    `json:"hasShares"`
-	TotalShares  any     `json:"totalShares,omitempty"`
-	Profit       float64 `json:"profit"`
-	HasNoShares  bool    `json:"hasNoShares"`
-	HasYesShares bool    `json:"hasYesShares"`
-	AnswerID     *string `json:"answerId,omitempty"`
+	ContractID   string             `json:"contractId"`
+	UserID       string             `json:"userId"`
+	UserName     string             `json:"userName"`
+	UserUsername string             `json:"userUsername"`
+	HasShares    bool               `json:"hasShares"`
+	TotalShares  map[string]float64 `json:"totalShares,omitempty"`
+	Profit       float64            `json:"profit"`
+	HasNoShares  bool               `json:"hasNoShares"`
+	HasYesShares bool               `json:"hasYesShares"`
+	AnswerID     *string            `json:"answerId,omitempty"`
+}
+
+// ProbChanges holds probability changes over different time periods.
+type ProbChanges struct {
+	Day   float64 `json:"day"`
+	Week  float64 `json:"week"`
+	Month float64 `json:"month"`
+}
+
+// PortfolioMarket is a market returned by the bulk portfolio endpoint.
+// This endpoint uses a different schema from the standard market endpoints
+// (e.g. "prob" instead of "probability", "slug" instead of "url").
+type PortfolioMarket struct {
+	ID              string      `json:"id"`
+	Question        string      `json:"question"`
+	Slug            string      `json:"slug"`
+	OutcomeType     string      `json:"outcomeType"`
+	Prob            *float64    `json:"prob,omitempty"`
+	IsResolved      bool        `json:"isResolved"`
+	Resolution      *string     `json:"resolution,omitempty"`
+	ResolutionTime  *int64      `json:"resolutionTime,omitempty"`
+	Volume24Hours   float64     `json:"volume24Hours"`
+	ProbChanges     ProbChanges `json:"probChanges"`
+	CreatorUsername string      `json:"creatorUsername"`
+}
+
+// URL returns the full Manifold URL for this market.
+func (m *PortfolioMarket) URL() string {
+	return "https://manifold.markets/" + m.CreatorUsername + "/" + m.Slug
+}
+
+// UserMetricsWithContracts is the response from the bulk portfolio endpoint.
+type UserMetricsWithContracts struct {
+	MetricsByContract map[string][]ContractMetric `json:"metricsByContract"`
+	Contracts         []PortfolioMarket           `json:"contracts"`
 }
 
 // PlaceBetRequest is the request body for placing a bet.

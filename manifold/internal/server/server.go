@@ -292,4 +292,33 @@ func (s *Server) registerTools() {
 			mcp.Description("Optional message to include with the mana transfer"),
 		),
 	), s.handleSendMana)
+
+	s.mcpServer.AddTool(mcp.NewTool("get_baseline",
+		mcp.WithDescription(
+			"Get the deterministic baseline probability for a market at a point in the past. "+
+				"Computes what probability the market was at by analyzing recent bets. "+
+				"Returns current probability, baseline, and percentage point change. "+
+				"Includes a warning if the baseline is approximate (all fetched bets are within the lookback window)."),
+		mcp.WithString("contractId",
+			mcp.Required(),
+			mcp.Description("The market/contract ID to compute the baseline for"),
+		),
+		mcp.WithNumber("lookbackHours",
+			mcp.Description("How many hours back to compute the baseline from (default: 24)"),
+		),
+	), s.handleGetBaseline)
+
+	s.mcpServer.AddTool(mcp.NewTool("get_portfolio_pnl",
+		mcp.WithDescription(
+			"Get a full portfolio P&L summary for a user. "+
+				"Discovers all positions, computes current value, cost basis, total P&L, "+
+				"24h probability changes, and 24h P&L for each position. "+
+				"Returns open positions sorted by |24h P&L|, significant movers (>2pp change), "+
+				"and recently resolved markets (last 7 days). "+
+				"May take 30-60 seconds for large portfolios."),
+		mcp.WithString("userId",
+			mcp.Required(),
+			mcp.Description("The Manifold user ID to compute portfolio P&L for"),
+		),
+	), s.handleGetPortfolioPnl)
 }
