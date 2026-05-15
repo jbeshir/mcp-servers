@@ -1,0 +1,12 @@
+[Unit]
+Description=Host MCP proxy for nanoclaw containers
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=%h/bin/mcp-proxy -config %h/.config/host-mcp-proxy/config.json
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
