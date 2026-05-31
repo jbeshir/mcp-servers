@@ -40,14 +40,23 @@ func (s *Server) Run() error {
 func (s *Server) registerTools() {
 	s.mcpServer.AddTool(mcp.NewTool("search_nodes",
 		mcp.WithDescription(
-			"Search all Workflowy nodes by keyword. Matches against node name and note fields. "+
-				"Returns matching nodes with their breadcrumb path for context."),
+			"Search all Workflowy nodes by keyword and/or completion date range. Matches against node name and note fields. "+
+				"Returns matching nodes with their breadcrumb path for context. "+
+				"At least one of query, completed_after, or completed_before is required. "+
+				"When a date bound is supplied without the completed parameter, completed items are included automatically."),
 		mcp.WithString("query",
-			mcp.Required(),
 			mcp.Description("Search query to match in node names and notes (case-insensitive substring match)"),
 		),
 		mcp.WithBoolean("completed",
 			mcp.Description("Filter by completion status: true for completed only, false for uncompleted only (default: false)"),
+		),
+		mcp.WithNumber("completed_after",
+			mcp.Description("Inclusive lower bound on the node's own completion timestamp (unix seconds). "+
+				"Only nodes with a non-nil CompletedAt >= this value match."),
+		),
+		mcp.WithNumber("completed_before",
+			mcp.Description("Inclusive upper bound on the node's own completion timestamp (unix seconds). "+
+				"Only nodes with a non-nil CompletedAt <= this value match."),
 		),
 		mcp.WithNumber("limit",
 			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),

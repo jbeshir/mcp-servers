@@ -43,7 +43,7 @@
     }
   },
   "tools": [
-    { "name": "search_nodes", "description": "Search nodes by keyword across name and note fields" },
+    { "name": "search_nodes", "description": "Search nodes by keyword and/or completion date range (unix seconds) across name and note fields" },
     { "name": "get_node", "description": "Get full details of a node by ID" },
     { "name": "list_children", "description": "List child nodes of a parent, sorted by priority" },
     { "name": "create_node", "description": "Create a new node" },
