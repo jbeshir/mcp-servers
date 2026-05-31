@@ -55,7 +55,7 @@ claude mcp add workflowy -- env WORKFLOWY_API_TOKEN=<your-token> /path/to/workfl
 
 | Tool | Description |
 |---|---|
-| `search_nodes` | Search nodes by keyword across name and note fields |
+| `search_nodes` | Search nodes by keyword and/or completion date range (`completed_after`/`completed_before`, unix seconds) across name and note fields |
 | `get_node` | Get full details of a node by ID |
 | `list_children` | List child nodes of a parent, sorted by priority |
 | `create_node` | Create a new node |

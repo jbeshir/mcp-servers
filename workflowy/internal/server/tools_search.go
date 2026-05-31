@@ -15,8 +15,19 @@ func (s *Server) handleSearchNodes(
 	args := request.Params.Arguments
 
 	query, _ := args["query"].(string)
-	if query == "" {
-		return mcp.NewToolResultError("query is required"), nil
+
+	var completedAfter, completedBefore *int64
+	if v, ok := args["completed_after"].(float64); ok {
+		i := int64(v)
+		completedAfter = &i
+	}
+	if v, ok := args["completed_before"].(float64); ok {
+		i := int64(v)
+		completedBefore = &i
+	}
+
+	if !validateSearchArgs(query, completedAfter, completedBefore) {
+		return mcp.NewToolResultError("query or a completed_after/completed_before bound is required"), nil
 	}
 
 	limit := 50
@@ -35,9 +46,13 @@ func (s *Server) handleSearchNodes(
 	}
 
 	index := buildIndex(nodes)
-	results := searchNodes(nodes, index, strings.ToLower(query), filterCompleted, limit)
+	results := searchNodes(nodes, index, strings.ToLower(query), filterCompleted, completedAfter, completedBefore, limit)
 
 	return formatSearchResults(results)
+}
+
+func validateSearchArgs(query string, completedAfter, completedBefore *int64) bool {
+	return query != "" || completedAfter != nil || completedBefore != nil
 }
 
 func buildIndex(nodes []client.Node) map[string]*client.Node {
@@ -50,19 +65,26 @@ func buildIndex(nodes []client.Node) map[string]*client.Node {
 
 func searchNodes(
 	nodes []client.Node, index map[string]*client.Node,
-	queryLower string, filterCompleted *bool, limit int,
+	queryLower string, filterCompleted *bool,
+	completedAfter, completedBefore *int64,
+	limit int,
 ) []SearchResult {
 	var results []SearchResult
 	completedMemo := make(map[string]bool)
+	dateBoundsPresent := completedAfter != nil || completedBefore != nil
 
 	for i := range nodes {
 		node := &nodes[i]
 
-		if !matchesFilter(node, index, completedMemo, filterCompleted) {
+		if !matchesFilter(node, index, completedMemo, filterCompleted, dateBoundsPresent) {
 			continue
 		}
 
-		if !matchesQuery(node, queryLower) {
+		if queryLower != "" && !matchesQuery(node, queryLower) {
+			continue
+		}
+
+		if dateBoundsPresent && !matchesDateRange(node, completedAfter, completedBefore) {
 			continue
 		}
 
@@ -81,14 +103,32 @@ func searchNodes(
 
 func matchesFilter(
 	node *client.Node, index map[string]*client.Node,
-	memo map[string]bool, filterCompleted *bool,
+	memo map[string]bool, filterCompleted *bool, dateBoundsPresent bool,
 ) bool {
 	completed := isEffectivelyCompleted(node, index, memo)
 	if filterCompleted == nil {
+		if dateBoundsPresent {
+			// Date bounds imply interest in completed items; matchesDateRange handles the actual gate.
+			return true
+		}
 		// Default: exclude completed items.
 		return !completed
 	}
 	return completed == *filterCompleted
+}
+
+func matchesDateRange(node *client.Node, after, before *int64) bool {
+	if node.CompletedAt == nil {
+		return false
+	}
+	ts := *node.CompletedAt
+	if after != nil && ts < *after {
+		return false
+	}
+	if before != nil && ts > *before {
+		return false
+	}
+	return true
 }
 
 // isEffectivelyCompleted returns true if this node or any ancestor is completed.
