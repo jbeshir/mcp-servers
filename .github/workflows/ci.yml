@@ -21,7 +21,7 @@ jobs:
         uses: golangci/golangci-lint-action@v8
         with:
           version: v2.8.0
-          args: --config .golangci.yml ./workflowy/... ./manifold/... ./supermarkets-uk/... ./amazon-products/... ./wanikani/... ./bunpro/...
+          args: --config .golangci.yml ./workflowy/... ./manifold/... ./supermarkets-uk/... ./amazon-products/... ./wanikani/... ./bunpro/... ./assets/...
 
   test:
     name: Test

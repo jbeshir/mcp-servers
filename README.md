@@ -52,6 +52,14 @@ Read-only access to [Bunpro](https://bunpro.jp) Japanese grammar SRS data — us
 
 **Requires:** Bunpro email and password
 
+### [Assets](assets/)
+
+Offline design assets — search and fetch icons (8 sets: Bootstrap Icons, Feather, Heroicons, Lucide, Material Symbols, Phosphor, Simple Icons, Tabler), illustrations (Open Doodles, Humaaans, Open Peeps), and fonts (14 OFL-1.1 families) with license/attribution metadata. Renders SVGs and writes files to disk; no network access required.
+
+**7 tools:** `list_asset_sources`, `search_icons`, `get_icon`, `search_illustrations`, `get_illustration`, `search_fonts`, `get_font`
+
+**Requires:** none (offline)
+
 ## Installation
 
 ### Pre-built binaries
@@ -69,6 +77,7 @@ go install github.com/jbeshir/mcp-servers/supermarkets-uk/cmd/supermarkets-uk-mc
 go install github.com/jbeshir/mcp-servers/amazon-products/cmd/amazon-products-mcp@latest
 go install github.com/jbeshir/mcp-servers/wanikani/cmd/wanikani-mcp@latest
 go install github.com/jbeshir/mcp-servers/bunpro/cmd/bunpro-mcp@latest
+go install github.com/jbeshir/mcp-servers/assets/cmd/assets-mcp@latest
 ```
 
 ### Build from source
@@ -79,4 +88,4 @@ Clone the repo and run `make build` — binaries are written to `bin/`.
 
 These servers are published to the [MCP Registry](https://registry.modelcontextprotocol.io) under the `io.github.jbeshir` namespace:
 
-`workflowy-mcp`, `manifold-mcp`, `supermarkets-uk-mcp`, `amazon-products-mcp`, `wanikani-mcp`, `bunpro-mcp`
+`workflowy-mcp`, `manifold-mcp`, `supermarkets-uk-mcp`, `amazon-products-mcp`, `wanikani-mcp`, `bunpro-mcp`, `assets-mcp`
