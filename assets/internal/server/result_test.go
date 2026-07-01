@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
@@ -73,8 +72,8 @@ func TestNewFileResultShape(t *testing.T) {
 	if err != nil {
 		t.Fatalf("newFileResult: unexpected error: %v", err)
 	}
-	if len(res.Content) != 2 {
-		t.Fatalf("res.Content has length %d, want 2", len(res.Content))
+	if len(res.Content) != 1 {
+		t.Fatalf("res.Content has length %d, want 1", len(res.Content))
 	}
 
 	summary, ok := res.Content[0].(mcp.TextContent)
@@ -85,17 +84,15 @@ func TestNewFileResultShape(t *testing.T) {
 		t.Errorf("summary text = %q, want %q", summary.Text, "wrote 1 file")
 	}
 
-	tc, ok := res.Content[1].(mcp.TextContent)
+	m, ok := res.StructuredContent.(fileManifest)
 	if !ok {
-		t.Fatalf("content[1] is %T, want mcp.TextContent", res.Content[1])
-	}
-
-	var m fileManifest
-	if err := json.Unmarshal([]byte(tc.Text), &m); err != nil {
-		t.Fatalf("unmarshal file manifest: %v", err)
+		t.Fatalf("StructuredContent is %T, want fileManifest", res.StructuredContent)
 	}
 	if m.Count != 1 || len(m.Files) != 1 {
 		t.Fatalf("unexpected manifest: count=%d files=%d", m.Count, len(m.Files))
+	}
+	if m.Count != len(m.Files) {
+		t.Errorf("manifest count %d != len(files) %d", m.Count, len(m.Files))
 	}
 	if m.Files[0] != want {
 		t.Errorf("manifest.Files[0] = %+v, want %+v", m.Files[0], want)

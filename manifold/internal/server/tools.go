@@ -34,7 +34,7 @@ func (s *Server) handleSearchMarkets(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 	params := url.Values{}
 
 	setOptionalString(params, args, "term")
@@ -56,7 +56,7 @@ func (s *Server) handleGetMarket(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	marketID, ok := request.Params.Arguments["marketId"].(string)
+	marketID, ok := request.GetArguments()["marketId"].(string)
 	if !ok || marketID == "" {
 		return mcp.NewToolResultError("marketId is required"), nil
 	}
@@ -73,7 +73,7 @@ func (s *Server) handleGetUser(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	username, ok := request.Params.Arguments["username"].(string)
+	username, ok := request.GetArguments()["username"].(string)
 	if !ok || username == "" {
 		return mcp.NewToolResultError("username is required"), nil
 	}
@@ -102,7 +102,7 @@ func (s *Server) handleListBets(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 	params := url.Values{}
 
 	setOptionalString(params, args, "userId")
@@ -123,7 +123,7 @@ func (s *Server) handleGetComments(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 	params := url.Values{}
 
 	setOptionalString(params, args, "contractId")
@@ -142,7 +142,7 @@ func (s *Server) handleGetPositions(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	marketID, ok := args["marketId"].(string)
 	if !ok || marketID == "" {

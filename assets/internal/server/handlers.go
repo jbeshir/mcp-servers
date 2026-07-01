@@ -109,7 +109,7 @@ func (s *Server) handleSearchIcons(
 	_ context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	query := stringArg(args, "query")
 	if query == "" {
@@ -133,7 +133,7 @@ func (s *Server) handleGetIcon(
 	_ context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	set := stringArg(args, "set")
 	if set == "" {
@@ -194,7 +194,7 @@ func (s *Server) handleSearchIllustrations(
 	_ context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	query := stringArg(args, "query")
 	if query == "" {
@@ -218,7 +218,7 @@ func (s *Server) handleGetIllustration(
 	_ context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	collection := stringArg(args, "collection")
 	if collection == "" {
@@ -261,7 +261,7 @@ func (s *Server) handleSearchFonts(
 	_ context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	query := stringArg(args, "query")
 	if query == "" {
@@ -289,7 +289,7 @@ func (s *Server) handleGetFont(
 	_ context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	family := stringArg(args, "family")
 	if family == "" {

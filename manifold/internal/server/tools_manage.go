@@ -49,7 +49,7 @@ func (s *Server) handleCreateMarket(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	outcomeType, ok := args["outcomeType"].(string)
 	if !ok || outcomeType == "" {
@@ -75,7 +75,7 @@ func (s *Server) handleResolveMarket(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	marketID, ok := args["marketId"].(string)
 	if !ok || marketID == "" {
@@ -112,7 +112,7 @@ func (s *Server) handleCloseMarket(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	marketID, ok := args["marketId"].(string)
 	if !ok || marketID == "" {
@@ -136,7 +136,7 @@ func (s *Server) handleAddComment(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	contractID, ok := args["contractId"].(string)
 	if !ok || contractID == "" {
@@ -165,7 +165,7 @@ func (s *Server) handleAddLiquidity(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	marketID, ok := args["marketId"].(string)
 	if !ok || marketID == "" {
@@ -192,7 +192,7 @@ func (s *Server) handleSendMana(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	toIDsStr, ok := args["toIds"].(string)
 	if !ok || toIDsStr == "" {

@@ -12,7 +12,7 @@ func (s *Server) handleSearchNodes(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	query, _ := args["query"].(string)
 

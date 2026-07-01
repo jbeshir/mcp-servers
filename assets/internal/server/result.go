@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -24,7 +23,7 @@ type fileEntry struct {
 	Attribution string `json:"attribution"`
 }
 
-// fileManifest is the JSON shape emitted as a text content block by file-producing tools.
+// fileManifest is the JSON shape emitted as native structured content by file-producing tools.
 type fileManifest struct {
 	Files []fileEntry `json:"files"`
 	Count int         `json:"count"`
@@ -68,23 +67,16 @@ func writeAsset(filename string, data []byte) (string, error) {
 }
 
 // newFileResult builds a CallToolResult for a file-producing tool: a human-readable summary text
-// block followed by a machine-readable JSON manifest text block.
+// block plus the machine-readable file manifest as native structured content.
 //
-// mcp-go v0.28.0's CallToolResult has no StructuredContent field, so the file manifest is emitted
-// as a second text content block instead of native structured content. A future mcp-go bump should
-// promote this to result.StructuredContent = m in one line (see README "Return contract").
+// The manifest is carried in result.StructuredContent (mcp-go's native structured output), shaped
+// {"files":[{path,kind,source,license,attribution}],"count":N}; the summary text block is retained
+// so clients that ignore structured content still get a readable result.
 func newFileResult(summary string, files []fileEntry) (*mcp.CallToolResult, error) {
-	m := fileManifest{Files: files, Count: len(files)}
-
-	b, err := json.Marshal(m)
-	if err != nil {
-		return nil, fmt.Errorf("marshal file manifest: %w", err)
-	}
-
 	return &mcp.CallToolResult{
 		Content: []mcp.Content{
 			mcp.NewTextContent(summary),
-			mcp.NewTextContent(string(b)),
 		},
+		StructuredContent: fileManifest{Files: files, Count: len(files)},
 	}, nil
 }

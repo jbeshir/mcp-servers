@@ -67,12 +67,12 @@ Every icon, illustration, and font is vendored into the binary via Go's `embed` 
 
 ## Return Contract
 
-Tools that produce files (`get_icon`, `get_illustration`, `get_font`) write the asset(s) to disk under `ASSETS_OUTPUT_DIR` (or the default temp directory) and return **two text content blocks**:
+Tools that produce files (`get_icon`, `get_illustration`, `get_font`) write the asset(s) to disk under `ASSETS_OUTPUT_DIR` (or the default temp directory) and return:
 
-1. A human-readable summary of what was written.
-2. A JSON manifest shaped `{"files":[{"path","kind","source","license","attribution"}],"count":N}`.
+1. A human-readable summary **text content block** of what was written.
+2. A native **`structuredContent`** object shaped `{"files":[{"path","kind","source","license","attribution"}],"count":N}` (with `count == len(files)`).
 
-This two-block shape is a deliberate workaround: the pinned `mcp-go` version (`v0.28.0`, required so all seven servers in this monorepo stay on a compatible `CallToolRequest.Params.Arguments` shape) has no `StructuredContent` field on `CallToolResult` and no `NewToolResultStructured*` helper. A future, separate PR that bumps `mcp-go` across the monorepo can promote the second block to native `result.StructuredContent` in one line, without changing the manifest's JSON shape.
+This mirrors the structured-output shape used elsewhere in this monorepo, e.g. `image-gen-mcp`'s structured `image_url` result.
 
 ## Licenses
 
