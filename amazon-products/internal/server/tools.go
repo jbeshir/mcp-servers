@@ -72,12 +72,12 @@ func (s *Server) handleSearch(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	query, ok := request.Params.Arguments["query"].(string)
+	query, ok := request.GetArguments()["query"].(string)
 	if !ok || query == "" {
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	region, err := s.resolveRegion(request.Params.Arguments)
+	region, err := s.resolveRegion(request.GetArguments())
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}
@@ -102,12 +102,12 @@ func (s *Server) handleProductDetails(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	asin, ok := request.Params.Arguments["asin"].(string)
+	asin, ok := request.GetArguments()["asin"].(string)
 	if !ok || asin == "" {
 		return mcp.NewToolResultError("asin is required"), nil
 	}
 
-	region, err := s.resolveRegion(request.Params.Arguments)
+	region, err := s.resolveRegion(request.GetArguments())
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}

@@ -159,7 +159,7 @@ func (s *Server) handleGetReviewForecast(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	granularity, _ := request.Params.Arguments["granularity"].(string)
+	granularity, _ := request.GetArguments()["granularity"].(string)
 	if granularity == "hourly" {
 		result, err := s.client.GetForecastHourly(ctx)
 		if err != nil {
@@ -223,7 +223,7 @@ func (s *Server) handleSRSDetails(
 	request mcp.CallToolRequest,
 	reviewableType client.ReviewableType,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	levelStr, ok := args["level"].(string)
 	if !ok || levelStr == "" {
@@ -253,7 +253,7 @@ func (s *Server) handleGetGrammarPoint(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	id, ok := request.Params.Arguments["id"].(string)
+	id, ok := request.GetArguments()["id"].(string)
 	if !ok || id == "" {
 		return mcp.NewToolResultError("id is required"), nil
 	}
@@ -269,7 +269,7 @@ func (s *Server) handleGetVocab(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	slugOrID, ok := request.Params.Arguments["slug_or_id"].(string)
+	slugOrID, ok := request.GetArguments()["slug_or_id"].(string)
 	if !ok || slugOrID == "" {
 		return mcp.NewToolResultError("slugOrId is required"), nil
 	}

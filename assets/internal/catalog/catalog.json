@@ -1,0 +1,420 @@
+{
+  "icons": [
+    {
+      "set": "lucide",
+      "license": "ISC",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@iconify-json/lucide/icons.json",
+      "count": 1000,
+      "grid": 24,
+      "note": "subset: kept first 1000 of 1804 icons (sorted); 106 aliases retained"
+    },
+    {
+      "set": "heroicons",
+      "license": "MIT",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@iconify-json/heroicons/icons.json",
+      "count": 1000,
+      "grid": 24,
+      "note": "subset: kept first 1000 of 1288 icons (sorted); 6 aliases retained"
+    },
+    {
+      "set": "tabler",
+      "license": "MIT",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@iconify-json/tabler/icons.json",
+      "count": 1000,
+      "grid": 24,
+      "note": "subset: kept first 1000 of 6194 icons (sorted); 19 aliases retained"
+    },
+    {
+      "set": "phosphor",
+      "license": "MIT",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@iconify-json/ph/icons.json",
+      "count": 1000,
+      "grid": 256,
+      "note": "subset: kept first 1000 of 9161 icons (sorted); 2 aliases retained"
+    },
+    {
+      "set": "feather",
+      "license": "MIT",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@iconify-json/feather/icons.json",
+      "count": 286,
+      "grid": 24,
+      "note": "all 286 icons kept; 0 aliases retained"
+    },
+    {
+      "set": "bootstrap-icons",
+      "license": "MIT",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@iconify-json/bi/icons.json",
+      "count": 1000,
+      "grid": 16,
+      "note": "subset: kept first 1000 of 2084 icons (sorted); 3 aliases retained"
+    },
+    {
+      "set": "material-symbols",
+      "license": "Apache-2.0",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@iconify-json/material-symbols/icons.json",
+      "count": 1000,
+      "grid": 24,
+      "note": "subset: kept first 1000 of 16336 icons (sorted); 116 aliases retained"
+    },
+    {
+      "set": "simple-icons",
+      "license": "CC0-1.0",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@iconify-json/simple-icons/icons.json",
+      "count": 1000,
+      "grid": 24,
+      "note": "subset: kept first 1000 of 3719 icons (sorted); 4 aliases retained"
+    }
+  ],
+  "illustrations": [
+    {
+      "collection": "open-doodles",
+      "license": "CC0-1.0",
+      "attribution": "",
+      "source_url": "https://www.npmjs.com/package/react-open-doodles",
+      "count": 33,
+      "note": "Original collection by Pablo Stanley (opendoodles.com), CC0-1.0. Rendered from the compiled react-open-doodles npm package (v1.0.5) via a custom fake-React-to-SVG-string renderer (no browser/DOM available in this sandbox). Curated subset, not the full collection; viewBox 0 0 1024 768 preserved from source components."
+    },
+    {
+      "collection": "humaaans",
+      "license": "CC0-1.0",
+      "attribution": "",
+      "source_url": "https://www.npmjs.com/package/humaaans",
+      "count": 20,
+      "note": "Original collection by Pablo Stanley (humaaans.com), CC0-1.0. Rendered from humaaans npm package (v1.7.0) ESM source under lib/body-parts/{head,scene,sitting,standing,torso}, transformed to CJS and rendered via the same fake-React SVG renderer. Curated subset: 4 files per category (5 categories) for even coverage. These are individual body-part fragments (not full figure compositions), so a generic approximate viewBox (0 0 400 500) is used since parts do not carry their own bounding boxes in the source."
+    },
+    {
+      "collection": "open-peeps",
+      "license": "CC0-1.0",
+      "attribution": "",
+      "source_url": "https://www.npmjs.com/package/@dicebear/open-peeps",
+      "count": 31,
+      "note": "Original collection by Pablo Stanley (openpeeps.com), CC0-1.0. Rendered from @dicebear/open-peeps npm package (v9.4.2), an official DiceBear remix of Open Peeps distributed as parametric SVG path-generator functions; rendered with fixed representative colors (skin #e0b592, clothing #6dbdb5) via the fake-React SVG renderer. Curated subset spanning 5 sub-groups: head(13), face(8), facial-hair(4), mask(2), accessories(4). viewBox 0 0 704 704 per DiceBear's open-peeps definition."
+    }
+  ],
+  "fonts": [
+    {
+      "family": "Inter",
+      "slug": "inter",
+      "license": "OFL-1.1",
+      "category": "sans",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/inter/",
+      "files": [
+        {
+          "file": "inter-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "inter-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "Roboto",
+      "slug": "roboto",
+      "license": "OFL-1.1",
+      "category": "sans",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/roboto/",
+      "files": [
+        {
+          "file": "roboto-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "roboto-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "Open Sans",
+      "slug": "open-sans",
+      "license": "OFL-1.1",
+      "category": "sans",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/open-sans/",
+      "files": [
+        {
+          "file": "open-sans-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "open-sans-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "Lato",
+      "slug": "lato",
+      "license": "OFL-1.1",
+      "category": "sans",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/lato/",
+      "files": [
+        {
+          "file": "lato-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "lato-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "Montserrat",
+      "slug": "montserrat",
+      "license": "OFL-1.1",
+      "category": "sans",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/montserrat/",
+      "files": [
+        {
+          "file": "montserrat-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "montserrat-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "Poppins",
+      "slug": "poppins",
+      "license": "OFL-1.1",
+      "category": "sans",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/poppins/",
+      "files": [
+        {
+          "file": "poppins-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "poppins-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "Source Serif 4",
+      "slug": "source-serif-4",
+      "license": "OFL-1.1",
+      "category": "serif",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/source-serif-4/",
+      "files": [
+        {
+          "file": "source-serif-4-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "source-serif-4-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "Merriweather",
+      "slug": "merriweather",
+      "license": "OFL-1.1",
+      "category": "serif",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/merriweather/",
+      "files": [
+        {
+          "file": "merriweather-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "merriweather-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "Lora",
+      "slug": "lora",
+      "license": "OFL-1.1",
+      "category": "serif",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/lora/",
+      "files": [
+        {
+          "file": "lora-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "lora-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "Playfair Display",
+      "slug": "playfair-display",
+      "license": "OFL-1.1",
+      "category": "serif",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/playfair-display/",
+      "files": [
+        {
+          "file": "playfair-display-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "playfair-display-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "JetBrains Mono",
+      "slug": "jetbrains-mono",
+      "license": "OFL-1.1",
+      "category": "mono",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono/",
+      "files": [
+        {
+          "file": "jetbrains-mono-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "jetbrains-mono-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "Fira Code",
+      "slug": "fira-code",
+      "license": "OFL-1.1",
+      "category": "mono",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/fira-code/",
+      "files": [
+        {
+          "file": "fira-code-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "fira-code-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "IBM Plex Mono",
+      "slug": "ibm-plex-mono",
+      "license": "OFL-1.1",
+      "category": "mono",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono/",
+      "files": [
+        {
+          "file": "ibm-plex-mono-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        },
+        {
+          "file": "ibm-plex-mono-latin-700-normal.woff2",
+          "weight": 700,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    },
+    {
+      "family": "Bebas Neue",
+      "slug": "bebas-neue",
+      "license": "OFL-1.1",
+      "category": "display",
+      "attribution": "",
+      "source_url": "https://cdn.jsdelivr.net/npm/@fontsource/bebas-neue/",
+      "files": [
+        {
+          "file": "bebas-neue-latin-400-normal.woff2",
+          "weight": 400,
+          "style": "normal",
+          "format": "woff2"
+        }
+      ],
+      "note": "license file bundled: LICENSE"
+    }
+  ]
+}

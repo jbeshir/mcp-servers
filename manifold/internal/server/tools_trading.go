@@ -12,7 +12,7 @@ func (s *Server) handlePlaceBet(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	amount, ok := args["amount"].(float64)
 	if !ok || amount <= 0 {
@@ -54,7 +54,7 @@ func (s *Server) handleSellShares(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	marketID, ok := args["marketId"].(string)
 	if !ok || marketID == "" {
@@ -84,7 +84,7 @@ func (s *Server) handleCancelBet(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	betID, ok := request.Params.Arguments["betId"].(string)
+	betID, ok := request.GetArguments()["betId"].(string)
 	if !ok || betID == "" {
 		return mcp.NewToolResultError("betId is required"), nil
 	}

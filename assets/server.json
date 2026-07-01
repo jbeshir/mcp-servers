@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.jbeshir/assets-mcp",
+  "title": "Assets",
+  "description": "Search and fetch offline icons, illustrations, and fonts with license metadata.",
+  "version": "0.0.0",
+  "repository": {
+    "url": "https://github.com/jbeshir/mcp-servers",
+    "source": "github",
+    "subfolder": "assets"
+  },
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/jbeshir/mcp-servers/releases/download/assets/v0.0.0/assets-mcp.mcpb",
+      "fileSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "ASSETS_OUTPUT_DIR",
+          "description": "Directory to write rendered assets to (default: OS temp dir + /assets-mcp)",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}

@@ -129,7 +129,7 @@ func (s *Server) handleSearchProducts(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	query, ok := args["query"].(string)
 	if !ok || query == "" {
@@ -149,7 +149,7 @@ func (s *Server) handleComparePrices(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	query, ok := request.Params.Arguments["query"].(string)
+	query, ok := request.GetArguments()["query"].(string)
 	if !ok || query == "" {
 		return mcp.NewToolResultError("query is required"), nil
 	}
@@ -162,7 +162,7 @@ func (s *Server) handleBrowseCategories(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	supermarketID, ok := request.Params.Arguments["supermarket"].(string)
+	supermarketID, ok := request.GetArguments()["supermarket"].(string)
 	if !ok || supermarketID == "" {
 		return mcp.NewToolResultError("supermarket is required"), nil
 	}
@@ -180,7 +180,7 @@ func (s *Server) handleGetProductDetails(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	supermarketID, ok := args["supermarket"].(string)
 	if !ok || supermarketID == "" {
@@ -205,7 +205,7 @@ func (s *Server) handleGetOrderHistory(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	supermarketID, ok := args["supermarket"].(string)
 	if !ok || supermarketID == "" {
@@ -232,7 +232,7 @@ func (s *Server) handleGetBasket(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	supermarketID, ok := request.Params.Arguments["supermarket"].(string)
+	supermarketID, ok := request.GetArguments()["supermarket"].(string)
 	if !ok || supermarketID == "" {
 		return mcp.NewToolResultError("supermarket is required"), nil
 	}
@@ -252,7 +252,7 @@ func (s *Server) handleAddToBasket(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	supermarketID, ok := args["supermarket"].(string)
 	if !ok || supermarketID == "" {
@@ -284,7 +284,7 @@ func (s *Server) handleRemoveFromBasket(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	supermarketID, ok := args["supermarket"].(string)
 	if !ok || supermarketID == "" {

@@ -102,7 +102,7 @@ func (s *Server) handleGetBaseline(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	contractID, ok := args["contractId"].(string)
 	if !ok || contractID == "" {
@@ -211,7 +211,7 @@ func (s *Server) handleGetPortfolioPnl(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	userID, ok := request.Params.Arguments["userId"].(string)
+	userID, ok := request.GetArguments()["userId"].(string)
 	if !ok || userID == "" {
 		return mcp.NewToolResultError("userId is required"), nil
 	}

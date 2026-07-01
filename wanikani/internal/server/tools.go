@@ -153,7 +153,7 @@ func (s *Server) handleGetAssignments(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 	params := url.Values{}
 
 	setOptionalString(params, args, "subjectTypes", "subject_types")
@@ -175,7 +175,7 @@ func (s *Server) handleGetSubjects(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 	params := url.Values{}
 
 	setOptionalString(params, args, "types", "types")
@@ -198,7 +198,7 @@ func (s *Server) handleGetReviewStatistics(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 	params := url.Values{}
 
 	setOptionalString(params, args, "subjectTypes", "subject_types")
@@ -217,7 +217,7 @@ func (s *Server) handleGetLevelProgressions(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	items, total, err := s.client.GetLevelProgressions(ctx, getLimit(request.Params.Arguments))
+	items, total, err := s.client.GetLevelProgressions(ctx, getLimit(request.GetArguments()))
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to get level progressions: %v", err)), nil
 	}

@@ -12,7 +12,7 @@ func (s *Server) handleGetNode(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	nodeID, ok := request.Params.Arguments["nodeId"].(string)
+	nodeID, ok := request.GetArguments()["nodeId"].(string)
 	if !ok || nodeID == "" {
 		return mcp.NewToolResultError("nodeId is required"), nil
 	}
@@ -29,7 +29,7 @@ func (s *Server) handleListChildren(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	parentID, _ := request.Params.Arguments["parentId"].(string)
+	parentID, _ := request.GetArguments()["parentId"].(string)
 
 	nodes, err := s.client.ListChildren(ctx, parentID)
 	if err != nil {
@@ -43,7 +43,7 @@ func (s *Server) handleCreateNode(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	name, ok := args["name"].(string)
 	if !ok || name == "" {
@@ -79,7 +79,7 @@ func (s *Server) handleUpdateNode(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	nodeID, ok := args["nodeId"].(string)
 	if !ok || nodeID == "" {
@@ -109,7 +109,7 @@ func (s *Server) handleDeleteNode(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	nodeID, ok := request.Params.Arguments["nodeId"].(string)
+	nodeID, ok := request.GetArguments()["nodeId"].(string)
 	if !ok || nodeID == "" {
 		return mcp.NewToolResultError("nodeId is required"), nil
 	}
@@ -126,7 +126,7 @@ func (s *Server) handleMoveNode(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	args := request.Params.Arguments
+	args := request.GetArguments()
 
 	nodeID, ok := args["nodeId"].(string)
 	if !ok || nodeID == "" {
@@ -153,7 +153,7 @@ func (s *Server) handleCompleteNode(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	nodeID, ok := request.Params.Arguments["nodeId"].(string)
+	nodeID, ok := request.GetArguments()["nodeId"].(string)
 	if !ok || nodeID == "" {
 		return mcp.NewToolResultError("nodeId is required"), nil
 	}
@@ -170,7 +170,7 @@ func (s *Server) handleUncompleteNode(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	nodeID, ok := request.Params.Arguments["nodeId"].(string)
+	nodeID, ok := request.GetArguments()["nodeId"].(string)
 	if !ok || nodeID == "" {
 		return mcp.NewToolResultError("nodeId is required"), nil
 	}
