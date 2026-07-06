@@ -8,9 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jbeshir/mcp-servers/assets/internal/fonts"
-	"github.com/jbeshir/mcp-servers/assets/internal/icons"
-	"github.com/jbeshir/mcp-servers/assets/internal/illustrations"
+	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -106,7 +104,7 @@ func (s *Server) handleListAssetSources(
 }
 
 func (s *Server) handleSearchIcons(
-	_ context.Context,
+	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
@@ -119,18 +117,21 @@ func (s *Server) handleSearchIcons(
 	set := stringArg(args, "set")
 	limit := clampLimit(intArg(args, "limit", 0))
 
-	results := icons.Search(query, set, limit)
+	page, _ := s.registry.SearchIcons(ctx, assetcore.IconQuery{
+		SearchOpts: assetcore.SearchOpts{Query: query, Limit: limit},
+		Set:        set,
+	})
 
-	lines := make([]string, 0, len(results))
-	for _, m := range results {
-		lines = append(lines, fmt.Sprintf("%s/%s", m.Set, m.Name))
+	lines := make([]string, 0, len(page.Assets))
+	for _, a := range page.Assets {
+		lines = append(lines, fmt.Sprintf("%s/%s", a.Source, a.Title))
 	}
 
-	return formatList(fmt.Sprintf("%d icon(s) matching %q:", len(results), query), lines), nil
+	return formatList(fmt.Sprintf("%d icon(s) matching %q:", len(page.Assets), query), lines), nil
 }
 
 func (s *Server) handleGetIcon(
-	_ context.Context,
+	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
@@ -148,16 +149,22 @@ func (s *Server) handleGetIcon(
 	color := stringArg(args, "color")
 	size := intArg(args, "size", 0)
 
-	data, err := icons.Render(set, name, color, size)
+	blob, err := s.registry.FetchIcon(ctx, assetcore.Asset{
+		Kind:   assetcore.KindIcon,
+		Source: set,
+		Title:  name,
+		Ref: map[string]string{
+			assetcore.RefColor: color,
+			assetcore.RefSize:  strconv.Itoa(size),
+		},
+	})
 	if err != nil {
-		if errors.Is(err, icons.ErrNotFound) {
+		if errors.Is(err, assetcore.ErrNotFound) {
 			return mcp.NewToolResultError(fmt.Sprintf("icon not found: %s/%s", set, name)), nil
 		}
 
 		return nil, fmt.Errorf("render icon %s/%s: %w", set, name, err)
 	}
-
-	license, attribution, _ := s.catalog.IconLicense(set)
 
 	filename := sanitizeFilename(fmt.Sprintf("icon-%s-%s", set, name))
 	if size > 0 {
@@ -170,7 +177,7 @@ func (s *Server) handleGetIcon(
 
 	filename += ".svg"
 
-	path, err := writeAsset(filename, data)
+	path, err := writeAsset(filename, blob.Content)
 	if err != nil {
 		return nil, fmt.Errorf("write icon %s/%s: %w", set, name, err)
 	}
@@ -185,13 +192,13 @@ func (s *Server) handleGetIcon(
 		Path:        path,
 		Kind:        kindIcon,
 		Source:      set,
-		License:     license,
-		Attribution: attribution,
+		License:     blob.Asset.License.SPDX,
+		Attribution: blob.Asset.License.Attribution,
 	}})
 }
 
 func (s *Server) handleSearchIllustrations(
-	_ context.Context,
+	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
@@ -204,18 +211,21 @@ func (s *Server) handleSearchIllustrations(
 	collection := stringArg(args, "collection")
 	limit := clampLimit(intArg(args, "limit", 0))
 
-	results := illustrations.Search(query, collection, limit)
+	page, _ := s.registry.SearchIllustrations(ctx, assetcore.IllustrationQuery{
+		SearchOpts: assetcore.SearchOpts{Query: query, Limit: limit},
+		Collection: collection,
+	})
 
-	lines := make([]string, 0, len(results))
-	for _, m := range results {
-		lines = append(lines, fmt.Sprintf("%s/%s", m.Collection, m.Name))
+	lines := make([]string, 0, len(page.Assets))
+	for _, a := range page.Assets {
+		lines = append(lines, fmt.Sprintf("%s/%s", a.Source, a.Title))
 	}
 
-	return formatList(fmt.Sprintf("%d illustration(s) matching %q:", len(results), query), lines), nil
+	return formatList(fmt.Sprintf("%d illustration(s) matching %q:", len(page.Assets), query), lines), nil
 }
 
 func (s *Server) handleGetIllustration(
-	_ context.Context,
+	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
@@ -230,20 +240,22 @@ func (s *Server) handleGetIllustration(
 		return mcp.NewToolResultError("name is required"), nil
 	}
 
-	data, err := illustrations.Get(collection, name)
+	blob, err := s.registry.FetchIllustration(ctx, assetcore.Asset{
+		Kind:   assetcore.KindIllustration,
+		Source: collection,
+		Title:  name,
+	})
 	if err != nil {
-		if errors.Is(err, illustrations.ErrNotFound) {
+		if errors.Is(err, assetcore.ErrNotFound) {
 			return mcp.NewToolResultError(fmt.Sprintf("illustration not found: %s/%s", collection, name)), nil
 		}
 
 		return nil, fmt.Errorf("get illustration %s/%s: %w", collection, name, err)
 	}
 
-	license, attribution, _ := s.catalog.IllustrationLicense(collection)
-
 	filename := sanitizeFilename(fmt.Sprintf("illustration-%s-%s", collection, name)) + ".svg"
 
-	path, err := writeAsset(filename, data)
+	path, err := writeAsset(filename, blob.Content)
 	if err != nil {
 		return nil, fmt.Errorf("write illustration %s/%s: %w", collection, name, err)
 	}
@@ -252,13 +264,13 @@ func (s *Server) handleGetIllustration(
 		Path:        path,
 		Kind:        kindIllustration,
 		Source:      collection,
-		License:     license,
-		Attribution: attribution,
+		License:     blob.Asset.License.SPDX,
+		Attribution: blob.Asset.License.Attribution,
 	}})
 }
 
 func (s *Server) handleSearchFonts(
-	_ context.Context,
+	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
@@ -270,23 +282,22 @@ func (s *Server) handleSearchFonts(
 
 	limit := clampLimit(intArg(args, "limit", 0))
 
-	results := fonts.Search(query, limit)
+	page, _ := s.registry.SearchFonts(ctx, assetcore.FontQuery{
+		SearchOpts: assetcore.SearchOpts{Query: query, Limit: limit},
+	})
 
-	lines := make([]string, 0, len(results))
-	for _, m := range results {
-		weights := make([]string, 0, len(m.Weights))
-		for _, w := range m.Weights {
-			weights = append(weights, strconv.Itoa(w))
-		}
-
-		lines = append(lines, fmt.Sprintf("%s (%s) weights: %s", m.Family, m.Category, strings.Join(weights, ",")))
+	lines := make([]string, 0, len(page.Assets))
+	for _, a := range page.Assets {
+		lines = append(lines, fmt.Sprintf(
+			"%s (%s) weights: %s", a.Title, a.Ref[assetcore.RefCategory], a.Ref[assetcore.RefWeights],
+		))
 	}
 
-	return formatList(fmt.Sprintf("%d font family(-ies) matching %q:", len(results), query), lines), nil
+	return formatList(fmt.Sprintf("%d font family(-ies) matching %q:", len(page.Assets), query), lines), nil
 }
 
 func (s *Server) handleGetFont(
-	_ context.Context,
+	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
@@ -305,21 +316,29 @@ func (s *Server) handleGetFont(
 
 	format := stringArg(args, "format")
 
-	font, err := fonts.Get(family, weight, style)
+	blob, prov, err := s.registry.FetchFont(ctx, assetcore.Asset{
+		Kind:   assetcore.KindFont,
+		Source: family,
+		Ref: map[string]string{
+			assetcore.RefWeight: strconv.Itoa(weight),
+			assetcore.RefStyle:  style,
+		},
+	})
 	if err != nil {
-		if errors.Is(err, fonts.ErrNotFound) {
+		if errors.Is(err, assetcore.ErrNotFound) {
 			return mcp.NewToolResultError(fmt.Sprintf("font not found: %s weight=%d style=%s", family, weight, style)), nil
 		}
 
 		return nil, fmt.Errorf("get font %s: %w", family, err)
 	}
 
-	license, attribution, _ := s.catalog.FontLicense(family)
+	license := blob.Asset.License.SPDX
+	attribution := blob.Asset.License.Attribution
 
 	slug := sanitizeFilename(strings.ToLower(family))
 	base := fmt.Sprintf("font-%s-%d-%s", slug, weight, style)
 
-	woffPath, err := writeAsset(base+".woff2", font.Data)
+	woffPath, err := writeAsset(base+".woff2", blob.Content)
 	if err != nil {
 		return nil, fmt.Errorf("write font %s: %w", family, err)
 	}
@@ -335,7 +354,12 @@ func (s *Server) handleGetFont(
 	summary := fmt.Sprintf("Wrote font %s (weight %d, %s) to %s", family, weight, style, woffPath)
 
 	if strings.EqualFold(format, cssFormat) {
-		css := fonts.FontFace(family, font)
+		renderer, ok := prov.(assetcore.FontFaceRenderer)
+		if !ok {
+			return nil, fmt.Errorf("font provider %q cannot render @font-face CSS", prov.Name())
+		}
+
+		css := renderer.RenderFontFace(family, blob)
 
 		cssPath, err := writeAsset(base+".css", []byte(css))
 		if err != nil {

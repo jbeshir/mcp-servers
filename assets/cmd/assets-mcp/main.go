@@ -2,17 +2,20 @@ package main
 
 import (
 	"log"
-	"os"
 
+	"github.com/jbeshir/mcp-servers/assets/internal/config"
 	"github.com/jbeshir/mcp-servers/assets/internal/server"
 )
 
 func main() {
-	if outputDir := os.Getenv("ASSETS_OUTPUT_DIR"); outputDir != "" {
-		log.Printf("writing rendered assets to %s", outputDir)
+	cfg := config.LoadConfig()
+	if cfg.OutputDir != "" {
+		log.Printf("writing rendered assets to %s", cfg.OutputDir)
 	}
 
-	srv := server.NewServer()
+	deps := config.Setup(cfg)
+
+	srv := server.NewServer(deps.Registry, deps.Catalog)
 
 	if err := srv.Run(); err != nil {
 		log.Fatal(err)

@@ -1,28 +1,25 @@
 package server
 
 import (
-	"log"
-
+	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/jbeshir/mcp-servers/assets/internal/catalog"
 	"github.com/mark3labs/mcp-go/server"
 )
 
-// Server is the MCP server for offline design assets (icons, illustrations, fonts).
+// Server is the MCP server for offline design assets (icons, illustrations, fonts). It serves assets
+// through a provider registry; the catalog is retained for the list_asset_sources tool.
 type Server struct {
 	mcpServer *server.MCPServer
+	registry  *assetcore.Registry
 	catalog   *catalog.Catalog
 }
 
-// NewServer creates a new MCP server, loading the embedded asset catalog.
-func NewServer() *Server {
-	c, err := catalog.Load()
-	if err != nil {
-		log.Printf("failed to load asset catalog: %v", err)
-		c = &catalog.Catalog{}
-	}
-
+// NewServer creates a new MCP server backed by the given provider registry and catalog. The registry
+// and catalog are built during wiring (config.Setup) and treated read-only.
+func NewServer(registry *assetcore.Registry, cat *catalog.Catalog) *Server {
 	s := &Server{
-		catalog: c,
+		registry: registry,
+		catalog:  cat,
 	}
 
 	s.mcpServer = server.NewMCPServer(
