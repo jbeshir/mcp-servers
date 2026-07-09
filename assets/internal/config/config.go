@@ -9,9 +9,9 @@ import (
 
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/jbeshir/mcp-servers/assets/internal/catalog"
-	fontsembedded "github.com/jbeshir/mcp-servers/assets/internal/providers/fonts/embedded"
-	iconsembedded "github.com/jbeshir/mcp-servers/assets/internal/providers/icons/embedded"
-	illusembedded "github.com/jbeshir/mcp-servers/assets/internal/providers/illustrations/embedded"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedfonts"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedicons"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedillustrations"
 )
 
 // envOutputDir names the environment variable selecting the asset output directory.
@@ -52,9 +52,9 @@ func Setup(_ Config) *Deps {
 	}
 
 	r := assetcore.NewRegistry()
-	r.AddIcon(iconsembedded.New(c))
-	r.AddIllustration(illusembedded.New(c))
-	r.AddFont(fontsembedded.New(c))
+	r.AddIcon(embeddedicons.New(c))
+	r.AddIllustration(embeddedillustrations.New(c))
+	r.AddFont(embeddedfonts.New(c))
 
 	return &Deps{Registry: r, Catalog: c}
 }

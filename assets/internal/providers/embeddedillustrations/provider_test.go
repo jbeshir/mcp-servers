@@ -1,4 +1,4 @@
-package illustrations
+package embeddedillustrations
 
 import (
 	"bytes"
@@ -13,28 +13,28 @@ const (
 )
 
 func TestGetKnownFile(t *testing.T) {
-	data, err := Get(knownCollection, knownStem)
+	data, err := getIllustration(knownCollection, knownStem)
 	if err != nil {
-		t.Fatalf("Get(%q, %q) returned unexpected error: %v", knownCollection, knownStem, err)
+		t.Fatalf("getIllustration(%q, %q) returned unexpected error: %v", knownCollection, knownStem, err)
 	}
 	if !bytes.Contains(data, []byte("<svg")) {
-		t.Fatalf("Get(%q, %q) bytes do not contain <svg", knownCollection, knownStem)
+		t.Fatalf("getIllustration(%q, %q) bytes do not contain <svg", knownCollection, knownStem)
 	}
 }
 
 func TestSearchFindsKnownFile(t *testing.T) {
-	results := Search("ballet", knownCollection, 0)
+	results := searchIllustrations("ballet", knownCollection, 0)
 	if len(results) == 0 {
-		t.Fatalf("Search(%q, %q, 0) returned no results", "ballet", knownCollection)
+		t.Fatalf("searchIllustrations(%q, %q, 0) returned no results", "ballet", knownCollection)
 	}
 	found := false
 	for _, m := range results {
-		if m.Collection == knownCollection && m.Name == knownStem {
+		if m.collection == knownCollection && m.name == knownStem {
 			found = true
 		}
 	}
 	if !found {
-		t.Fatalf("Search(%q, %q, 0) = %+v, want a result for %q", "ballet", knownCollection, results, knownStem)
+		t.Fatalf("searchIllustrations(%q, %q, 0) = %+v, want a result for %q", "ballet", knownCollection, results, knownStem)
 	}
 }
 
@@ -51,9 +51,9 @@ func TestGetNotFound(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := Get(tt.collection, tt.illust)
+			_, err := getIllustration(tt.collection, tt.illust)
 			if !errors.Is(err, ErrNotFound) {
-				t.Fatalf("Get(%q, %q) error = %v, want ErrNotFound", tt.collection, tt.illust, err)
+				t.Fatalf("getIllustration(%q, %q) error = %v, want ErrNotFound", tt.collection, tt.illust, err)
 			}
 		})
 	}
@@ -61,8 +61,8 @@ func TestGetNotFound(t *testing.T) {
 
 func TestCollections(t *testing.T) {
 	want := []string{"humaaans", "open-doodles", "open-peeps"}
-	got := Collections()
+	got := loadedCollections()
 	if !reflect.DeepEqual(got, want) {
-		t.Fatalf("Collections() = %v, want %v", got, want)
+		t.Fatalf("loadedCollections() = %v, want %v", got, want)
 	}
 }

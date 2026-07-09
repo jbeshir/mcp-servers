@@ -1,15 +1,21 @@
-// Package icons serves vendored Iconify icon sets, rendering individual icons to standalone SVG.
-package icons
+// Package embeddedicons serves the vendored Iconify icon sets as an assetcore.IconProvider,
+// rendering individual icons to standalone SVG.
+package embeddedicons
 
 import (
+	"context"
 	"embed"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"path"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
+	"github.com/jbeshir/mcp-servers/assets/internal/catalog"
 )
 
 //go:embed data/*.json
@@ -18,11 +24,8 @@ var dataFS embed.FS
 // ErrNotFound is returned when a requested icon set or icon name does not exist.
 var ErrNotFound = errors.New("icon not found")
 
-// Meta identifies a single icon within a set.
-type Meta struct {
-	Set  string
-	Name string
-}
+// providerName is the stable registry key for the embedded icon provider.
+const providerName = "embedded-icons"
 
 const (
 	dataDir            = "data"
@@ -32,6 +35,12 @@ const (
 	defaultSearchLimit = 50
 	maxSearchLimit     = 200
 )
+
+// iconMeta identifies a single icon within a set.
+type iconMeta struct {
+	set  string
+	name string
+}
 
 // iconData is a single icon entry in the Iconify JSON schema. Only the fields needed for
 // rendering are decoded; info, rotate, hFlip, vFlip and other metadata fields are ignored.
@@ -63,13 +72,13 @@ type iconSet struct {
 
 var (
 	loadOnce sync.Once
-	sets     map[string]iconSet
+	iconSets map[string]iconSet
 )
 
-// load parses every embedded data/<set>.json file into sets, once.
+// load parses every embedded data/<set>.json file into iconSets, once.
 func load() {
 	loadOnce.Do(func() {
-		sets = make(map[string]iconSet)
+		iconSets = make(map[string]iconSet)
 		entries, err := dataFS.ReadDir(dataDir)
 		if err != nil {
 			return
@@ -86,48 +95,48 @@ func load() {
 			if err := json.Unmarshal(raw, &s); err != nil {
 				continue
 			}
-			sets[strings.TrimSuffix(entry.Name(), jsonExt)] = s
+			iconSets[strings.TrimSuffix(entry.Name(), jsonExt)] = s
 		}
 	})
 }
 
-// Sets returns the sorted list of vendored icon set names.
-func Sets() []string {
+// loadedSetNames returns the sorted list of vendored icon set names.
+func loadedSetNames() []string {
 	load()
-	names := make([]string, 0, len(sets))
-	for name := range sets {
+	names := make([]string, 0, len(iconSets))
+	for name := range iconSets {
 		names = append(names, name)
 	}
 	sort.Strings(names)
 	return names
 }
 
-// Search returns icons whose name contains query (case-insensitive), optionally filtered to a
+// searchIcons returns icons whose name contains query (case-insensitive), optionally filtered to a
 // single set. limit defaults to 50 and is capped at 200.
-func Search(query, set string, limit int) []Meta {
+func searchIcons(query, set string, limit int) []iconMeta {
 	load()
 	limit = clampLimit(limit)
-	setNames := Sets()
+	setNames := loadedSetNames()
 	if set != "" {
-		if _, ok := sets[set]; !ok {
+		if _, ok := iconSets[set]; !ok {
 			return nil
 		}
 		setNames = []string{set}
 	}
 	q := strings.ToLower(query)
-	var results []Meta
+	var results []iconMeta
 	for _, name := range setNames {
-		for iconName := range sets[name].Icons {
+		for iconName := range iconSets[name].Icons {
 			if strings.Contains(strings.ToLower(iconName), q) {
-				results = append(results, Meta{Set: name, Name: iconName})
+				results = append(results, iconMeta{set: name, name: iconName})
 			}
 		}
 	}
 	sort.Slice(results, func(i, j int) bool {
-		if results[i].Set != results[j].Set {
-			return results[i].Set < results[j].Set
+		if results[i].set != results[j].set {
+			return results[i].set < results[j].set
 		}
-		return results[i].Name < results[j].Name
+		return results[i].name < results[j].name
 	})
 	if len(results) > limit {
 		results = results[:limit]
@@ -146,12 +155,12 @@ func clampLimit(limit int) int {
 	}
 }
 
-// Render returns the standalone SVG bytes for the given icon, with an optional color override and
-// output size. Rotation and horizontal/vertical flip transforms present on some alias entries are
-// not applied; only body, dimensions and offset are resolved.
-func Render(set, name, color string, size int) ([]byte, error) {
+// renderIcon returns the standalone SVG bytes for the given icon, with an optional color override
+// and output size. Rotation and horizontal/vertical flip transforms present on some alias entries
+// are not applied; only body, dimensions and offset are resolved.
+func renderIcon(set, name, color string, size int) ([]byte, error) {
 	load()
-	s, ok := sets[set]
+	s, ok := iconSets[set]
 	if !ok {
 		return nil, fmt.Errorf("icon set %q: %w", set, ErrNotFound)
 	}
@@ -213,4 +222,76 @@ func firstInt(fallback int, vals ...*int) int {
 		}
 	}
 	return fallback
+}
+
+// Provider satisfies assetcore.IconProvider.
+var _ assetcore.IconProvider = (*Provider)(nil)
+
+// Provider serves the vendored Iconify icon sets as an assetcore.IconProvider.
+type Provider struct {
+	catalog *catalog.Catalog
+}
+
+// New returns an embedded icon provider that resolves licensing through cat.
+func New(cat *catalog.Catalog) *Provider {
+	return &Provider{catalog: cat}
+}
+
+// Name returns the provider's stable registry key.
+func (p *Provider) Name() string { return providerName }
+
+// Kind reports that this provider serves icons.
+func (p *Provider) Kind() assetcore.Kind { return assetcore.KindIcon }
+
+// Search finds icons matching q and maps each hit onto an assetcore.Asset.
+func (p *Provider) Search(_ context.Context, q assetcore.IconQuery) (assetcore.Page, error) {
+	results := searchIcons(q.Query, q.Set, q.Limit)
+
+	assets := make([]assetcore.Asset, 0, len(results))
+	for _, m := range results {
+		assets = append(assets, p.asset(m.set, m.name))
+	}
+
+	return assetcore.Page{Assets: assets, Total: len(assets)}, nil
+}
+
+// Fetch renders the icon identified by a (Source=set, Title=name) with the colour/size hints
+// carried in a.Ref. An unknown set or icon is reported as assetcore.ErrNotFound.
+func (p *Provider) Fetch(_ context.Context, a assetcore.Asset) (assetcore.Blob, error) {
+	set, name := a.Source, a.Title
+	color := a.Ref[assetcore.RefColor]
+	size, _ := strconv.Atoi(a.Ref[assetcore.RefSize])
+
+	data, err := renderIcon(set, name, color, size)
+	if err != nil {
+		if errors.Is(err, ErrNotFound) {
+			return assetcore.Blob{}, errors.Join(assetcore.ErrNotFound, err)
+		}
+
+		return assetcore.Blob{}, err
+	}
+
+	asset := p.asset(set, name)
+	asset.Ref = a.Ref
+
+	return assetcore.Blob{
+		Asset:       asset,
+		Content:     data,
+		Filename:    name + ".svg",
+		ContentType: "image/svg+xml",
+	}, nil
+}
+
+// asset builds the assetcore.Asset for an icon, resolving its license from the catalog.
+func (p *Provider) asset(set, name string) assetcore.Asset {
+	license, attribution, _ := p.catalog.IconLicense(set)
+
+	return assetcore.Asset{
+		Provider: providerName,
+		Source:   set,
+		ID:       set + "/" + name,
+		Kind:     assetcore.KindIcon,
+		Title:    name,
+		License:  assetcore.License{SPDX: license, Attribution: attribution},
+	}
 }
