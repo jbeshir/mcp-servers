@@ -42,6 +42,23 @@ func TestRenderColorAndSize(t *testing.T) {
 	}
 }
 
+func TestRenderColorEscaped(t *testing.T) {
+	svg, err := renderIcon("lucide", "a-arrow-down", `"><script>x</script>`, 0)
+	if err != nil {
+		t.Fatalf("renderIcon() error = %v, want nil", err)
+	}
+	out := string(svg)
+	if strings.Contains(out, `"><script>`) {
+		t.Errorf("renderIcon() output contains unescaped breakout: %s", out)
+	}
+	if !strings.Contains(out, "&quot;&gt;&lt;script&gt;") {
+		t.Errorf("renderIcon() output missing escaped color value: %s", out)
+	}
+	if !strings.HasPrefix(out, "<svg ") || !strings.HasSuffix(out, "</svg>") {
+		t.Errorf("renderIcon() output not wrapped in <svg>...</svg>: %s", out)
+	}
+}
+
 func TestRenderBootstrapIconsGrid(t *testing.T) {
 	svg, err := renderIcon("bootstrap-icons", "alarm", "", 0)
 	if err != nil {

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"reflect"
 	"testing"
+
+	"github.com/jbeshir/mcp-servers/assets/internal/catalog"
 )
 
 const (
@@ -64,5 +66,24 @@ func TestCollections(t *testing.T) {
 	got := loadedCollections()
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("loadedCollections() = %v, want %v", got, want)
+	}
+}
+
+func TestEveryCollectionHasLicense(t *testing.T) {
+	c, err := catalog.Load()
+	if err != nil {
+		t.Fatalf("catalog.Load: %v", err)
+	}
+
+	_ = New(c)
+
+	for _, collection := range loadedCollections() {
+		license, _, ok := c.IllustrationLicense(collection)
+		if !ok {
+			t.Errorf("IllustrationLicense(%q) ok = false, want true", collection)
+		}
+		if license == "" {
+			t.Errorf("IllustrationLicense(%q) license is empty", collection)
+		}
 	}
 }

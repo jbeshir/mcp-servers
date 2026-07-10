@@ -174,7 +174,7 @@ func renderIcon(set, name, color string, size int) ([]byte, error) {
 	}
 	var colorAttr string
 	if color != "" {
-		colorAttr = fmt.Sprintf(" color=%q", color)
+		colorAttr = " color=\"" + escapeXMLAttr(color) + "\""
 	}
 	svg := fmt.Sprintf(
 		`<svg xmlns=%q width="%d" height="%d" viewBox="%d %d %d %d"%s>%s</svg>`,
@@ -182,6 +182,19 @@ func renderIcon(set, name, color string, size int) ([]byte, error) {
 	)
 	return []byte(svg), nil
 }
+
+// xmlAttrEscaper escapes the five XML metacharacters so a user-supplied value cannot break out of a
+// double-quoted attribute in the rendered SVG.
+var xmlAttrEscaper = strings.NewReplacer(
+	"&", "&amp;",
+	"<", "&lt;",
+	">", "&gt;",
+	`"`, "&quot;",
+	"'", "&apos;",
+)
+
+// escapeXMLAttr renders s safe for interpolation inside a double-quoted XML attribute value.
+func escapeXMLAttr(s string) string { return xmlAttrEscaper.Replace(s) }
 
 // resolveIcon looks up name directly, then as an alias of a parent icon, returning its body and
 // resolved grid (width, height, left, top). ok is false if name is not found in either map.

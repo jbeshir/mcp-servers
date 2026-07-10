@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/jbeshir/mcp-servers/assets/internal/catalog"
 )
 
 const (
@@ -115,5 +117,24 @@ func TestFamilies(t *testing.T) {
 	}
 	if want := []int{400, 700}; !reflect.DeepEqual(inter.weights, want) {
 		t.Errorf("inter weights = %v, want %v", inter.weights, want)
+	}
+}
+
+func TestEveryFamilyHasLicense(t *testing.T) {
+	c, err := catalog.Load()
+	if err != nil {
+		t.Fatalf("catalog.Load: %v", err)
+	}
+
+	_ = New(c)
+
+	for _, fam := range loadedFamilies() {
+		license, _, ok := c.FontLicense(fam.family)
+		if !ok {
+			t.Errorf("FontLicense(%q) ok = false, want true", fam.family)
+		}
+		if license == "" {
+			t.Errorf("FontLicense(%q) license is empty", fam.family)
+		}
 	}
 }
