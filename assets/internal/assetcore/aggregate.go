@@ -7,9 +7,9 @@ import (
 )
 
 // searchProviderTimeout bounds each provider's Search during a fan-out so one slow provider cannot
-// stall the aggregate. Embedded providers are in-process and never approach it; it exists for the
-// remote providers a later PR will add.
-const searchProviderTimeout = 4 * time.Second
+// stall the aggregate. Embedded providers are in-process and never approach it; it is set generously
+// for the remote providers a later PR will add, which can legitimately be slow.
+const searchProviderTimeout = 30 * time.Second
 
 // Warning records a single provider degrading during an aggregate search: its results are dropped
 // but the search as a whole still returns, mirroring Openverse's warnings[] envelope.
