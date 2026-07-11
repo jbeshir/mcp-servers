@@ -307,7 +307,7 @@ func (p *Provider) Kind() assetcore.Kind { return assetcore.KindFont }
 
 // Search finds font families matching opts.Query among those allowed by opts.Sources and maps each
 // hit onto an assetcore.Asset, carrying the family's category and available weights as display Meta.
-func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) (assetcore.Page, error) {
+func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) ([]assetcore.Asset, error) {
 	results := searchFonts(opts.Query, opts.Sources, assetcore.ClampLimit(opts.Limit))
 
 	assets := make([]assetcore.Asset, 0, len(results))
@@ -315,7 +315,7 @@ func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) (assetco
 		assets = append(assets, p.asset(m))
 	}
 
-	return assetcore.Page{Assets: assets, Total: len(assets)}, nil
+	return assets, nil
 }
 
 // Fetch returns the woff2 for the family identified by the provider-local slug id, at the weight and

@@ -10,23 +10,23 @@ import (
 const embeddedIconsName = "embedded-icons"
 
 // fakeIconProvider is a minimal IconProvider used across the assetcore tests. A non-nil err makes
-// both Search and Fetch fail; otherwise Search returns page and Fetch echoes the provider name and
+// both Search and Fetch fail; otherwise Search returns assets and Fetch echoes the provider name and
 // the local id it was given.
 type fakeIconProvider struct {
-	name string
-	page Page
-	err  error
+	name   string
+	assets []Asset
+	err    error
 }
 
 func (f fakeIconProvider) Name() string { return f.name }
 func (f fakeIconProvider) Kind() Kind   { return KindIcon }
 
-func (f fakeIconProvider) Search(_ context.Context, _ SearchOpts) (Page, error) {
+func (f fakeIconProvider) Search(_ context.Context, _ SearchOpts) ([]Asset, error) {
 	if f.err != nil {
-		return Page{}, f.err
+		return nil, f.err
 	}
 
-	return f.page, nil
+	return f.assets, nil
 }
 
 func (f fakeIconProvider) Fetch(_ context.Context, id string, _ IconFetchOpts) (Blob, error) {
@@ -54,8 +54,8 @@ type fakeFontProvider struct {
 func (f fakeFontProvider) Name() string { return f.name }
 func (f fakeFontProvider) Kind() Kind   { return KindFont }
 
-func (f fakeFontProvider) Search(_ context.Context, _ SearchOpts) (Page, error) {
-	return Page{}, f.err
+func (f fakeFontProvider) Search(_ context.Context, _ SearchOpts) ([]Asset, error) {
+	return nil, f.err
 }
 
 func (f fakeFontProvider) Fetch(_ context.Context, id string, _ FontFetchOpts) (Blob, error) {
@@ -75,8 +75,8 @@ type fakeIllustrationProvider struct {
 func (f fakeIllustrationProvider) Name() string { return f.name }
 func (f fakeIllustrationProvider) Kind() Kind   { return KindIllustration }
 
-func (f fakeIllustrationProvider) Search(_ context.Context, _ SearchOpts) (Page, error) {
-	return Page{}, f.err
+func (f fakeIllustrationProvider) Search(_ context.Context, _ SearchOpts) ([]Asset, error) {
+	return nil, f.err
 }
 
 func (f fakeIllustrationProvider) Fetch(_ context.Context, id string) (Blob, error) {
@@ -111,17 +111,17 @@ func TestRegistryIconsDeterministicOrder(t *testing.T) {
 
 func TestRegistryAddIconSameNameWins(t *testing.T) {
 	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: "dup", page: Page{Total: 1}})
-	r.AddIcon(fakeIconProvider{name: "dup", page: Page{Total: 2}})
+	r.AddIcon(fakeIconProvider{name: "dup", assets: []Asset{{ID: "dup:a"}}})
+	r.AddIcon(fakeIconProvider{name: "dup", assets: []Asset{{ID: "dup:b"}}})
 
 	got := r.Icons()
 	if len(got) != 1 {
 		t.Fatalf("Icons() length = %d, want 1", len(got))
 	}
 
-	page, _ := got[0].Search(t.Context(), SearchOpts{})
-	if page.Total != 2 {
-		t.Errorf("second registration did not win: Total = %d, want 2", page.Total)
+	assets, _ := got[0].Search(t.Context(), SearchOpts{})
+	if len(assets) != 1 || assets[0].ID != "dup:b" {
+		t.Errorf("second registration did not win: assets = %+v, want a single asset with ID dup:b", assets)
 	}
 }
 

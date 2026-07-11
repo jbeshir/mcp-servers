@@ -9,22 +9,22 @@ func TestSearchIconsMergesAndDedupesByLogicalIdentity(t *testing.T) {
 	// The same logical asset (Source=s, Title=camera) is served by both providers with a different
 	// composite ID each; merge must dedup on (Source, Title), first-provider-wins.
 	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: "a", page: Page{Assets: []Asset{
+	r.AddIcon(fakeIconProvider{name: "a", assets: []Asset{
 		{Source: "s", Title: "camera", ID: "a:s/camera"},
 		{Source: "s", Title: "home", ID: "a:s/home"},
-	}}})
-	r.AddIcon(fakeIconProvider{name: "b", page: Page{Assets: []Asset{
+	}})
+	r.AddIcon(fakeIconProvider{name: "b", assets: []Asset{
 		{Source: "s", Title: "camera", ID: "b:s/camera"},
 		{Source: "s", Title: "gear", ID: "b:s/gear"},
-	}}})
+	}})
 
-	page, warns := r.SearchIcons(t.Context(), SearchOpts{})
+	assets, warns := r.SearchIcons(t.Context(), SearchOpts{})
 	if len(warns) != 0 {
 		t.Fatalf("warnings = %v, want none", warns)
 	}
 
 	var titles, ids []string
-	for _, a := range page.Assets {
+	for _, a := range assets {
 		titles = append(titles, a.Title)
 		ids = append(ids, a.ID)
 	}
@@ -46,13 +46,13 @@ func TestSearchIconsMergesAndDedupesByLogicalIdentity(t *testing.T) {
 
 func TestSearchIconsDegradesFailingProvider(t *testing.T) {
 	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: "good", page: Page{Assets: []Asset{{Source: "s", Title: "t", ID: "good:s/t"}}}})
+	r.AddIcon(fakeIconProvider{name: "good", assets: []Asset{{Source: "s", Title: "t", ID: "good:s/t"}}})
 	r.AddIcon(fakeIconProvider{name: "bad", err: errors.New("boom")})
 
-	page, warns := r.SearchIcons(t.Context(), SearchOpts{})
+	assets, warns := r.SearchIcons(t.Context(), SearchOpts{})
 
-	if len(page.Assets) != 1 || page.Assets[0].ID != "good:s/t" {
-		t.Fatalf("assets = %+v, want the single good result", page.Assets)
+	if len(assets) != 1 || assets[0].ID != "good:s/t" {
+		t.Fatalf("assets = %+v, want the single good result", assets)
 	}
 
 	if len(warns) != 1 {
@@ -70,27 +70,27 @@ func TestSearchIconsProviderFilterSkipsBeforeFanOut(t *testing.T) {
 	// The excluded provider errors; if it were searched it would produce a warning. The Providers
 	// filter must skip it entirely, so no warning and only the allowed provider's assets appear.
 	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: "keep", page: Page{Assets: []Asset{{Source: "s", Title: "t", ID: "keep:s/t"}}}})
+	r.AddIcon(fakeIconProvider{name: "keep", assets: []Asset{{Source: "s", Title: "t", ID: "keep:s/t"}}})
 	r.AddIcon(fakeIconProvider{name: "drop", err: errors.New("should never run")})
 
-	page, warns := r.SearchIcons(t.Context(), SearchOpts{Providers: Filter{Except: []string{"drop"}}})
+	assets, warns := r.SearchIcons(t.Context(), SearchOpts{Providers: Filter{Except: []string{"drop"}}})
 
 	if len(warns) != 0 {
 		t.Fatalf("warnings = %v, want none (excluded provider must be skipped, not run)", warns)
 	}
-	if len(page.Assets) != 1 || page.Assets[0].ID != "keep:s/t" {
-		t.Fatalf("assets = %+v, want only the kept provider's result", page.Assets)
+	if len(assets) != 1 || assets[0].ID != "keep:s/t" {
+		t.Fatalf("assets = %+v, want only the kept provider's result", assets)
 	}
 }
 
 func TestSearchIconsProviderOnlyFilter(t *testing.T) {
 	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: "a", page: Page{Assets: []Asset{{Source: "s", Title: "ta", ID: "a:s/ta"}}}})
-	r.AddIcon(fakeIconProvider{name: "b", page: Page{Assets: []Asset{{Source: "s", Title: "tb", ID: "b:s/tb"}}}})
+	r.AddIcon(fakeIconProvider{name: "a", assets: []Asset{{Source: "s", Title: "ta", ID: "a:s/ta"}}})
+	r.AddIcon(fakeIconProvider{name: "b", assets: []Asset{{Source: "s", Title: "tb", ID: "b:s/tb"}}})
 
-	page, _ := r.SearchIcons(t.Context(), SearchOpts{Providers: Filter{Only: []string{"b"}}})
+	assets, _ := r.SearchIcons(t.Context(), SearchOpts{Providers: Filter{Only: []string{"b"}}})
 
-	if len(page.Assets) != 1 || page.Assets[0].ID != "b:s/tb" {
-		t.Fatalf("assets = %+v, want only provider b's result", page.Assets)
+	if len(assets) != 1 || assets[0].ID != "b:s/tb" {
+		t.Fatalf("assets = %+v, want only provider b's result", assets)
 	}
 }

@@ -261,7 +261,7 @@ func (p *Provider) Kind() assetcore.Kind { return assetcore.KindIcon }
 
 // Search finds icons matching opts.Query within the sets allowed by opts.Sources and maps each hit
 // onto an assetcore.Asset.
-func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) (assetcore.Page, error) {
+func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) ([]assetcore.Asset, error) {
 	results := searchIcons(opts.Query, opts.Sources, assetcore.ClampLimit(opts.Limit))
 
 	assets := make([]assetcore.Asset, 0, len(results))
@@ -269,7 +269,7 @@ func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) (assetco
 		assets = append(assets, p.asset(m.set, m.name))
 	}
 
-	return assetcore.Page{Assets: assets, Total: len(assets)}, nil
+	return assets, nil
 }
 
 // Fetch renders the icon identified by the provider-local id "<set>/<name>", honouring the colour and

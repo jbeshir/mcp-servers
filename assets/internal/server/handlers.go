@@ -226,19 +226,19 @@ func (s *Server) handleSearchIcons(
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	page, warns := s.registry.SearchIcons(ctx, assetcore.SearchOpts{
+	assets, warns := s.registry.SearchIcons(ctx, assetcore.SearchOpts{
 		Query:     query,
 		Limit:     intArg(args, "limit", 0),
 		Sources:   filterArg(args, "sources", "exclude_sources"),
 		Providers: filterArg(args, "providers", "exclude_providers"),
 	})
 
-	lines := make([]string, 0, len(page.Assets))
-	for _, a := range page.Assets {
+	lines := make([]string, 0, len(assets))
+	for _, a := range assets {
 		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
 	}
 
-	return searchResult(fmt.Sprintf("%d icon(s) matching %q:", len(page.Assets), query), lines, warns), nil
+	return searchResult(fmt.Sprintf("%d icon(s) matching %q:", len(assets), query), lines, warns), nil
 }
 
 func (s *Server) handleGetIcon(
@@ -300,19 +300,19 @@ func (s *Server) handleSearchIllustrations(
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	page, warns := s.registry.SearchIllustrations(ctx, assetcore.SearchOpts{
+	assets, warns := s.registry.SearchIllustrations(ctx, assetcore.SearchOpts{
 		Query:     query,
 		Limit:     intArg(args, "limit", 0),
 		Sources:   filterArg(args, "sources", "exclude_sources"),
 		Providers: filterArg(args, "providers", "exclude_providers"),
 	})
 
-	lines := make([]string, 0, len(page.Assets))
-	for _, a := range page.Assets {
+	lines := make([]string, 0, len(assets))
+	for _, a := range assets {
 		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
 	}
 
-	return searchResult(fmt.Sprintf("%d illustration(s) matching %q:", len(page.Assets), query), lines, warns), nil
+	return searchResult(fmt.Sprintf("%d illustration(s) matching %q:", len(assets), query), lines, warns), nil
 }
 
 func (s *Server) handleGetIllustration(
@@ -358,22 +358,22 @@ func (s *Server) handleSearchFonts(
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	page, warns := s.registry.SearchFonts(ctx, assetcore.SearchOpts{
+	assets, warns := s.registry.SearchFonts(ctx, assetcore.SearchOpts{
 		Query:     query,
 		Limit:     intArg(args, "limit", 0),
 		Sources:   filterArg(args, "sources", "exclude_sources"),
 		Providers: filterArg(args, "providers", "exclude_providers"),
 	})
 
-	lines := make([]string, 0, len(page.Assets))
-	for _, a := range page.Assets {
+	lines := make([]string, 0, len(assets))
+	for _, a := range assets {
 		lines = append(lines, fmt.Sprintf(
 			"%s — %s (%s) weights: %s",
 			a.ID, a.Title, a.Meta[assetcore.MetaCategory], a.Meta[assetcore.MetaWeights],
 		))
 	}
 
-	return searchResult(fmt.Sprintf("%d font family(-ies) matching %q:", len(page.Assets), query), lines, warns), nil
+	return searchResult(fmt.Sprintf("%d font family(-ies) matching %q:", len(assets), query), lines, warns), nil
 }
 
 func (s *Server) handleGetFont(

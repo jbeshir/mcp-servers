@@ -28,7 +28,7 @@ type FontFetchOpts struct {
 // id (the local half of a composite Asset.ID), rendered per the typed opts.
 type IconProvider interface {
 	Provider
-	Search(ctx context.Context, opts SearchOpts) (Page, error)
+	Search(ctx context.Context, opts SearchOpts) ([]Asset, error)
 	Fetch(ctx context.Context, id string, opts IconFetchOpts) (Blob, error)
 }
 
@@ -36,7 +36,7 @@ type IconProvider interface {
 // takes only the provider-local id.
 type IllustrationProvider interface {
 	Provider
-	Search(ctx context.Context, opts SearchOpts) (Page, error)
+	Search(ctx context.Context, opts SearchOpts) ([]Asset, error)
 	Fetch(ctx context.Context, id string) (Blob, error)
 }
 
@@ -44,7 +44,7 @@ type IllustrationProvider interface {
 // selectors in FontFetchOpts.
 type FontProvider interface {
 	Provider
-	Search(ctx context.Context, opts SearchOpts) (Page, error)
+	Search(ctx context.Context, opts SearchOpts) ([]Asset, error)
 	Fetch(ctx context.Context, id string, opts FontFetchOpts) (Blob, error)
 }
 

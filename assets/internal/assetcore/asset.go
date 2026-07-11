@@ -67,13 +67,6 @@ type Source struct {
 	Meta    map[string]string
 }
 
-// Page is one search response. NextCursor is opaque: only the emitting provider parses it.
-type Page struct {
-	Assets     []Asset
-	NextCursor string // "" => no more results
-	Total      int    // best-effort; -1 if unknown
-}
-
 // Blob is a materialized asset: bytes plus the metadata the writer layer turns into a file and a
 // manifest entry. []byte is sufficient for the small icon/illustration/font payloads served today.
 type Blob struct {
