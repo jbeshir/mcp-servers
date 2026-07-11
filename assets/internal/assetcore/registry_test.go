@@ -1,97 +1,22 @@
-package assetcore
+package assetcore_test
 
 import (
-	"context"
 	"errors"
 	"testing"
+
+	"github.com/stretchr/testify/mock"
+
+	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 )
 
 // embeddedIconsName is a sample provider name reused across these tests.
 const embeddedIconsName = "embedded-icons"
 
-// fakeIconProvider is a minimal IconProvider used across the assetcore tests. A non-nil err makes
-// both Search and Fetch fail; otherwise Search returns assets and Fetch echoes the provider name and
-// the local id it was given.
-type fakeIconProvider struct {
-	name   string
-	assets []Asset
-	err    error
-}
-
-func (f fakeIconProvider) Name() string { return f.name }
-func (f fakeIconProvider) Kind() Kind   { return KindIcon }
-
-func (f fakeIconProvider) Search(_ context.Context, _ SearchOpts) ([]Asset, error) {
-	if f.err != nil {
-		return nil, f.err
-	}
-
-	return f.assets, nil
-}
-
-func (f fakeIconProvider) Fetch(_ context.Context, id string, _ IconFetchOpts) (Blob, error) {
-	if f.err != nil {
-		return Blob{}, f.err
-	}
-
-	return Blob{Asset: Asset{ID: id}, Content: []byte(f.name)}, nil
-}
-
-// sourcedIconProvider adds the SourceLister capability to fakeIconProvider.
-type sourcedIconProvider struct {
-	fakeIconProvider
-	sources []Source
-}
-
-func (f sourcedIconProvider) Sources() []Source { return f.sources }
-
-// fakeFontProvider is a minimal FontProvider for the routed-fetch and Providers tests.
-type fakeFontProvider struct {
-	name string
-	err  error
-}
-
-func (f fakeFontProvider) Name() string { return f.name }
-func (f fakeFontProvider) Kind() Kind   { return KindFont }
-
-func (f fakeFontProvider) Search(_ context.Context, _ SearchOpts) ([]Asset, error) {
-	return nil, f.err
-}
-
-func (f fakeFontProvider) Fetch(_ context.Context, id string, _ FontFetchOpts) (Blob, error) {
-	if f.err != nil {
-		return Blob{}, f.err
-	}
-
-	return Blob{Asset: Asset{ID: id}, Content: []byte(f.name)}, nil
-}
-
-// fakeIllustrationProvider is a minimal IllustrationProvider for the routed-fetch tests.
-type fakeIllustrationProvider struct {
-	name string
-	err  error
-}
-
-func (f fakeIllustrationProvider) Name() string { return f.name }
-func (f fakeIllustrationProvider) Kind() Kind   { return KindIllustration }
-
-func (f fakeIllustrationProvider) Search(_ context.Context, _ SearchOpts) ([]Asset, error) {
-	return nil, f.err
-}
-
-func (f fakeIllustrationProvider) Fetch(_ context.Context, id string) (Blob, error) {
-	if f.err != nil {
-		return Blob{}, f.err
-	}
-
-	return Blob{Asset: Asset{ID: id}, Content: []byte(f.name)}, nil
-}
-
 func TestRegistryIconsDeterministicOrder(t *testing.T) {
-	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: embeddedIconsName})
-	r.AddIcon(fakeIconProvider{name: "aardvark"})
-	r.AddIcon(fakeIconProvider{name: "zzz"})
+	r := assetcore.NewRegistry()
+	r.AddIcon(newIconProvider(t, embeddedIconsName))
+	r.AddIcon(newIconProvider(t, "aardvark"))
+	r.AddIcon(newIconProvider(t, "zzz"))
 
 	want := []string{"aardvark", embeddedIconsName, "zzz"}
 
@@ -110,24 +35,28 @@ func TestRegistryIconsDeterministicOrder(t *testing.T) {
 }
 
 func TestRegistryAddIconSameNameWins(t *testing.T) {
-	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: "dup", assets: []Asset{{ID: "dup:a"}}})
-	r.AddIcon(fakeIconProvider{name: "dup", assets: []Asset{{ID: "dup:b"}}})
+	r := assetcore.NewRegistry()
+	// The first registration is overwritten; only its Name is read (at registration).
+	r.AddIcon(newIconProvider(t, "dup"))
+
+	winner := newIconProvider(t, "dup")
+	winner.EXPECT().Search(mock.Anything, mock.Anything).Return([]assetcore.Asset{{ID: "dup:b"}}, nil)
+	r.AddIcon(winner)
 
 	got := r.Icons()
 	if len(got) != 1 {
 		t.Fatalf("Icons() length = %d, want 1", len(got))
 	}
 
-	assets, _ := got[0].Search(t.Context(), SearchOpts{})
+	assets, _ := got[0].Search(t.Context(), assetcore.SearchOpts{})
 	if len(assets) != 1 || assets[0].ID != "dup:b" {
 		t.Errorf("second registration did not win: assets = %+v, want a single asset with ID dup:b", assets)
 	}
 }
 
 func TestRegistryKindsSegregated(t *testing.T) {
-	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: embeddedIconsName})
+	r := assetcore.NewRegistry()
+	r.AddIcon(newIconProvider(t, embeddedIconsName))
 
 	if len(r.Icons()) != 1 {
 		t.Errorf("Icons() length = %d, want 1", len(r.Icons()))
@@ -141,11 +70,14 @@ func TestRegistryKindsSegregated(t *testing.T) {
 }
 
 func TestFetchIconRoutesToProvider(t *testing.T) {
-	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: "a"})
-	r.AddIcon(fakeIconProvider{name: "b"})
+	r := assetcore.NewRegistry()
+	r.AddIcon(newIconProvider(t, "a"))
 
-	blob, err := r.FetchIcon(t.Context(), AssetID("b", "some/local"), IconFetchOpts{})
+	b := newIconProvider(t, "b")
+	expectIconFetchEcho(b, "b")
+	r.AddIcon(b)
+
+	blob, err := r.FetchIcon(t.Context(), assetcore.AssetID("b", "some/local"), assetcore.IconFetchOpts{})
 	if err != nil {
 		t.Fatalf("FetchIcon error = %v, want nil", err)
 	}
@@ -159,28 +91,30 @@ func TestFetchIconRoutesToProvider(t *testing.T) {
 }
 
 func TestFetchIconMalformedID(t *testing.T) {
-	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: "a"})
+	r := assetcore.NewRegistry()
+	r.AddIcon(newIconProvider(t, "a"))
 
-	if _, err := r.FetchIcon(t.Context(), "no-colon-here", IconFetchOpts{}); !errors.Is(err, ErrNotFound) {
+	if _, err := r.FetchIcon(t.Context(), "no-colon-here", assetcore.IconFetchOpts{}); !errors.Is(err, assetcore.ErrNotFound) {
 		t.Errorf("FetchIcon(malformed) error = %v, want ErrNotFound", err)
 	}
 }
 
 func TestFetchIconUnknownProvider(t *testing.T) {
-	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: "a"})
+	r := assetcore.NewRegistry()
+	r.AddIcon(newIconProvider(t, "a"))
 
-	if _, err := r.FetchIcon(t.Context(), AssetID("z", "x"), IconFetchOpts{}); !errors.Is(err, ErrNotFound) {
+	if _, err := r.FetchIcon(t.Context(), assetcore.AssetID("z", "x"), assetcore.IconFetchOpts{}); !errors.Is(err, assetcore.ErrNotFound) {
 		t.Errorf("FetchIcon(unknown provider) error = %v, want ErrNotFound", err)
 	}
 }
 
 func TestFetchIllustrationRoutesToProvider(t *testing.T) {
-	r := NewRegistry()
-	r.AddIllustration(fakeIllustrationProvider{name: "col"})
+	r := assetcore.NewRegistry()
+	col := newIllustrationProvider(t, "col")
+	expectIllustrationFetchEcho(col, "col")
+	r.AddIllustration(col)
 
-	blob, err := r.FetchIllustration(t.Context(), AssetID("col", "set/name"))
+	blob, err := r.FetchIllustration(t.Context(), assetcore.AssetID("col", "set/name"))
 	if err != nil {
 		t.Fatalf("FetchIllustration error = %v, want nil", err)
 	}
@@ -188,20 +122,21 @@ func TestFetchIllustrationRoutesToProvider(t *testing.T) {
 		t.Errorf("FetchIllustration routed to %q, want provider col", string(blob.Content))
 	}
 
-	if _, err := r.FetchIllustration(t.Context(), AssetID("nope", "x")); !errors.Is(err, ErrNotFound) {
+	if _, err := r.FetchIllustration(t.Context(), assetcore.AssetID("nope", "x")); !errors.Is(err, assetcore.ErrNotFound) {
 		t.Errorf("FetchIllustration(unknown provider) error = %v, want ErrNotFound", err)
 	}
-	if _, err := r.FetchIllustration(t.Context(), "malformed"); !errors.Is(err, ErrNotFound) {
+	if _, err := r.FetchIllustration(t.Context(), "malformed"); !errors.Is(err, assetcore.ErrNotFound) {
 		t.Errorf("FetchIllustration(malformed) error = %v, want ErrNotFound", err)
 	}
 }
 
 func TestFetchFontRoutesAndReturnsProvider(t *testing.T) {
-	r := NewRegistry()
-	want := fakeFontProvider{name: "fonts"}
-	r.AddFont(want)
+	r := assetcore.NewRegistry()
+	f := newFontProvider(t, "fonts")
+	expectFontFetchEcho(f, "fonts")
+	r.AddFont(f)
 
-	blob, prov, err := r.FetchFont(t.Context(), AssetID("fonts", "inter"), FontFetchOpts{})
+	blob, prov, err := r.FetchFont(t.Context(), assetcore.AssetID("fonts", "inter"), assetcore.FontFetchOpts{})
 	if err != nil {
 		t.Fatalf("FetchFont error = %v, want nil", err)
 	}
@@ -212,32 +147,44 @@ func TestFetchFontRoutesAndReturnsProvider(t *testing.T) {
 		t.Errorf("FetchFont returned provider %v, want the fonts provider", prov)
 	}
 
-	if _, _, err := r.FetchFont(t.Context(), AssetID("z", "x"), FontFetchOpts{}); !errors.Is(err, ErrNotFound) {
+	if _, _, err := r.FetchFont(t.Context(), assetcore.AssetID("z", "x"), assetcore.FontFetchOpts{}); !errors.Is(err, assetcore.ErrNotFound) {
 		t.Errorf("FetchFont(unknown provider) error = %v, want ErrNotFound", err)
 	}
-	if _, _, err := r.FetchFont(t.Context(), "malformed", FontFetchOpts{}); !errors.Is(err, ErrNotFound) {
+	if _, _, err := r.FetchFont(t.Context(), "malformed", assetcore.FontFetchOpts{}); !errors.Is(err, assetcore.ErrNotFound) {
 		t.Errorf("FetchFont(malformed) error = %v, want ErrNotFound", err)
 	}
 }
 
 func TestFetchFontPropagatesProviderError(t *testing.T) {
-	r := NewRegistry()
-	r.AddFont(fakeFontProvider{name: "fonts", err: errors.New("boom")})
+	r := assetcore.NewRegistry()
+	f := newFontProvider(t, "fonts")
+	f.EXPECT().Fetch(mock.Anything, mock.Anything, mock.Anything).Return(assetcore.Blob{}, errors.New("boom"))
+	r.AddFont(f)
 
-	if _, _, err := r.FetchFont(t.Context(), AssetID("fonts", "inter"), FontFetchOpts{}); err == nil {
+	if _, _, err := r.FetchFont(t.Context(), assetcore.AssetID("fonts", "inter"), assetcore.FontFetchOpts{}); err == nil {
 		t.Error("FetchFont error = nil, want the provider's error")
 	}
 }
 
 func TestProvidersShapeAndSort(t *testing.T) {
-	r := NewRegistry()
-	// Register out of (kind, name) order to prove Providers() sorts.
-	r.AddFont(fakeFontProvider{name: "embedded-fonts"})
+	r := assetcore.NewRegistry()
+
+	// Register out of (kind, name) order to prove Providers() sorts. Providers() reads each provider's
+	// Kind, so each mock expects a Kind call.
+	fontMock := newFontProvider(t, "embedded-fonts")
+	fontMock.EXPECT().Kind().Return(assetcore.KindFont)
+	r.AddFont(fontMock)
+
+	iconMock := newIconProvider(t, "embedded-icons")
+	iconMock.EXPECT().Kind().Return(assetcore.KindIcon)
 	r.AddIcon(sourcedIconProvider{
-		fakeIconProvider: fakeIconProvider{name: "embedded-icons"},
-		sources:          []Source{{Name: "lucide", License: License{SPDX: "ISC"}, Count: 3}},
+		IconProvider: iconMock,
+		sources:      []assetcore.Source{{Name: "lucide", License: assetcore.License{SPDX: "ISC"}, Count: 3}},
 	})
-	r.AddIllustration(fakeIllustrationProvider{name: "embedded-illustrations"})
+
+	illusMock := newIllustrationProvider(t, "embedded-illustrations")
+	illusMock.EXPECT().Kind().Return(assetcore.KindIllustration)
+	r.AddIllustration(illusMock)
 
 	infos := r.Providers()
 	if len(infos) != 3 {
@@ -245,7 +192,7 @@ func TestProvidersShapeAndSort(t *testing.T) {
 	}
 
 	// Sorted by (kind, name): KindFont < KindIcon < KindIllustration lexically ("font" < "icon" < "illustration").
-	wantKinds := []Kind{KindFont, KindIcon, KindIllustration}
+	wantKinds := []assetcore.Kind{assetcore.KindFont, assetcore.KindIcon, assetcore.KindIllustration}
 	for i, want := range wantKinds {
 		if infos[i].Kind != want {
 			t.Errorf("Providers()[%d].Kind = %q, want %q", i, infos[i].Kind, want)
