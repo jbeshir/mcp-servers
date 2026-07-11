@@ -34,6 +34,7 @@ func (s *Server) registerTools() {
 			mcp.Description("Omit these upstream sources"),
 			mcp.Items(stringArrayItems),
 		),
+		mcp.WithOutputSchema[providersManifest](),
 	), s.handleListAssetSources)
 
 	s.mcpServer.AddTool(mcp.NewTool("search_icons",
@@ -85,6 +86,7 @@ func (s *Server) registerTools() {
 		mcp.WithNumber("size",
 			mcp.Description("Output width/height in pixels; omit to use the icon's native grid size"),
 		),
+		mcp.WithOutputSchema[fileManifest](),
 	), s.handleGetIcon)
 
 	s.mcpServer.AddTool(mcp.NewTool("search_illustrations",
@@ -128,6 +130,7 @@ func (s *Server) registerTools() {
 			mcp.Description("Composite illustration id from search_illustrations, e.g. "+
 				"embedded-illustrations:open-doodles/coffee-doodle"),
 		),
+		mcp.WithOutputSchema[fileManifest](),
 	), s.handleGetIllustration)
 
 	s.mcpServer.AddTool(mcp.NewTool("search_fonts",
@@ -179,5 +182,6 @@ func (s *Server) registerTools() {
 		mcp.WithString("format",
 			mcp.Description("Output format: \"woff2\" (default) or \"css\" to also emit an @font-face snippet"),
 		),
+		mcp.WithOutputSchema[fileManifest](),
 	), s.handleGetFont)
 }

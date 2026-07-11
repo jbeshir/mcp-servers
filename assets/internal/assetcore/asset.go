@@ -14,11 +14,11 @@ var ErrNotFound = errors.New("asset not found")
 // record (à la Openverse): the Attribution string is copied verbatim into the output manifest, never
 // assembled at the call site. Value type; copy freely.
 type License struct {
-	SPDX                string // e.g. "CC0-1.0", "OFL-1.1", "MIT"; empty if unknown
-	Name                string // human-readable label
-	URL                 string // deed / license text URL
-	Attribution         string // ready-to-embed attribution; empty if none required
-	RequiresAttribution bool
+	SPDX                string `json:"spdx"`           // e.g. "CC0-1.0", "OFL-1.1", "MIT"; empty if unknown
+	Name                string `json:"name,omitempty"` // human-readable label
+	URL                 string `json:"url,omitempty"`  // deed / license text URL
+	Attribution         string `json:"attribution"`    // ready-to-embed attribution; empty if none required
+	RequiresAttribution bool   `json:"requiresAttribution"`
 }
 
 // Asset is a search hit: metadata only, no bytes. Value type; copy freely.

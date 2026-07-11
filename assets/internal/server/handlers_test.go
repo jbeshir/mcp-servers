@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/jbeshir/mcp-servers/assets/internal/config"
 	"github.com/mark3labs/mcp-go/mcp"
 )
@@ -85,12 +86,14 @@ func TestStringSliceArg(t *testing.T) {
 	}
 }
 
+// newTestServer builds a Server wired to a fresh registry, writing rendered assets under a
+// per-test temp directory.
 func newTestServer(t *testing.T) *Server {
 	t.Helper()
 
-	deps := config.Setup(config.Config{})
+	deps := config.Setup(config.Config{OutputDir: t.TempDir()})
 
-	return NewServer(deps.Registry)
+	return NewServer(deps.Registry, deps.OutputDir)
 }
 
 func newRequest(args map[string]any) mcp.CallToolRequest {
@@ -101,7 +104,6 @@ func newRequest(args map[string]any) mcp.CallToolRequest {
 }
 
 func TestHandleGetIconHappyPath(t *testing.T) {
-	t.Setenv(envOutputDir, t.TempDir())
 	s := newTestServer(t)
 
 	res, err := s.handleGetIcon(t.Context(), newRequest(map[string]any{
@@ -121,22 +123,39 @@ func TestHandleGetIconHappyPath(t *testing.T) {
 	if !ok {
 		t.Fatalf("StructuredContent is %T, want fileManifest", res.StructuredContent)
 	}
-	if m.Count != 1 || len(m.Files) != 1 {
-		t.Fatalf("unexpected manifest: count=%d files=%d", m.Count, len(m.Files))
+	if len(m.Files) != 1 {
+		t.Fatalf("unexpected manifest: files=%d", len(m.Files))
 	}
 
-	entry := m.Files[0]
-	if entry.Source != testIconSet {
-		t.Errorf("entry.Source = %q, want %q", entry.Source, testIconSet)
+	assertManifestFileShape(t, m.Files[0], testIconID, string(assetcore.KindIcon), testIconSet, "ISC")
+	if !strings.HasSuffix(m.Files[0].Path, ".svg") {
+		t.Errorf("entry.Path = %q, want .svg suffix", m.Files[0].Path)
 	}
-	if entry.License != "ISC" {
-		t.Errorf("entry.License = %q, want %q", entry.License, "ISC")
+}
+
+// assertManifestFileShape asserts the structuredContent.files[N] shape the demesne filegen adapter and
+// other MCP clients depend on: path, id, kind, source, title, and an embedded license.spdx, plus that
+// the file was actually written to path.
+func assertManifestFileShape(t *testing.T, entry manifestFile, wantID, wantKind, wantSource, wantSPDX string) {
+	t.Helper()
+
+	if entry.Path == "" {
+		t.Error("entry.Path is empty")
 	}
-	if entry.Kind != kindIcon {
-		t.Errorf("entry.Kind = %q, want %q", entry.Kind, kindIcon)
+	if entry.ID != wantID {
+		t.Errorf("entry.ID = %q, want %q", entry.ID, wantID)
 	}
-	if !strings.HasSuffix(entry.Path, ".svg") {
-		t.Errorf("entry.Path = %q, want .svg suffix", entry.Path)
+	if entry.Kind != wantKind {
+		t.Errorf("entry.Kind = %q, want %q", entry.Kind, wantKind)
+	}
+	if entry.Source != wantSource {
+		t.Errorf("entry.Source = %q, want %q", entry.Source, wantSource)
+	}
+	if entry.Title == "" {
+		t.Error("entry.Title is empty")
+	}
+	if entry.License.SPDX != wantSPDX {
+		t.Errorf("entry.License.SPDX = %q, want %q", entry.License.SPDX, wantSPDX)
 	}
 	if _, err := os.Stat(entry.Path); err != nil {
 		t.Errorf("entry.Path %q does not exist: %v", entry.Path, err)
@@ -144,7 +163,6 @@ func TestHandleGetIconHappyPath(t *testing.T) {
 }
 
 func TestHandleGetIconMissingID(t *testing.T) {
-	t.Setenv(envOutputDir, t.TempDir())
 	s := newTestServer(t)
 
 	res, err := s.handleGetIcon(t.Context(), newRequest(map[string]any{}))
@@ -157,7 +175,6 @@ func TestHandleGetIconMissingID(t *testing.T) {
 }
 
 func TestHandleGetIconNotFound(t *testing.T) {
-	t.Setenv(envOutputDir, t.TempDir())
 	s := newTestServer(t)
 
 	res, err := s.handleGetIcon(t.Context(), newRequest(map[string]any{
@@ -172,7 +189,6 @@ func TestHandleGetIconNotFound(t *testing.T) {
 }
 
 func TestHandleGetIconUnknownProvider(t *testing.T) {
-	t.Setenv(envOutputDir, t.TempDir())
 	s := newTestServer(t)
 
 	res, err := s.handleGetIcon(t.Context(), newRequest(map[string]any{
@@ -187,7 +203,6 @@ func TestHandleGetIconUnknownProvider(t *testing.T) {
 }
 
 func TestHandleSearchIconsHappyPath(t *testing.T) {
-	t.Setenv(envOutputDir, t.TempDir())
 	s := newTestServer(t)
 
 	res, err := s.handleSearchIcons(t.Context(), newRequest(map[string]any{
@@ -214,7 +229,6 @@ func TestHandleSearchIconsHappyPath(t *testing.T) {
 }
 
 func TestHandleSearchIconsSourceFilter(t *testing.T) {
-	t.Setenv(envOutputDir, t.TempDir())
 	s := newTestServer(t)
 
 	res, err := s.handleSearchIcons(t.Context(), newRequest(map[string]any{
@@ -238,7 +252,6 @@ func TestHandleSearchIconsSourceFilter(t *testing.T) {
 }
 
 func TestHandleGetFontCSS(t *testing.T) {
-	t.Setenv(envOutputDir, t.TempDir())
 	s := newTestServer(t)
 
 	res, err := s.handleGetFont(t.Context(), newRequest(map[string]any{
@@ -257,18 +270,13 @@ func TestHandleGetFontCSS(t *testing.T) {
 	if !ok {
 		t.Fatalf("StructuredContent is %T, want fileManifest", res.StructuredContent)
 	}
-	if m.Count != 2 {
-		t.Fatalf("manifest count = %d, want 2 (woff2 + css)", m.Count)
+	if len(m.Files) != 2 {
+		t.Fatalf("manifest files = %d, want 2 (woff2 + css)", len(m.Files))
 	}
 
 	exts := make(map[string]bool, len(m.Files))
 	for _, entry := range m.Files {
-		if entry.Kind != kindFont {
-			t.Errorf("entry.Kind = %q, want %q", entry.Kind, kindFont)
-		}
-		if _, err := os.Stat(entry.Path); err != nil {
-			t.Errorf("entry.Path %q does not exist: %v", entry.Path, err)
-		}
+		assertFontManifestFile(t, entry)
 		exts[filepath.Ext(entry.Path)] = true
 	}
 	if !exts[".woff2"] {
@@ -279,8 +287,23 @@ func TestHandleGetFontCSS(t *testing.T) {
 	}
 }
 
+// assertFontManifestFile asserts the common shape of one get_font manifest entry, plus that a css
+// entry (identified by its path extension) carries the text/css content type.
+func assertFontManifestFile(t *testing.T, entry manifestFile) {
+	t.Helper()
+
+	if entry.Kind != string(assetcore.KindFont) {
+		t.Errorf("entry.Kind = %q, want %q", entry.Kind, assetcore.KindFont)
+	}
+	if _, err := os.Stat(entry.Path); err != nil {
+		t.Errorf("entry.Path %q does not exist: %v", entry.Path, err)
+	}
+	if filepath.Ext(entry.Path) == ".css" && entry.ContentType != "text/css" {
+		t.Errorf("css entry.ContentType = %q, want text/css", entry.ContentType)
+	}
+}
+
 func TestHandleGetIllustration(t *testing.T) {
-	t.Setenv(envOutputDir, t.TempDir())
 	s := newTestServer(t)
 
 	res, err := s.handleGetIllustration(t.Context(), newRequest(map[string]any{
@@ -297,11 +320,11 @@ func TestHandleGetIllustration(t *testing.T) {
 	if !ok {
 		t.Fatalf("StructuredContent is %T, want fileManifest", res.StructuredContent)
 	}
-	if m.Count != 1 || m.Files[0].Kind != kindIllustration {
+	if len(m.Files) != 1 || m.Files[0].Kind != string(assetcore.KindIllustration) {
 		t.Fatalf("unexpected manifest: %+v", m)
 	}
-	if m.Files[0].License != "CC0-1.0" {
-		t.Errorf("illustration license = %q, want CC0-1.0", m.Files[0].License)
+	if m.Files[0].License.SPDX != "CC0-1.0" {
+		t.Errorf("illustration license.spdx = %q, want CC0-1.0", m.Files[0].License.SPDX)
 	}
 }
 
@@ -312,8 +335,8 @@ func TestHandleListAssetSources(t *testing.T) {
 	if err != nil {
 		t.Fatalf("handleListAssetSources: unexpected error: %v", err)
 	}
-	if len(res.Content) != 2 {
-		t.Fatalf("content length = %d, want 2 (listing + JSON)", len(res.Content))
+	if len(res.Content) != 1 {
+		t.Fatalf("content length = %d, want 1 (human summary only)", len(res.Content))
 	}
 
 	listing := res.Content[0].(mcp.TextContent).Text
@@ -323,9 +346,22 @@ func TestHandleListAssetSources(t *testing.T) {
 		}
 	}
 
-	structured := res.Content[1].(mcp.TextContent).Text
-	if !strings.Contains(structured, `"providers"`) {
-		t.Errorf("structured block missing providers key: %s", structured)
+	m, ok := res.StructuredContent.(providersManifest)
+	if !ok {
+		t.Fatalf("StructuredContent is %T, want providersManifest", res.StructuredContent)
+	}
+	if len(m.Providers) == 0 {
+		t.Fatal("providersManifest.Providers is empty")
+	}
+
+	names := make([]string, 0, len(m.Providers))
+	for _, p := range m.Providers {
+		names = append(names, p.Provider)
+	}
+	for _, want := range []string{"embedded-icons", "embedded-illustrations", "embedded-fonts"} {
+		if !strings.Contains(strings.Join(names, ","), want) {
+			t.Errorf("providers %v missing %q", names, want)
+		}
 	}
 }
 

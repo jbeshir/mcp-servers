@@ -5,6 +5,7 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedfonts"
@@ -15,12 +16,13 @@ import (
 // envOutputDir names the environment variable selecting the asset output directory.
 const envOutputDir = "ASSETS_OUTPUT_DIR"
 
+// defaultOutputDirName is the subdirectory of the OS temp dir used when ASSETS_OUTPUT_DIR is unset.
+const defaultOutputDirName = "assets-mcp"
+
 // Config holds the server's resolved configuration. For this PR the only knob is the output
 // directory; no remote-provider or credential settings exist yet.
 type Config struct {
-	// OutputDir is the ASSETS_OUTPUT_DIR value, surfaced here for logging/wiring. The asset writer
-	// (internal/server) still reads this variable itself for the actual write path, so output
-	// behaviour is unchanged; centralizing that read is deferred to a later PR.
+	// OutputDir is the raw ASSETS_OUTPUT_DIR value; empty means "use the default temp directory".
 	OutputDir string
 }
 
@@ -31,20 +33,27 @@ func LoadConfig() Config {
 	}
 }
 
-// Deps are the constructed dependencies the server runs on: the provider registry. The registry is
-// treated read-only after construction.
+// Deps are the constructed dependencies the server runs on: the provider registry and the resolved
+// output directory rendered assets are written to.
 type Deps struct {
-	Registry *assetcore.Registry
+	Registry  *assetcore.Registry
+	OutputDir string
 }
 
-// Setup builds the provider registry from cfg. It registers the three self-contained embedded
-// providers unconditionally (the zero-config, offline default); remote providers are out of scope for
-// this PR. Each provider owns its own license metadata, so there is no catalog to load.
-func Setup(_ Config) *Deps {
+// Setup builds the provider registry from cfg and resolves the asset output directory. It registers
+// the three self-contained embedded providers unconditionally (the zero-config, offline default);
+// remote providers are out of scope for this PR. Each provider owns its own license metadata, so there
+// is no catalog to load.
+func Setup(cfg Config) *Deps {
 	r := assetcore.NewRegistry()
 	r.AddIcon(embeddedicons.New())
 	r.AddIllustration(embeddedillustrations.New())
 	r.AddFont(embeddedfonts.New())
 
-	return &Deps{Registry: r}
+	outputDir := cfg.OutputDir
+	if outputDir == "" {
+		outputDir = filepath.Join(os.TempDir(), defaultOutputDirName)
+	}
+
+	return &Deps{Registry: r, OutputDir: outputDir}
 }

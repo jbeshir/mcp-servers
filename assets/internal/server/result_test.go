@@ -5,47 +5,14 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
-const envOutputDir = "ASSETS_OUTPUT_DIR"
-
-func TestOutputDirHonorsEnv(t *testing.T) {
-	dir := t.TempDir()
-	t.Setenv(envOutputDir, dir)
-
-	got, err := outputDir()
-	if err != nil {
-		t.Fatalf("outputDir: unexpected error: %v", err)
-	}
-	if got != dir {
-		t.Errorf("outputDir() = %q, want %q", got, dir)
-	}
-	if _, err := os.Stat(got); err != nil {
-		t.Errorf("output dir does not exist: %v", err)
-	}
-}
-
-func TestOutputDirDefault(t *testing.T) {
-	t.Setenv(envOutputDir, "")
-
-	got, err := outputDir()
-	if err != nil {
-		t.Fatalf("outputDir: unexpected error: %v", err)
-	}
-	want := filepath.Join(os.TempDir(), "assets-mcp")
-	if got != want {
-		t.Errorf("outputDir() = %q, want %q", got, want)
-	}
-	if _, err := os.Stat(got); err != nil {
-		t.Errorf("output dir does not exist: %v", err)
-	}
-}
-
 func TestWriteAssetAbsolute(t *testing.T) {
-	t.Setenv(envOutputDir, t.TempDir())
+	dir := t.TempDir()
 
-	path, err := writeAsset("sample.svg", []byte("<svg/>"))
+	path, err := writeAsset(dir, "sample.svg", []byte("<svg/>"))
 	if err != nil {
 		t.Fatalf("writeAsset: unexpected error: %v", err)
 	}
@@ -65,10 +32,65 @@ func TestWriteAssetAbsolute(t *testing.T) {
 	}
 }
 
-func TestNewFileResultShape(t *testing.T) {
-	want := fileEntry{Path: "/tmp/x.svg", Kind: kindIcon, Source: "lucide", License: "ISC", Attribution: ""}
+func TestWriteAssetCreatesDir(t *testing.T) {
+	dir := filepath.Join(t.TempDir(), "nested")
 
-	res, err := newFileResult("wrote 1 file", []fileEntry{want})
+	if _, err := writeAsset(dir, "sample.svg", []byte("<svg/>")); err != nil {
+		t.Fatalf("writeAsset: unexpected error: %v", err)
+	}
+	if _, err := os.Stat(dir); err != nil {
+		t.Errorf("output dir does not exist: %v", err)
+	}
+}
+
+func testBlob() assetcore.Blob {
+	return assetcore.Blob{
+		Asset: assetcore.Asset{
+			ID:     "embedded-icons:lucide/camera",
+			Kind:   assetcore.KindIcon,
+			Source: "lucide",
+			Title:  "camera",
+			License: assetcore.License{
+				SPDX: "ISC",
+			},
+		},
+		Content:     []byte("<svg/>"),
+		ContentType: "image/svg+xml",
+	}
+}
+
+func TestManifestFileForShape(t *testing.T) {
+	blob := testBlob()
+
+	entry := manifestFileFor("/tmp/x.svg", blob)
+
+	if entry.Path != "/tmp/x.svg" {
+		t.Errorf("entry.Path = %q, want /tmp/x.svg", entry.Path)
+	}
+	if entry.ID != blob.Asset.ID {
+		t.Errorf("entry.ID = %q, want %q", entry.ID, blob.Asset.ID)
+	}
+	if entry.Kind != string(blob.Asset.Kind) {
+		t.Errorf("entry.Kind = %q, want %q", entry.Kind, string(blob.Asset.Kind))
+	}
+	if entry.Source != blob.Asset.Source {
+		t.Errorf("entry.Source = %q, want %q", entry.Source, blob.Asset.Source)
+	}
+	if entry.Title != blob.Asset.Title {
+		t.Errorf("entry.Title = %q, want %q", entry.Title, blob.Asset.Title)
+	}
+	if entry.ContentType != blob.ContentType {
+		t.Errorf("entry.ContentType = %q, want %q", entry.ContentType, blob.ContentType)
+	}
+	if entry.License != blob.Asset.License {
+		t.Errorf("entry.License = %+v, want %+v", entry.License, blob.Asset.License)
+	}
+}
+
+func TestNewFileResultShape(t *testing.T) {
+	want := manifestFileFor("/tmp/x.svg", testBlob())
+
+	res, err := newFileResult("wrote 1 file", []manifestFile{want})
 	if err != nil {
 		t.Fatalf("newFileResult: unexpected error: %v", err)
 	}
@@ -88,11 +110,8 @@ func TestNewFileResultShape(t *testing.T) {
 	if !ok {
 		t.Fatalf("StructuredContent is %T, want fileManifest", res.StructuredContent)
 	}
-	if m.Count != 1 || len(m.Files) != 1 {
-		t.Fatalf("unexpected manifest: count=%d files=%d", m.Count, len(m.Files))
-	}
-	if m.Count != len(m.Files) {
-		t.Errorf("manifest count %d != len(files) %d", m.Count, len(m.Files))
+	if len(m.Files) != 1 {
+		t.Fatalf("unexpected manifest: files=%d", len(m.Files))
 	}
 	if m.Files[0] != want {
 		t.Errorf("manifest.Files[0] = %+v, want %+v", m.Files[0], want)

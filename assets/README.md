@@ -74,13 +74,33 @@ Every icon, illustration, and font is vendored into the binary via Go's `embed` 
 Tools that produce files (`get_icon`, `get_illustration`, `get_font`) write the asset(s) to disk under `ASSETS_OUTPUT_DIR` (or the default temp directory) and return:
 
 1. A human-readable summary **text content block** of what was written.
-2. A native **`structuredContent`** object shaped `{"files":[{"path","kind","source","license","attribution"}],"count":N}` (with `count == len(files)`).
+2. A native **`structuredContent`** object shaped `{"files":[<file>,...]}`, where each `<file>` is:
+
+   ```json
+   {
+     "path": "/tmp/assets-mcp/icon-lucide-camera.svg",
+     "id": "embedded-icons:lucide/camera",
+     "kind": "icon",
+     "source": "lucide",
+     "title": "camera",
+     "content_type": "image/svg+xml",
+     "license": {
+       "spdx": "ISC",
+       "attribution": "",
+       "requiresAttribution": false
+     }
+   }
+   ```
+
+`list_asset_sources` likewise returns its listing as both a summary text block and a native `structuredContent` object shaped `{"providers":[...]}` — see [Tools](#tools).
+
+`get_icon`, `get_illustration`, `get_font`, and `list_asset_sources` all declare an MCP `outputSchema` for their structured content, so clients can validate or consume it directly without parsing the text block. The `search_*` tools remain text-only.
 
 This mirrors the structured-output shape used elsewhere in this monorepo, e.g. `image-gen-mcp`'s structured `image_url` result.
 
 ## Licenses
 
-Every asset carries a license and (where applicable) attribution, retrievable via `list_asset_sources` or the `license`/`attribution` fields returned by `get_icon`/`get_illustration`/`get_font`.
+Every asset carries a license and (where applicable) attribution, retrievable via `list_asset_sources` or the embedded `license` object (`spdx`, `name`, `url`, `attribution`, `requiresAttribution`) on each file returned by `get_icon`/`get_illustration`/`get_font`.
 
 **Icons:**
 
@@ -95,7 +115,7 @@ Every asset carries a license and (where applicable) attribution, retrievable vi
 
 **Illustrations:** all three collections (Open Doodles, Humaaans, Open Peeps) are CC0-1.0.
 
-**Fonts:** all fourteen families are OFL-1.1. Each family's `LICENSE` file travels alongside its woff2 files in `internal/fonts/data/<family>/` and is not re-served by the MCP server (`get_font`'s `attribution` field is empty for this reason — the license text itself is bundled in the repo).
+**Fonts:** all fourteen families are OFL-1.1. Each family's `LICENSE` file travels alongside its woff2 files in `internal/fonts/data/<family>/` and is not re-served by the MCP server (`get_font`'s `license.attribution` is empty for this reason — the license text itself is bundled in the repo).
 
 ## Follow-ups
 

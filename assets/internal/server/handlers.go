@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -111,6 +110,11 @@ type providerJSON struct {
 	Sources  []sourceJSON `json:"sources"`
 }
 
+// providersManifest is the JSON shape emitted as native structured content by list_asset_sources.
+type providersManifest struct {
+	Providers []providerJSON `json:"providers"`
+}
+
 func (s *Server) handleListAssetSources(
 	_ context.Context,
 	request mcp.CallToolRequest,
@@ -147,18 +151,11 @@ func (s *Server) handleListAssetSources(
 		b.WriteString("(no matching sources)\n")
 	}
 
-	structured, err := json.Marshal(struct {
-		Providers []providerJSON `json:"providers"`
-	}{Providers: out})
-	if err != nil {
-		return nil, fmt.Errorf("marshal sources: %w", err)
-	}
-
 	return &mcp.CallToolResult{
 		Content: []mcp.Content{
 			mcp.NewTextContent(b.String()),
-			mcp.NewTextContent(string(structured)),
 		},
+		StructuredContent: providersManifest{Providers: out},
 	}, nil
 }
 
@@ -278,7 +275,7 @@ func (s *Server) handleGetIcon(
 	}
 	filename += ".svg"
 
-	path, err := writeAsset(filename, blob.Content)
+	path, err := writeAsset(s.outputDir, filename, blob.Content)
 	if err != nil {
 		return nil, fmt.Errorf("write icon %s: %w", id, err)
 	}
@@ -289,13 +286,7 @@ func (s *Server) handleGetIcon(
 			"third-party trademark — using it must not imply endorsement."
 	}
 
-	return newFileResult(summary, []fileEntry{{
-		Path:        path,
-		Kind:        kindIcon,
-		Source:      set,
-		License:     blob.Asset.License.SPDX,
-		Attribution: blob.Asset.License.Attribution,
-	}})
+	return newFileResult(summary, []manifestFile{manifestFileFor(path, blob)})
 }
 
 func (s *Server) handleSearchIllustrations(
@@ -348,18 +339,12 @@ func (s *Server) handleGetIllustration(
 
 	filename := sanitizeFilename(fmt.Sprintf("illustration-%s-%s", collection, name)) + ".svg"
 
-	path, err := writeAsset(filename, blob.Content)
+	path, err := writeAsset(s.outputDir, filename, blob.Content)
 	if err != nil {
 		return nil, fmt.Errorf("write illustration %s: %w", id, err)
 	}
 
-	return newFileResult(fmt.Sprintf("Wrote illustration %s to %s", id, path), []fileEntry{{
-		Path:        path,
-		Kind:        kindIllustration,
-		Source:      collection,
-		License:     blob.Asset.License.SPDX,
-		Attribution: blob.Asset.License.Attribution,
-	}})
+	return newFileResult(fmt.Sprintf("Wrote illustration %s to %s", id, path), []manifestFile{manifestFileFor(path, blob)})
 }
 
 func (s *Server) handleSearchFonts(
@@ -421,24 +406,16 @@ func (s *Server) handleGetFont(
 	}
 
 	family := blob.Asset.Title
-	license := blob.Asset.License.SPDX
-	attribution := blob.Asset.License.Attribution
 
 	slug := sanitizeFilename(strings.ToLower(family))
 	base := fmt.Sprintf("font-%s-%d-%s", slug, weight, style)
 
-	woffPath, err := writeAsset(base+".woff2", blob.Content)
+	woffPath, err := writeAsset(s.outputDir, base+".woff2", blob.Content)
 	if err != nil {
 		return nil, fmt.Errorf("write font %s: %w", id, err)
 	}
 
-	files := []fileEntry{{
-		Path:        woffPath,
-		Kind:        kindFont,
-		Source:      family,
-		License:     license,
-		Attribution: attribution,
-	}}
+	files := []manifestFile{manifestFileFor(woffPath, blob)}
 
 	summary := fmt.Sprintf("Wrote font %s (weight %d, %s) to %s", family, weight, style, woffPath)
 
@@ -450,18 +427,14 @@ func (s *Server) handleGetFont(
 
 		css := renderer.RenderFontFace(family, blob)
 
-		cssPath, err := writeAsset(base+".css", []byte(css))
+		cssPath, err := writeAsset(s.outputDir, base+".css", []byte(css))
 		if err != nil {
 			return nil, fmt.Errorf("write font css %s: %w", id, err)
 		}
 
-		files = append(files, fileEntry{
-			Path:        cssPath,
-			Kind:        kindFont,
-			Source:      family,
-			License:     license,
-			Attribution: attribution,
-		})
+		cssEntry := manifestFileFor(cssPath, blob)
+		cssEntry.ContentType = "text/css"
+		files = append(files, cssEntry)
 		summary += fmt.Sprintf(" and @font-face CSS to %s", cssPath)
 	}
 
