@@ -2,24 +2,19 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 
-	"github.com/jbeshir/mcp-servers/assets/internal/fonts"
-	"github.com/jbeshir/mcp-servers/assets/internal/icons"
-	"github.com/jbeshir/mcp-servers/assets/internal/illustrations"
+	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
 const (
-	defaultSearchLimit = 50
-	maxSearchLimit     = 200
-	defaultFontWeight  = 400
-	defaultFontStyle   = "normal"
-	cssFormat          = "css"
+	defaultFontWeight = 400
+	defaultFontStyle  = "normal"
+	cssFormat         = "css"
+	simpleIconsSet    = "simple-icons"
 )
 
 // stringArg reads a string argument, defaulting to "" if absent or of the wrong type.
@@ -28,8 +23,8 @@ func stringArg(args map[string]any, key string) string {
 	return v
 }
 
-// intArg reads a numeric argument (mcp-go v0.28.0 delivers numbers as float64), defaulting to def
-// if absent or of the wrong type.
+// intArg reads a numeric argument (mcp-go delivers JSON numbers as float64), defaulting to def if
+// absent or of the wrong type.
 func intArg(args map[string]any, key string, def int) int {
 	if v, ok := args[key].(float64); ok {
 		return int(v)
@@ -38,15 +33,29 @@ func intArg(args map[string]any, key string, def int) int {
 	return def
 }
 
-// clampLimit applies the default/max bounds shared by every search tool.
-func clampLimit(limit int) int {
-	switch {
-	case limit <= 0:
-		return defaultSearchLimit
-	case limit > maxSearchLimit:
-		return maxSearchLimit
-	default:
-		return limit
+// stringSliceArg reads a string-array argument (JSON arrays arrive as []any), dropping non-string and
+// empty elements. Absent or wrong-typed arguments yield nil.
+func stringSliceArg(args map[string]any, key string) []string {
+	raw, ok := args[key].([]any)
+	if !ok {
+		return nil
+	}
+
+	out := make([]string, 0, len(raw))
+	for _, e := range raw {
+		if s, ok := e.(string); ok && s != "" {
+			out = append(out, s)
+		}
+	}
+
+	return out
+}
+
+// filterArg builds an assetcore.Filter from an include ("only") and exclude argument pair.
+func filterArg(args map[string]any, onlyKey, exceptKey string) assetcore.Filter {
+	return assetcore.Filter{
+		Only:   stringSliceArg(args, onlyKey),
+		Except: stringSliceArg(args, exceptKey),
 	}
 }
 
@@ -62,51 +71,152 @@ func sanitizeFilename(s string) string {
 	}, s)
 }
 
-// formatList renders a search result header plus one line per result, or a "no matches" note.
-func formatList(header string, lines []string) *mcp.CallToolResult {
+// searchResult renders a search header plus one line per hit (or a "no matches" note) and appends a
+// note naming any providers that degraded during the aggregate search.
+func searchResult(header string, lines []string, warns []assetcore.Warning) *mcp.CallToolResult {
+	var b strings.Builder
+	b.WriteString(header)
+
 	if len(lines) == 0 {
-		return mcp.NewToolResultText(header + "\n(no matches)")
+		b.WriteString("\n(no matches)")
+	} else {
+		b.WriteString("\n")
+		b.WriteString(strings.Join(lines, "\n"))
 	}
 
-	return mcp.NewToolResultText(header + "\n" + strings.Join(lines, "\n"))
+	if len(warns) > 0 {
+		names := make([]string, 0, len(warns))
+		for _, w := range warns {
+			names = append(names, w.Provider)
+		}
+		fmt.Fprintf(&b, "\nNote: some providers were unavailable and omitted: %s", strings.Join(names, ", "))
+	}
+
+	return mcp.NewToolResultText(b.String())
+}
+
+// sourceJSON is the structured shape of one upstream source in list_asset_sources output.
+type sourceJSON struct {
+	Name    string            `json:"name"`
+	License string            `json:"license"`
+	Count   int               `json:"count"`
+	Meta    map[string]string `json:"meta,omitempty"`
+}
+
+// providerJSON is the structured shape of one provider in list_asset_sources output.
+type providerJSON struct {
+	Provider string       `json:"provider"`
+	Kind     string       `json:"kind"`
+	Sources  []sourceJSON `json:"sources"`
+}
+
+// providersManifest is the JSON shape emitted as native structured content by list_asset_sources.
+type providersManifest struct {
+	Providers []providerJSON `json:"providers"`
 }
 
 func (s *Server) handleListAssetSources(
 	_ context.Context,
-	_ mcp.CallToolRequest,
+	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
-	var b strings.Builder
+	args := request.GetArguments()
 
-	b.WriteString("Icon sets:\n")
-	for _, src := range s.catalog.Icons {
-		fmt.Fprintf(&b, "  %s — %s — %d icons\n", src.Set, src.License, src.Count)
+	kindFilter := stringArg(args, "kind")
+	providers := filterArg(args, "providers", "exclude_providers")
+	sources := filterArg(args, "sources", "exclude_sources")
+	sourceScoped := len(sources.Only) > 0 || len(sources.Except) > 0
+
+	var (
+		b   strings.Builder
+		out []providerJSON
+	)
+
+	for _, info := range s.registry.Providers() {
+		if !includeProvider(info, kindFilter, providers) {
+			continue
+		}
+
+		srcs := filterSources(info.Sources, sources)
+
+		// When a source filter is active, a provider whose sources are all filtered out is noise.
+		if sourceScoped && len(srcs) == 0 {
+			continue
+		}
+
+		out = append(out, providerJSON{Provider: info.Name, Kind: string(info.Kind), Sources: srcs})
+		writeProviderListing(&b, info, srcs)
 	}
 
-	b.WriteString("\nIllustration collections:\n")
-	for _, src := range s.catalog.Illustrations {
-		fmt.Fprintf(&b, "  %s — %s — %d illustrations\n", src.Collection, src.License, src.Count)
-	}
-
-	b.WriteString("\nFont families:\n")
-	for _, src := range s.catalog.Fonts {
-		fmt.Fprintf(&b, "  %s — %s — %s\n", src.Family, src.License, src.Category)
-	}
-
-	catalogJSON, err := json.Marshal(s.catalog)
-	if err != nil {
-		return nil, fmt.Errorf("marshal catalog: %w", err)
+	if len(out) == 0 {
+		b.WriteString("(no matching sources)\n")
 	}
 
 	return &mcp.CallToolResult{
 		Content: []mcp.Content{
 			mcp.NewTextContent(b.String()),
-			mcp.NewTextContent(string(catalogJSON)),
 		},
+		StructuredContent: providersManifest{Providers: out},
 	}, nil
 }
 
+// includeProvider reports whether a provider passes the kind and provider filters.
+func includeProvider(info assetcore.ProviderInfo, kind string, providers assetcore.Filter) bool {
+	if kind != "" && string(info.Kind) != kind {
+		return false
+	}
+
+	return providers.Allows(info.Name)
+}
+
+// filterSources projects the sources a provider serves through the source filter into the JSON shape.
+func filterSources(sources []assetcore.Source, f assetcore.Filter) []sourceJSON {
+	out := make([]sourceJSON, 0, len(sources))
+	for _, src := range sources {
+		if !f.Allows(src.Name) {
+			continue
+		}
+		out = append(out, sourceJSON{
+			Name:    src.Name,
+			License: src.License.SPDX,
+			Count:   src.Count,
+			Meta:    src.Meta,
+		})
+	}
+
+	return out
+}
+
+// writeProviderListing renders a provider header and its (already filtered) source lines.
+func writeProviderListing(b *strings.Builder, info assetcore.ProviderInfo, srcs []sourceJSON) {
+	fmt.Fprintf(b, "%s (%s):\n", info.Name, info.Kind)
+	if len(srcs) == 0 {
+		b.WriteString("  (no enumerable sources)\n")
+		return
+	}
+	for _, src := range srcs {
+		writeSourceLine(b, src)
+	}
+}
+
+// writeSourceLine renders one source's listing line, appending its count and any category Meta.
+func writeSourceLine(b *strings.Builder, src sourceJSON) {
+	b.WriteString("  ")
+	b.WriteString(src.Name)
+	if src.License != "" {
+		b.WriteString(" — ")
+		b.WriteString(src.License)
+	}
+	if src.Count >= 0 {
+		fmt.Fprintf(b, " — %d", src.Count)
+	}
+	if cat := src.Meta[assetcore.MetaCategory]; cat != "" {
+		fmt.Fprintf(b, " [%s]", cat)
+	}
+	b.WriteString("\n")
+}
+
 func (s *Server) handleSearchIcons(
-	_ context.Context,
+	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
@@ -116,82 +226,71 @@ func (s *Server) handleSearchIcons(
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	set := stringArg(args, "set")
-	limit := clampLimit(intArg(args, "limit", 0))
+	assets, warns := s.registry.SearchIcons(ctx, assetcore.SearchOpts{
+		Query:     query,
+		Limit:     intArg(args, "limit", 0),
+		Sources:   filterArg(args, "sources", "exclude_sources"),
+		Providers: filterArg(args, "providers", "exclude_providers"),
+	})
 
-	results := icons.Search(query, set, limit)
-
-	lines := make([]string, 0, len(results))
-	for _, m := range results {
-		lines = append(lines, fmt.Sprintf("%s/%s", m.Set, m.Name))
+	lines := make([]string, 0, len(assets))
+	for _, a := range assets {
+		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
 	}
 
-	return formatList(fmt.Sprintf("%d icon(s) matching %q:", len(results), query), lines), nil
+	return searchResult(fmt.Sprintf("%d icon(s) matching %q:", len(assets), query), lines, warns), nil
 }
 
 func (s *Server) handleGetIcon(
-	_ context.Context,
+	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
 
-	set := stringArg(args, "set")
-	if set == "" {
-		return mcp.NewToolResultError("set is required"), nil
-	}
-
-	name := stringArg(args, "name")
-	if name == "" {
-		return mcp.NewToolResultError("name is required"), nil
+	id := stringArg(args, "id")
+	if id == "" {
+		return mcp.NewToolResultError("id is required"), nil
 	}
 
 	color := stringArg(args, "color")
 	size := intArg(args, "size", 0)
 
-	data, err := icons.Render(set, name, color, size)
+	blob, err := s.registry.FetchIcon(ctx, id, assetcore.IconFetchOpts{Color: color, Size: size})
 	if err != nil {
-		if errors.Is(err, icons.ErrNotFound) {
-			return mcp.NewToolResultError(fmt.Sprintf("icon not found: %s/%s", set, name)), nil
+		if errors.Is(err, assetcore.ErrNotFound) {
+			return mcp.NewToolResultError("icon not found: " + id), nil
 		}
 
-		return nil, fmt.Errorf("render icon %s/%s: %w", set, name, err)
+		return nil, fmt.Errorf("render icon %s: %w", id, err)
 	}
 
-	license, attribution, _ := s.catalog.IconLicense(set)
+	set, name := blob.Asset.Source, blob.Asset.Title
 
 	filename := sanitizeFilename(fmt.Sprintf("icon-%s-%s", set, name))
 	if size > 0 {
 		filename += fmt.Sprintf("-%d", size)
 	}
-
 	if color != "" {
 		filename += "-" + sanitizeFilename(color)
 	}
-
 	filename += ".svg"
 
-	path, err := writeAsset(filename, data)
+	path, err := writeAsset(s.outputDir, filename, blob.Content)
 	if err != nil {
-		return nil, fmt.Errorf("write icon %s/%s: %w", set, name, err)
+		return nil, fmt.Errorf("write icon %s: %w", id, err)
 	}
 
-	summary := fmt.Sprintf("Wrote icon %s/%s to %s", set, name, path)
-	if strings.EqualFold(set, "simple-icons") {
+	summary := fmt.Sprintf("Wrote icon %s to %s", id, path)
+	if strings.EqualFold(set, simpleIconsSet) {
 		summary += ". Note: simple-icons vector data is CC0-1.0, but the brand mark it depicts is a " +
 			"third-party trademark — using it must not imply endorsement."
 	}
 
-	return newFileResult(summary, []fileEntry{{
-		Path:        path,
-		Kind:        kindIcon,
-		Source:      set,
-		License:     license,
-		Attribution: attribution,
-	}})
+	return newFileResult(summary, []manifestFile{manifestFileFor(path, blob)})
 }
 
 func (s *Server) handleSearchIllustrations(
-	_ context.Context,
+	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
@@ -201,64 +300,55 @@ func (s *Server) handleSearchIllustrations(
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	collection := stringArg(args, "collection")
-	limit := clampLimit(intArg(args, "limit", 0))
+	assets, warns := s.registry.SearchIllustrations(ctx, assetcore.SearchOpts{
+		Query:     query,
+		Limit:     intArg(args, "limit", 0),
+		Sources:   filterArg(args, "sources", "exclude_sources"),
+		Providers: filterArg(args, "providers", "exclude_providers"),
+	})
 
-	results := illustrations.Search(query, collection, limit)
-
-	lines := make([]string, 0, len(results))
-	for _, m := range results {
-		lines = append(lines, fmt.Sprintf("%s/%s", m.Collection, m.Name))
+	lines := make([]string, 0, len(assets))
+	for _, a := range assets {
+		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
 	}
 
-	return formatList(fmt.Sprintf("%d illustration(s) matching %q:", len(results), query), lines), nil
+	return searchResult(fmt.Sprintf("%d illustration(s) matching %q:", len(assets), query), lines, warns), nil
 }
 
 func (s *Server) handleGetIllustration(
-	_ context.Context,
+	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
 
-	collection := stringArg(args, "collection")
-	if collection == "" {
-		return mcp.NewToolResultError("collection is required"), nil
+	id := stringArg(args, "id")
+	if id == "" {
+		return mcp.NewToolResultError("id is required"), nil
 	}
 
-	name := stringArg(args, "name")
-	if name == "" {
-		return mcp.NewToolResultError("name is required"), nil
-	}
-
-	data, err := illustrations.Get(collection, name)
+	blob, err := s.registry.FetchIllustration(ctx, id)
 	if err != nil {
-		if errors.Is(err, illustrations.ErrNotFound) {
-			return mcp.NewToolResultError(fmt.Sprintf("illustration not found: %s/%s", collection, name)), nil
+		if errors.Is(err, assetcore.ErrNotFound) {
+			return mcp.NewToolResultError("illustration not found: " + id), nil
 		}
 
-		return nil, fmt.Errorf("get illustration %s/%s: %w", collection, name, err)
+		return nil, fmt.Errorf("get illustration %s: %w", id, err)
 	}
 
-	license, attribution, _ := s.catalog.IllustrationLicense(collection)
+	collection, name := blob.Asset.Source, blob.Asset.Title
 
 	filename := sanitizeFilename(fmt.Sprintf("illustration-%s-%s", collection, name)) + ".svg"
 
-	path, err := writeAsset(filename, data)
+	path, err := writeAsset(s.outputDir, filename, blob.Content)
 	if err != nil {
-		return nil, fmt.Errorf("write illustration %s/%s: %w", collection, name, err)
+		return nil, fmt.Errorf("write illustration %s: %w", id, err)
 	}
 
-	return newFileResult(fmt.Sprintf("Wrote illustration %s/%s to %s", collection, name, path), []fileEntry{{
-		Path:        path,
-		Kind:        kindIllustration,
-		Source:      collection,
-		License:     license,
-		Attribution: attribution,
-	}})
+	return newFileResult(fmt.Sprintf("Wrote illustration %s to %s", id, path), []manifestFile{manifestFileFor(path, blob)})
 }
 
 func (s *Server) handleSearchFonts(
-	_ context.Context,
+	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
@@ -268,32 +358,33 @@ func (s *Server) handleSearchFonts(
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	limit := clampLimit(intArg(args, "limit", 0))
+	assets, warns := s.registry.SearchFonts(ctx, assetcore.SearchOpts{
+		Query:     query,
+		Limit:     intArg(args, "limit", 0),
+		Sources:   filterArg(args, "sources", "exclude_sources"),
+		Providers: filterArg(args, "providers", "exclude_providers"),
+	})
 
-	results := fonts.Search(query, limit)
-
-	lines := make([]string, 0, len(results))
-	for _, m := range results {
-		weights := make([]string, 0, len(m.Weights))
-		for _, w := range m.Weights {
-			weights = append(weights, strconv.Itoa(w))
-		}
-
-		lines = append(lines, fmt.Sprintf("%s (%s) weights: %s", m.Family, m.Category, strings.Join(weights, ",")))
+	lines := make([]string, 0, len(assets))
+	for _, a := range assets {
+		lines = append(lines, fmt.Sprintf(
+			"%s — %s (%s) weights: %s",
+			a.ID, a.Title, a.Meta[assetcore.MetaCategory], a.Meta[assetcore.MetaWeights],
+		))
 	}
 
-	return formatList(fmt.Sprintf("%d font family(-ies) matching %q:", len(results), query), lines), nil
+	return searchResult(fmt.Sprintf("%d font family(-ies) matching %q:", len(assets), query), lines, warns), nil
 }
 
 func (s *Server) handleGetFont(
-	_ context.Context,
+	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
 
-	family := stringArg(args, "family")
-	if family == "" {
-		return mcp.NewToolResultError("family is required"), nil
+	id := stringArg(args, "id")
+	if id == "" {
+		return mcp.NewToolResultError("id is required"), nil
 	}
 
 	weight := intArg(args, "weight", defaultFontWeight)
@@ -305,50 +396,45 @@ func (s *Server) handleGetFont(
 
 	format := stringArg(args, "format")
 
-	font, err := fonts.Get(family, weight, style)
+	blob, prov, err := s.registry.FetchFont(ctx, id, assetcore.FontFetchOpts{Weight: weight, Style: style})
 	if err != nil {
-		if errors.Is(err, fonts.ErrNotFound) {
-			return mcp.NewToolResultError(fmt.Sprintf("font not found: %s weight=%d style=%s", family, weight, style)), nil
+		if errors.Is(err, assetcore.ErrNotFound) {
+			return mcp.NewToolResultError(fmt.Sprintf("font not found: %s weight=%d style=%s", id, weight, style)), nil
 		}
 
-		return nil, fmt.Errorf("get font %s: %w", family, err)
+		return nil, fmt.Errorf("get font %s: %w", id, err)
 	}
 
-	license, attribution, _ := s.catalog.FontLicense(family)
+	family := blob.Asset.Title
 
 	slug := sanitizeFilename(strings.ToLower(family))
 	base := fmt.Sprintf("font-%s-%d-%s", slug, weight, style)
 
-	woffPath, err := writeAsset(base+".woff2", font.Data)
+	woffPath, err := writeAsset(s.outputDir, base+".woff2", blob.Content)
 	if err != nil {
-		return nil, fmt.Errorf("write font %s: %w", family, err)
+		return nil, fmt.Errorf("write font %s: %w", id, err)
 	}
 
-	files := []fileEntry{{
-		Path:        woffPath,
-		Kind:        kindFont,
-		Source:      family,
-		License:     license,
-		Attribution: attribution,
-	}}
+	files := []manifestFile{manifestFileFor(woffPath, blob)}
 
 	summary := fmt.Sprintf("Wrote font %s (weight %d, %s) to %s", family, weight, style, woffPath)
 
 	if strings.EqualFold(format, cssFormat) {
-		css := fonts.FontFace(family, font)
-
-		cssPath, err := writeAsset(base+".css", []byte(css))
-		if err != nil {
-			return nil, fmt.Errorf("write font css %s: %w", family, err)
+		renderer, ok := prov.(assetcore.FontFaceRenderer)
+		if !ok {
+			return nil, fmt.Errorf("font provider %q cannot render @font-face CSS", prov.Name())
 		}
 
-		files = append(files, fileEntry{
-			Path:        cssPath,
-			Kind:        kindFont,
-			Source:      family,
-			License:     license,
-			Attribution: attribution,
-		})
+		css := renderer.RenderFontFace(family, blob)
+
+		cssPath, err := writeAsset(s.outputDir, base+".css", []byte(css))
+		if err != nil {
+			return nil, fmt.Errorf("write font css %s: %w", id, err)
+		}
+
+		cssEntry := manifestFileFor(cssPath, blob)
+		cssEntry.ContentType = "text/css"
+		files = append(files, cssEntry)
 		summary += fmt.Sprintf(" and @font-face CSS to %s", cssPath)
 	}
 

@@ -42,6 +42,21 @@ fmt:
 	done
 	goimports -w .
 
+# ── Mocks ────────────────────────────────────────────────────
+
+# Regenerates the assetcore provider mocks (internal/assetcore/mocks) via the
+# mockery tool pinned in assets/go.mod. Generated files are checked in; do not
+# edit them by hand.
+.PHONY: mocks
+mocks:
+	cd assets && go tool mockery
+
+# Regenerates the mocks and fails if the working tree then differs, i.e. the
+# checked-in mocks are stale relative to the assetcore interfaces they mock.
+.PHONY: check-mocks
+check-mocks: mocks
+	git diff --exit-code assets/internal/assetcore/mocks
+
 # ── Desloppify ───────────────────────────────────────────────
 
 .PHONY: desloppify

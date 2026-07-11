@@ -5,51 +5,45 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
-const (
-	kindIcon         = "icon"
-	kindIllustration = "illustration"
-	kindFont         = "font"
-)
+// manifestFile describes a single asset file written to disk by a tool call, derived entirely from
+// the assetcore.Blob it was rendered from.
+type manifestFile struct {
+	Path        string            `json:"path"`
+	ID          string            `json:"id"`
+	Kind        string            `json:"kind"`
+	Source      string            `json:"source"`
+	Title       string            `json:"title"`
+	ContentType string            `json:"content_type,omitempty"`
+	License     assetcore.License `json:"license"`
+}
 
-// fileEntry describes a single asset file written to disk by a tool call.
-type fileEntry struct {
-	Path        string `json:"path"`
-	Kind        string `json:"kind"`
-	Source      string `json:"source"`
-	License     string `json:"license"`
-	Attribution string `json:"attribution"`
+// manifestFileFor builds a manifestFile for path from b's asset metadata and content type.
+func manifestFileFor(path string, b assetcore.Blob) manifestFile {
+	return manifestFile{
+		Path:        path,
+		ID:          b.Asset.ID,
+		Kind:        string(b.Asset.Kind),
+		Source:      b.Asset.Source,
+		Title:       b.Asset.Title,
+		ContentType: b.ContentType,
+		License:     b.Asset.License,
+	}
 }
 
 // fileManifest is the JSON shape emitted as native structured content by file-producing tools.
 type fileManifest struct {
-	Files []fileEntry `json:"files"`
-	Count int         `json:"count"`
+	Files []manifestFile `json:"files"`
 }
 
-// outputDir returns the directory rendered assets are written to: ASSETS_OUTPUT_DIR if set,
-// otherwise a subdirectory of the OS temp dir. The directory is created if it does not exist.
-func outputDir() (string, error) {
-	dir := os.Getenv("ASSETS_OUTPUT_DIR")
-	if dir == "" {
-		dir = filepath.Join(os.TempDir(), "assets-mcp")
-	}
-
+// writeAsset writes data to filename (sanitized to its base name) under dir, creating dir if it does
+// not yet exist, and returns the absolute path written.
+func writeAsset(dir, filename string, data []byte) (string, error) {
 	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return "", fmt.Errorf("create output dir: %w", err)
-	}
-
-	return dir, nil
-}
-
-// writeAsset writes data to filename (sanitized to its base name) under the output directory and
-// returns the absolute path written.
-func writeAsset(filename string, data []byte) (string, error) {
-	dir, err := outputDir()
-	if err != nil {
-		return "", err
 	}
 
 	path := filepath.Join(dir, filepath.Base(filename))
@@ -70,13 +64,13 @@ func writeAsset(filename string, data []byte) (string, error) {
 // block plus the machine-readable file manifest as native structured content.
 //
 // The manifest is carried in result.StructuredContent (mcp-go's native structured output), shaped
-// {"files":[{path,kind,source,license,attribution}],"count":N}; the summary text block is retained
-// so clients that ignore structured content still get a readable result.
-func newFileResult(summary string, files []fileEntry) (*mcp.CallToolResult, error) {
+// {"files":[manifestFile,...]}; the summary text block is retained so clients that ignore structured
+// content still get a readable result.
+func newFileResult(summary string, files []manifestFile) (*mcp.CallToolResult, error) {
 	return &mcp.CallToolResult{
 		Content: []mcp.Content{
 			mcp.NewTextContent(summary),
 		},
-		StructuredContent: fileManifest{Files: files, Count: len(files)},
+		StructuredContent: fileManifest{Files: files},
 	}, nil
 }
