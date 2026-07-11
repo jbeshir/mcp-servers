@@ -1,6 +1,10 @@
 package assetcore
 
-import "sort"
+import (
+	"context"
+	"fmt"
+	"sort"
+)
 
 // Registry maps provider name -> provider, segregated per kind. It is built once during wiring
 // (config.Setup) via the Add* methods and treated read-only thereafter: the accessors take no lock
@@ -60,6 +64,102 @@ func (r *Registry) Fonts() []FontProvider {
 	}
 
 	return out
+}
+
+// FetchIcon routes id to the provider named in its composite prefix and fetches the icon by its
+// provider-local id. A malformed id or an unknown provider name is reported as ErrNotFound.
+func (r *Registry) FetchIcon(ctx context.Context, id string, opts IconFetchOpts) (Blob, error) {
+	name, local, ok := ParseAssetID(id)
+	if !ok {
+		return Blob{}, fmt.Errorf("%w: malformed asset id %q", ErrNotFound, id)
+	}
+
+	p, ok := r.icons[name]
+	if !ok {
+		return Blob{}, fmt.Errorf("%w: no icon provider %q", ErrNotFound, name)
+	}
+
+	return p.Fetch(ctx, local, opts)
+}
+
+// FetchIllustration routes id to the provider named in its composite prefix and fetches the
+// illustration by its provider-local id. A malformed id or an unknown provider is ErrNotFound.
+func (r *Registry) FetchIllustration(ctx context.Context, id string) (Blob, error) {
+	name, local, ok := ParseAssetID(id)
+	if !ok {
+		return Blob{}, fmt.Errorf("%w: malformed asset id %q", ErrNotFound, id)
+	}
+
+	p, ok := r.illustrations[name]
+	if !ok {
+		return Blob{}, fmt.Errorf("%w: no illustration provider %q", ErrNotFound, name)
+	}
+
+	return p.Fetch(ctx, local)
+}
+
+// FetchFont routes id to the provider named in its composite prefix and fetches the font by its
+// provider-local id, returning that provider so the caller can type-assert an optional
+// FontFaceRenderer for @font-face CSS. A malformed id or an unknown provider is ErrNotFound.
+func (r *Registry) FetchFont(ctx context.Context, id string, opts FontFetchOpts) (Blob, FontProvider, error) {
+	name, local, ok := ParseAssetID(id)
+	if !ok {
+		return Blob{}, nil, fmt.Errorf("%w: malformed asset id %q", ErrNotFound, id)
+	}
+
+	p, ok := r.fonts[name]
+	if !ok {
+		return Blob{}, nil, fmt.Errorf("%w: no font provider %q", ErrNotFound, name)
+	}
+
+	b, err := p.Fetch(ctx, local, opts)
+	if err != nil {
+		return Blob{}, nil, err
+	}
+
+	return b, p, nil
+}
+
+// ProviderInfo describes a registered provider and, when it implements SourceLister, the upstream
+// sources it serves. Sources is nil for providers that cannot enumerate their catalogue.
+type ProviderInfo struct {
+	Name    string
+	Kind    Kind
+	Sources []Source
+}
+
+// Providers returns every registered provider across all kinds, sorted by (kind, name), each carrying
+// its Sources() if it implements SourceLister. It backs the list_asset_sources discovery tool.
+func (r *Registry) Providers() []ProviderInfo {
+	var infos []ProviderInfo
+
+	collect := func(p Provider) {
+		info := ProviderInfo{Name: p.Name(), Kind: p.Kind()}
+		if sl, ok := p.(SourceLister); ok {
+			info.Sources = sl.Sources()
+		}
+		infos = append(infos, info)
+	}
+
+	for _, p := range r.Icons() {
+		collect(p)
+	}
+	for _, p := range r.Illustrations() {
+		collect(p)
+	}
+	for _, p := range r.Fonts() {
+		collect(p)
+	}
+
+	sort.Slice(infos, func(i, j int) bool {
+		if infos[i].Kind != infos[j].Kind {
+			return infos[i].Kind < infos[j].Kind
+		}
+
+		return infos[i].Name < infos[j].Name
+	})
+
+	return infos
 }
 
 // sortedKeys returns the map keys sorted ascending, giving deterministic provider ordering.

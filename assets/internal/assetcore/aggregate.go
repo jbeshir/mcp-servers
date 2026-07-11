@@ -2,7 +2,6 @@ package assetcore
 
 import (
 	"context"
-	"errors"
 	"sync"
 	"time"
 )
@@ -19,44 +18,49 @@ type Warning struct {
 	Err      string
 }
 
-// SearchIcons fans out across every registered icon provider and merges the results.
-func (r *Registry) SearchIcons(ctx context.Context, q IconQuery) (Page, []Warning) {
-	return fanOutSearch(ctx, r.Icons(), func(c context.Context, p IconProvider) (Page, error) {
-		return p.Search(c, q)
+// SearchIcons fans out across the icon providers allowed by opts.Providers and merges the results.
+func (r *Registry) SearchIcons(ctx context.Context, opts SearchOpts) (Page, []Warning) {
+	provs := allowedProviders(r.Icons(), opts.Providers)
+
+	return fanOutSearch(ctx, provs, func(c context.Context, p IconProvider) (Page, error) {
+		return p.Search(c, opts)
 	})
 }
 
-// SearchIllustrations fans out across every registered illustration provider and merges the results.
-func (r *Registry) SearchIllustrations(ctx context.Context, q IllustrationQuery) (Page, []Warning) {
-	return fanOutSearch(ctx, r.Illustrations(), func(c context.Context, p IllustrationProvider) (Page, error) {
-		return p.Search(c, q)
+// SearchIllustrations fans out across the illustration providers allowed by opts.Providers and merges
+// the results.
+func (r *Registry) SearchIllustrations(ctx context.Context, opts SearchOpts) (Page, []Warning) {
+	provs := allowedProviders(r.Illustrations(), opts.Providers)
+
+	return fanOutSearch(ctx, provs, func(c context.Context, p IllustrationProvider) (Page, error) {
+		return p.Search(c, opts)
 	})
 }
 
-// SearchFonts fans out across every registered font provider and merges the results.
-func (r *Registry) SearchFonts(ctx context.Context, q FontQuery) (Page, []Warning) {
-	return fanOutSearch(ctx, r.Fonts(), func(c context.Context, p FontProvider) (Page, error) {
-		return p.Search(c, q)
+// SearchFonts fans out across the font providers allowed by opts.Providers and merges the results.
+func (r *Registry) SearchFonts(ctx context.Context, opts SearchOpts) (Page, []Warning) {
+	provs := allowedProviders(r.Fonts(), opts.Providers)
+
+	return fanOutSearch(ctx, provs, func(c context.Context, p FontProvider) (Page, error) {
+		return p.Search(c, opts)
 	})
 }
 
-// FetchIcon fetches an icon from the first registered provider that has it.
-func (r *Registry) FetchIcon(ctx context.Context, a Asset) (Blob, error) {
-	_, b, err := fetchFirst(ctx, r.Icons(), a)
-	return b, err
-}
+// allowedProviders returns the subset of provs whose Name the filter allows, preserving order. An
+// all-allowing filter returns provs unchanged.
+func allowedProviders[P Provider](provs []P, f Filter) []P {
+	if len(f.Only) == 0 && len(f.Except) == 0 {
+		return provs
+	}
 
-// FetchIllustration fetches an illustration from the first registered provider that has it.
-func (r *Registry) FetchIllustration(ctx context.Context, a Asset) (Blob, error) {
-	_, b, err := fetchFirst(ctx, r.Illustrations(), a)
-	return b, err
-}
+	out := make([]P, 0, len(provs))
+	for _, p := range provs {
+		if f.Allows(p.Name()) {
+			out = append(out, p)
+		}
+	}
 
-// FetchFont fetches a font from the first registered provider that has it, returning that provider so
-// the caller can type-assert an optional FontFaceRenderer for @font-face CSS.
-func (r *Registry) FetchFont(ctx context.Context, a Asset) (Blob, FontProvider, error) {
-	p, b, err := fetchFirst(ctx, r.Fonts(), a)
-	return b, p, err
+	return out
 }
 
 // fanOutSearch runs search concurrently across provs with a per-provider timeout, collecting a
@@ -102,16 +106,18 @@ func fanOutSearch[P Provider](
 	return merge(pages), warns
 }
 
-// merge concatenates pages in provider order, dropping later duplicates keyed by (Source, ID) so the
-// first provider to emit an asset wins. Cursor/Total are per-provider concepts that do not compose
-// across providers, so the merged Page reports only the deduped assets.
+// merge concatenates pages in provider order, deduping by logical identity (Source, Title) so the
+// same logical asset served by two providers appears once, first-provider-wins. Deduping on ID would
+// not compose across providers because the composite ID embeds the provider name, so the same logical
+// asset carries a different ID per provider. Cursor/Total are per-provider concepts that do not
+// compose, so the merged Page reports only the deduped assets.
 func merge(pages []Page) Page {
 	seen := make(map[string]bool)
 	out := Page{Total: -1}
 
 	for _, pg := range pages {
 		for _, a := range pg.Assets {
-			key := a.Source + "\x00" + a.ID
+			key := a.Source + "\x00" + a.Title
 			if seen[key] {
 				continue
 			}
@@ -121,33 +127,4 @@ func merge(pages []Page) Page {
 	}
 
 	return out
-}
-
-// fetchProvider is the constraint for fetchFirst: any provider that can materialize an Asset. Each
-// per-kind provider interface (IconProvider, IllustrationProvider, FontProvider) satisfies it.
-type fetchProvider interface {
-	Provider
-	Fetch(ctx context.Context, a Asset) (Blob, error)
-}
-
-// fetchFirst tries each provider's Fetch in order, skipping providers that report ErrNotFound and
-// returning the first success (with the serving provider) or a non-ErrNotFound error. If no provider
-// has the asset it returns ErrNotFound. Generic so the three FetchX helpers share one implementation.
-func fetchFirst[P fetchProvider](ctx context.Context, provs []P, a Asset) (P, Blob, error) {
-	var zero P
-
-	for _, p := range provs {
-		blob, err := p.Fetch(ctx, a)
-		if err != nil {
-			if errors.Is(err, ErrNotFound) {
-				continue
-			}
-
-			return zero, Blob{}, err
-		}
-
-		return p, blob, nil
-	}
-
-	return zero, Blob{}, ErrNotFound
 }

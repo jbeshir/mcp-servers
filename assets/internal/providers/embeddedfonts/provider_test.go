@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jbeshir/mcp-servers/assets/internal/catalog"
+	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 )
 
 const (
@@ -55,6 +55,33 @@ func TestFontFace(t *testing.T) {
 	for _, want := range []string{"@font-face", "font-weight: 400", knownFilename} {
 		if !strings.Contains(css, want) {
 			t.Errorf("fontFaceCSS(%q, f) = %q, want it to contain %q", knownFamily, css, want)
+		}
+	}
+}
+
+func TestParseFontFilename(t *testing.T) {
+	weight, style := parseFontFilename("inter-latin-700-normal.woff2")
+	if weight != 700 || style != "normal" {
+		t.Errorf("parseFontFilename = (%d, %q), want (700, normal)", weight, style)
+	}
+
+	if w, s := parseFontFilename("garbage.woff2"); w != 0 || s != "" {
+		t.Errorf("parseFontFilename(garbage) = (%d, %q), want (0, \"\")", w, s)
+	}
+}
+
+func TestRenderFontFaceFromBlob(t *testing.T) {
+	p := New()
+
+	blob, err := p.Fetch(t.Context(), knownSlug, assetcore.FontFetchOpts{Weight: 700})
+	if err != nil {
+		t.Fatalf("Fetch: %v", err)
+	}
+
+	css := p.RenderFontFace(knownFamily, blob)
+	for _, want := range []string{"@font-face", "font-weight: 700", "inter-latin-700-normal.woff2"} {
+		if !strings.Contains(css, want) {
+			t.Errorf("RenderFontFace CSS = %q, want it to contain %q", css, want)
 		}
 	}
 }
@@ -120,21 +147,73 @@ func TestFamilies(t *testing.T) {
 	}
 }
 
-func TestEveryFamilyHasLicense(t *testing.T) {
-	c, err := catalog.Load()
-	if err != nil {
-		t.Fatalf("catalog.Load: %v", err)
+func TestSearchFiltersBySource(t *testing.T) {
+	// Query all families, but scope to just Inter by display name.
+	results := searchFonts("", assetcore.Filter{Only: []string{knownFamily}}, 200)
+	if len(results) != 1 || results[0].family != knownFamily {
+		t.Fatalf("searchFonts scoped to %q = %+v, want a single Inter result", knownFamily, results)
 	}
 
-	_ = New(c)
+	// Excluding Inter must drop it.
+	for _, m := range searchFonts("", assetcore.Filter{Except: []string{knownFamily}}, 200) {
+		if m.family == knownFamily {
+			t.Errorf("searchFonts with Inter excluded still returned it")
+		}
+	}
+}
 
-	for _, fam := range loadedFamilies() {
-		license, _, ok := c.FontLicense(fam.family)
-		if !ok {
-			t.Errorf("FontLicense(%q) ok = false, want true", fam.family)
+func TestSearchMapsFontHits(t *testing.T) {
+	p := New()
+
+	page, err := p.Search(t.Context(), assetcore.SearchOpts{Query: knownSlug, Limit: 10})
+	if err != nil {
+		t.Fatalf("Search: %v", err)
+	}
+
+	var inter *assetcore.Asset
+	for i := range page.Assets {
+		if page.Assets[i].Title == knownFamily {
+			inter = &page.Assets[i]
 		}
-		if license == "" {
-			t.Errorf("FontLicense(%q) license is empty", fam.family)
+	}
+	if inter == nil {
+		t.Fatalf("Search(%q) did not return Inter", knownSlug)
+	}
+	if inter.ID != assetcore.AssetID(providerName, knownSlug) {
+		t.Errorf("Inter asset.ID = %q, want composite id", inter.ID)
+	}
+	if inter.Meta[assetcore.MetaCategory] != categorySans {
+		t.Errorf("Inter category meta = %q, want %q", inter.Meta[assetcore.MetaCategory], categorySans)
+	}
+	if inter.Meta[assetcore.MetaWeights] != "400,700" {
+		t.Errorf("Inter weights meta = %q, want 400,700", inter.Meta[assetcore.MetaWeights])
+	}
+}
+
+func TestSourcesReportsFamiliesWithLicenseCountCategory(t *testing.T) {
+	p := New()
+
+	srcs := p.Sources()
+	if len(srcs) != 14 {
+		t.Fatalf("Sources() length = %d, want 14", len(srcs))
+	}
+
+	var inter *assetcore.Source
+	for i := range srcs {
+		if srcs[i].Name == knownFamily {
+			inter = &srcs[i]
 		}
+	}
+	if inter == nil {
+		t.Fatal("Sources() missing Inter")
+	}
+	if inter.License.SPDX != "OFL-1.1" {
+		t.Errorf("Inter license = %q, want OFL-1.1", inter.License.SPDX)
+	}
+	if inter.Count != 2 {
+		t.Errorf("Inter variant count = %d, want 2", inter.Count)
+	}
+	if inter.Meta[assetcore.MetaCategory] != categorySans {
+		t.Errorf("Inter source category = %q, want %q", inter.Meta[assetcore.MetaCategory], categorySans)
 	}
 }

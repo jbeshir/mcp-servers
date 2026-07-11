@@ -5,46 +5,53 @@ import (
 	"testing"
 )
 
-func TestSearchIconsMergesAndDedupes(t *testing.T) {
+func TestSearchIconsMergesAndDedupesByLogicalIdentity(t *testing.T) {
+	// The same logical asset (Source=s, Title=camera) is served by both providers with a different
+	// composite ID each; merge must dedup on (Source, Title), first-provider-wins.
 	r := NewRegistry()
 	r.AddIcon(fakeIconProvider{name: "a", page: Page{Assets: []Asset{
-		{Source: "s", ID: "1"}, {Source: "s", ID: "2"},
+		{Source: "s", Title: "camera", ID: "a:s/camera"},
+		{Source: "s", Title: "home", ID: "a:s/home"},
 	}}})
 	r.AddIcon(fakeIconProvider{name: "b", page: Page{Assets: []Asset{
-		{Source: "s", ID: "2"}, {Source: "s", ID: "3"},
+		{Source: "s", Title: "camera", ID: "b:s/camera"},
+		{Source: "s", Title: "gear", ID: "b:s/gear"},
 	}}})
 
-	page, warns := r.SearchIcons(t.Context(), IconQuery{})
-
+	page, warns := r.SearchIcons(t.Context(), SearchOpts{})
 	if len(warns) != 0 {
 		t.Fatalf("warnings = %v, want none", warns)
 	}
 
-	var ids []string
+	var titles, ids []string
 	for _, a := range page.Assets {
+		titles = append(titles, a.Title)
 		ids = append(ids, a.ID)
 	}
-	// (s,2) is emitted by both providers but must appear once, first-provider-wins.
-	want := []string{"1", "2", "3"}
-	if len(ids) != len(want) {
-		t.Fatalf("merged ids = %v, want %v", ids, want)
+
+	wantTitles := []string{"camera", "home", "gear"}
+	if len(titles) != len(wantTitles) {
+		t.Fatalf("merged titles = %v, want %v", titles, wantTitles)
 	}
-	for i, id := range want {
-		if ids[i] != id {
-			t.Errorf("merged ids[%d] = %q, want %q", i, ids[i], id)
+	for i, want := range wantTitles {
+		if titles[i] != want {
+			t.Errorf("merged titles[%d] = %q, want %q", i, titles[i], want)
 		}
+	}
+	// The winning "camera" must be provider a's (first-provider-wins), keeping its composite ID.
+	if ids[0] != "a:s/camera" {
+		t.Errorf("deduped camera ID = %q, want a:s/camera (first provider wins)", ids[0])
 	}
 }
 
 func TestSearchIconsDegradesFailingProvider(t *testing.T) {
 	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: "good", page: Page{Assets: []Asset{{Source: "s", ID: "1"}}}})
+	r.AddIcon(fakeIconProvider{name: "good", page: Page{Assets: []Asset{{Source: "s", Title: "t", ID: "good:s/t"}}}})
 	r.AddIcon(fakeIconProvider{name: "bad", err: errors.New("boom")})
 
-	page, warns := r.SearchIcons(t.Context(), IconQuery{})
+	page, warns := r.SearchIcons(t.Context(), SearchOpts{})
 
-	// The failing provider must not fail the whole search: the good provider's result survives.
-	if len(page.Assets) != 1 || page.Assets[0].ID != "1" {
+	if len(page.Assets) != 1 || page.Assets[0].ID != "good:s/t" {
 		t.Fatalf("assets = %+v, want the single good result", page.Assets)
 	}
 
@@ -59,44 +66,31 @@ func TestSearchIconsDegradesFailingProvider(t *testing.T) {
 	}
 }
 
-func TestFetchIconTriesUntilFound(t *testing.T) {
+func TestSearchIconsProviderFilterSkipsBeforeFanOut(t *testing.T) {
+	// The excluded provider errors; if it were searched it would produce a warning. The Providers
+	// filter must skip it entirely, so no warning and only the allowed provider's assets appear.
 	r := NewRegistry()
-	// Sorted by name: "a-miss" is tried first and reports ErrNotFound, then "b-hit" succeeds.
-	r.AddIcon(fakeIconProvider{name: "a-miss", err: ErrNotFound})
-	r.AddIcon(fakeIconProvider{name: "b-hit"})
+	r.AddIcon(fakeIconProvider{name: "keep", page: Page{Assets: []Asset{{Source: "s", Title: "t", ID: "keep:s/t"}}}})
+	r.AddIcon(fakeIconProvider{name: "drop", err: errors.New("should never run")})
 
-	blob, err := r.FetchIcon(t.Context(), Asset{})
-	if err != nil {
-		t.Fatalf("FetchIcon error = %v, want nil", err)
+	page, warns := r.SearchIcons(t.Context(), SearchOpts{Providers: Filter{Except: []string{"drop"}}})
+
+	if len(warns) != 0 {
+		t.Fatalf("warnings = %v, want none (excluded provider must be skipped, not run)", warns)
 	}
-	if string(blob.Content) != "b-hit" {
-		t.Errorf("FetchIcon served %q, want the b-hit provider", string(blob.Content))
-	}
-}
-
-func TestFetchIconAllMissReturnsNotFound(t *testing.T) {
-	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: "x", err: ErrNotFound})
-
-	if _, err := r.FetchIcon(t.Context(), Asset{}); !errors.Is(err, ErrNotFound) {
-		t.Errorf("FetchIcon error = %v, want ErrNotFound", err)
+	if len(page.Assets) != 1 || page.Assets[0].ID != "keep:s/t" {
+		t.Fatalf("assets = %+v, want only the kept provider's result", page.Assets)
 	}
 }
 
-func TestFetchIconPropagatesRealError(t *testing.T) {
+func TestSearchIconsProviderOnlyFilter(t *testing.T) {
 	r := NewRegistry()
-	r.AddIcon(fakeIconProvider{name: "x", err: errors.New("disk full")})
+	r.AddIcon(fakeIconProvider{name: "a", page: Page{Assets: []Asset{{Source: "s", Title: "ta", ID: "a:s/ta"}}}})
+	r.AddIcon(fakeIconProvider{name: "b", page: Page{Assets: []Asset{{Source: "s", Title: "tb", ID: "b:s/tb"}}}})
 
-	_, err := r.FetchIcon(t.Context(), Asset{})
-	if err == nil || errors.Is(err, ErrNotFound) {
-		t.Errorf("FetchIcon error = %v, want a non-ErrNotFound error", err)
-	}
-}
+	page, _ := r.SearchIcons(t.Context(), SearchOpts{Providers: Filter{Only: []string{"b"}}})
 
-func TestFetchIconEmptyRegistryReturnsNotFound(t *testing.T) {
-	r := NewRegistry()
-
-	if _, err := r.FetchIcon(t.Context(), Asset{}); !errors.Is(err, ErrNotFound) {
-		t.Errorf("FetchIcon error = %v, want ErrNotFound", err)
+	if len(page.Assets) != 1 || page.Assets[0].ID != "b:s/tb" {
+		t.Fatalf("assets = %+v, want only provider b's result", page.Assets)
 	}
 }

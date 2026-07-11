@@ -1,10 +1,13 @@
 package assetcore
 
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
-// ErrNotFound is returned by a provider's Fetch (or Search of an unknown source) when the requested
-// asset does not exist. It is the provider-neutral counterpart of the kind packages' own ErrNotFound
-// values, so callers depend only on assetcore.
+// ErrNotFound is returned by a provider's Fetch (or a routed Fetch given a malformed/unknown id) when
+// the requested asset does not exist. It is the provider-neutral counterpart of the provider packages'
+// own ErrNotFound values, so callers depend only on assetcore.
 var ErrNotFound = errors.New("asset not found")
 
 // License carries the licensing and attribution of an asset. It is a pre-formatted, ready-to-embed
@@ -18,33 +21,51 @@ type License struct {
 	RequiresAttribution bool
 }
 
-// Asset is a search hit: metadata only, no bytes. Fetch takes an Asset back so a provider can reuse
-// the identity (and any Ref hints) it emitted during Search. Value type; copy freely.
+// Asset is a search hit: metadata only, no bytes. Value type; copy freely.
 type Asset struct {
-	Provider   string            // registry key of the emitting provider, e.g. "embedded-icons"
 	Source     string            // upstream set/collection/family, e.g. "lucide", "open-doodles"
-	ID         string            // provider-scoped, Fetch-round-trippable identifier
+	ID         string            // composite routing key "<provider>:<local>", round-trippable through Fetch
 	Kind       Kind              //
 	Title      string            // display name within the source (icon/illustration name, font family)
 	Tags       []string          //
 	License    License           //
 	LandingURL string            // upstream page, for credit/debugging
 	PreviewURL string            // thumbnail (display only; not the fetch target)
-	Ref        map[string]string // opaque provider hints threaded from Search/caller into Fetch
+	Meta       map[string]string // display-only metadata surfaced on search hits; never read by Fetch
 }
 
-// Well-known Asset.Ref keys. Ref is a stringly-typed bag of provider hints (the brief's chosen
-// mechanism for threading non-identity parameters through Fetch, and per-kind display data through
-// Search) rather than widening Asset with per-kind fields. These constants are the shared contract
-// between the handlers that populate Ref and the embedded providers that read it.
+// Well-known Asset.Meta keys. Meta carries per-kind display data that a Search hit wants to show but
+// that is not part of the asset's identity or fetch parameters. It is strictly informational: Fetch
+// takes typed opts (IconFetchOpts, FontFetchOpts), never Meta.
 const (
-	RefColor    = "color"    // icon render colour override (icon Fetch)
-	RefSize     = "size"     // icon render size in px, decimal string, "0"/"" = native grid (icon Fetch)
-	RefWeight   = "weight"   // font weight, decimal string (font Fetch)
-	RefStyle    = "style"    // font style (font Fetch)
-	RefCategory = "category" // font family category, for search display (font Search)
-	RefWeights  = "weights"  // comma-separated font weights, for search display (font Search)
+	MetaCategory = "category" // font family category, for search display
+	MetaWeights  = "weights"  // comma-separated font weights, for search display
 )
+
+// AssetID composes a provider name and a provider-local id into the canonical composite asset id. The
+// local part is opaque to everyone but the emitting provider and may itself contain colons.
+func AssetID(provider, local string) string { return provider + ":" + local }
+
+// ParseAssetID splits a composite asset id into its provider name and provider-local part at the first
+// colon. ok is true only when both parts are non-empty.
+func ParseAssetID(id string) (provider, local string, ok bool) {
+	provider, local, _ = strings.Cut(id, ":")
+	if provider == "" || local == "" {
+		return "", "", false
+	}
+
+	return provider, local, true
+}
+
+// Source describes one upstream set/collection/family a provider serves, for discovery
+// (list_asset_sources). Count is the asset count, or -1 if unknown. Meta is optional display data
+// (e.g. a font family's category). Value type; copy freely.
+type Source struct {
+	Name    string
+	License License
+	Count   int
+	Meta    map[string]string
+}
 
 // Page is one search response. NextCursor is opaque: only the emitting provider parses it.
 type Page struct {

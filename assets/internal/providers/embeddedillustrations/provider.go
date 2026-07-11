@@ -1,5 +1,6 @@
 // Package embeddedillustrations serves the vendored SVG illustration collections as an
-// assetcore.IllustrationProvider.
+// assetcore.IllustrationProvider. It owns its per-collection license metadata (folded from the former
+// shared catalog) and derives collection counts from the embedded files.
 package embeddedillustrations
 
 import (
@@ -14,7 +15,6 @@ import (
 	"sync"
 
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
-	"github.com/jbeshir/mcp-servers/assets/internal/catalog"
 )
 
 //go:embed data
@@ -27,11 +27,13 @@ var ErrNotFound = errors.New("illustration not found")
 const providerName = "embedded-illustrations"
 
 const (
-	defaultLimit = 50
-	maxLimit     = 200
-	dataDir      = "data"
-	svgExt       = ".svg"
+	dataDir = "data"
+	svgExt  = ".svg"
 )
+
+// collectionLicense is the license shared by every vendored collection; all are CC0-1.0 with no
+// required attribution.
+var collectionLicense = assetcore.License{SPDX: "CC0-1.0"}
 
 // illustrationMeta identifies a single illustration within a collection.
 type illustrationMeta struct {
@@ -74,30 +76,17 @@ func loadedCollections() []string {
 	return collections
 }
 
-// searchIllustrations returns illustrations whose name contains query (case-insensitive),
-// optionally filtered to a single collection. limit defaults to 50 and is capped at 200.
-func searchIllustrations(query, collection string, limit int) []illustrationMeta {
+// searchIllustrations returns illustrations whose name contains query (case-insensitive) across the
+// collections allowed by the sources filter, sorted by (collection, name) and capped at limit.
+func searchIllustrations(query string, sources assetcore.Filter, limit int) []illustrationMeta {
 	load()
-
-	if limit <= 0 {
-		limit = defaultLimit
-	} else if limit > maxLimit {
-		limit = maxLimit
-	}
-
-	var cols []string
-	if collection != "" {
-		if !collSet[collection] {
-			return nil
-		}
-		cols = []string{collection}
-	} else {
-		cols = collections
-	}
 
 	lowerQuery := strings.ToLower(query)
 	var results []illustrationMeta
-	for _, col := range cols {
+	for _, col := range collections {
+		if !sources.Allows(col) {
+			continue
+		}
 		results = append(results, searchCollection(col, lowerQuery)...)
 	}
 
@@ -134,6 +123,31 @@ func searchCollection(col, lowerQuery string) []illustrationMeta {
 	return results
 }
 
+// countCollection returns the number of .svg files in col, or -1 if it cannot be read.
+func countCollection(col string) int {
+	entries, err := fs.ReadDir(dataFS, path.Join(dataDir, col))
+	if err != nil {
+		return -1
+	}
+	n := 0
+	for _, e := range entries {
+		if !e.IsDir() && strings.HasSuffix(e.Name(), svgExt) {
+			n++
+		}
+	}
+	return n
+}
+
+// splitLocal splits a provider-local illustration id ("<collection>/<name>") into its collection and
+// name at the first slash. Collection and illustration names never contain a slash.
+func splitLocal(id string) (collection, name string, ok bool) {
+	collection, name, _ = strings.Cut(id, "/")
+	if collection == "" || name == "" {
+		return "", "", false
+	}
+	return collection, name, true
+}
+
 // getIllustration returns the raw SVG bytes for the given illustration.
 func getIllustration(collection, name string) ([]byte, error) {
 	load()
@@ -152,18 +166,17 @@ func getIllustration(collection, name string) ([]byte, error) {
 	return data, nil
 }
 
-// Provider satisfies assetcore.IllustrationProvider.
-var _ assetcore.IllustrationProvider = (*Provider)(nil)
+// Provider satisfies assetcore.IllustrationProvider and the optional assetcore.SourceLister capability.
+var (
+	_ assetcore.IllustrationProvider = (*Provider)(nil)
+	_ assetcore.SourceLister         = (*Provider)(nil)
+)
 
 // Provider serves the vendored SVG illustration collections as an assetcore.IllustrationProvider.
-type Provider struct {
-	catalog *catalog.Catalog
-}
+type Provider struct{}
 
-// New returns an embedded illustration provider that resolves licensing through cat.
-func New(cat *catalog.Catalog) *Provider {
-	return &Provider{catalog: cat}
-}
+// New returns an embedded illustration provider.
+func New() *Provider { return &Provider{} }
 
 // Name returns the provider's stable registry key.
 func (p *Provider) Name() string { return providerName }
@@ -171,9 +184,10 @@ func (p *Provider) Name() string { return providerName }
 // Kind reports that this provider serves illustrations.
 func (p *Provider) Kind() assetcore.Kind { return assetcore.KindIllustration }
 
-// Search finds illustrations matching q and maps each hit onto an assetcore.Asset.
-func (p *Provider) Search(_ context.Context, q assetcore.IllustrationQuery) (assetcore.Page, error) {
-	results := searchIllustrations(q.Query, q.Collection, q.Limit)
+// Search finds illustrations matching opts.Query within the collections allowed by opts.Sources and
+// maps each hit onto an assetcore.Asset.
+func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) (assetcore.Page, error) {
+	results := searchIllustrations(opts.Query, opts.Sources, assetcore.ClampLimit(opts.Limit))
 
 	assets := make([]assetcore.Asset, 0, len(results))
 	for _, m := range results {
@@ -183,10 +197,13 @@ func (p *Provider) Search(_ context.Context, q assetcore.IllustrationQuery) (ass
 	return assetcore.Page{Assets: assets, Total: len(assets)}, nil
 }
 
-// Fetch returns the SVG identified by a (Source=collection, Title=name). An unknown collection or
-// name is reported as assetcore.ErrNotFound.
-func (p *Provider) Fetch(_ context.Context, a assetcore.Asset) (assetcore.Blob, error) {
-	collection, name := a.Source, a.Title
+// Fetch returns the SVG identified by the provider-local id "<collection>/<name>". A malformed id,
+// unknown collection, or unknown name is reported as assetcore.ErrNotFound.
+func (p *Provider) Fetch(_ context.Context, id string) (assetcore.Blob, error) {
+	collection, name, ok := splitLocal(id)
+	if !ok {
+		return assetcore.Blob{}, fmt.Errorf("%w: malformed illustration id %q", assetcore.ErrNotFound, id)
+	}
 
 	data, err := getIllustration(collection, name)
 	if err != nil {
@@ -205,16 +222,27 @@ func (p *Provider) Fetch(_ context.Context, a assetcore.Asset) (assetcore.Blob, 
 	}, nil
 }
 
-// asset builds the assetcore.Asset for an illustration, resolving its license from the catalog.
-func (p *Provider) asset(collection, name string) assetcore.Asset {
-	license, attribution, _ := p.catalog.IllustrationLicense(collection)
+// Sources reports one assetcore.Source per vendored collection, with its license and its file count.
+func (p *Provider) Sources() []assetcore.Source {
+	cols := loadedCollections()
+	out := make([]assetcore.Source, 0, len(cols))
+	for _, col := range cols {
+		out = append(out, assetcore.Source{
+			Name:    col,
+			License: collectionLicense,
+			Count:   countCollection(col),
+		})
+	}
+	return out
+}
 
+// asset builds the assetcore.Asset for an illustration, stamping the composite id and license.
+func (p *Provider) asset(collection, name string) assetcore.Asset {
 	return assetcore.Asset{
-		Provider: providerName,
-		Source:   collection,
-		ID:       collection + "/" + name,
-		Kind:     assetcore.KindIllustration,
-		Title:    name,
-		License:  assetcore.License{SPDX: license, Attribution: attribution},
+		Source:  collection,
+		ID:      assetcore.AssetID(providerName, collection+"/"+name),
+		Kind:    assetcore.KindIllustration,
+		Title:   name,
+		License: collectionLicense,
 	}
 }

@@ -51,19 +51,23 @@ claude mcp add assets -- /path/to/assets-mcp
 
 ## Tools
 
-| Tool | Description |
-|---|---|
-| `list_asset_sources` | List every asset source (icon sets, illustration collections, font families) with license, attribution, and count |
-| `search_icons` | Search vendored icon sets by name |
-| `get_icon` | Render an icon to a standalone SVG file and write it to disk |
-| `search_illustrations` | Search vendored illustration collections by name |
-| `get_illustration` | Fetch an SVG illustration and write it to disk, unmodified |
-| `search_fonts` | Search vendored font families by name, slug, or category |
-| `get_font` | Fetch a font's woff2 file (and optionally an `@font-face` CSS snippet) and write it to disk |
+Assets are identified by a **composite id** of the form `<provider>:<local>` — e.g. `embedded-icons:lucide/camera`, `embedded-illustrations:open-doodles/coffee-doodle`, `embedded-fonts:inter`. The `search_*` tools return each hit's composite id; pass it to the matching `get_*` tool, or construct one directly. The `local` part is opaque to everyone but the emitting provider.
+
+| Tool | Arguments | Description |
+|---|---|---|
+| `list_asset_sources` | `kind?`, `providers?`, `exclude_providers?`, `sources?`, `exclude_sources?` | List registered providers and the upstream sources each serves, with license and item count, as a readable listing plus a structured JSON block |
+| `search_icons` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?` | Search vendored icon sets by name; returns composite ids |
+| `get_icon` | `id`, `color?`, `size?` | Render an icon to a standalone SVG file (by composite id) and write it to disk |
+| `search_illustrations` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?` | Search vendored illustration collections by name; returns composite ids |
+| `get_illustration` | `id` | Fetch an SVG illustration (by composite id) and write it to disk, unmodified |
+| `search_fonts` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?` | Search vendored font families by name, slug, or category; returns composite ids |
+| `get_font` | `id`, `weight?`, `style?`, `format?` | Fetch a font's woff2 file (and optionally an `@font-face` CSS snippet) by composite id and write it to disk |
+
+The `sources`/`providers`/`exclude_*` arguments are string arrays. `providers`/`exclude_providers` currently only match the offline `embedded-*` providers.
 
 ## Offline Posture
 
-Every icon, illustration, and font is vendored into the binary via Go's `embed` package at build time (`internal/{icons,illustrations,fonts}/data/`, plus `internal/catalog/catalog.json` for source metadata). The server never makes an outbound network request — `search_*` and `get_*` tools resolve entirely against embedded data.
+Every icon, illustration, and font is vendored into the binary via Go's `embed` package at build time (`internal/providers/embedded{icons,illustrations,fonts}/data/`). Each provider owns its own license metadata and derives item counts from the embedded data it actually carries, so nothing can drift out of sync. The server never makes an outbound network request — `search_*` and `get_*` tools resolve entirely against embedded data.
 
 ## Return Contract
 

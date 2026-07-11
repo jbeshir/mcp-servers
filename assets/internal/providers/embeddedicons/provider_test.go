@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
-	"github.com/jbeshir/mcp-servers/assets/internal/catalog"
 )
 
 // setLucide is the icon set exercised by these tests.
@@ -80,13 +79,23 @@ func TestRenderPhosphorGrid(t *testing.T) {
 }
 
 func TestSearchLucideArrow(t *testing.T) {
-	results := searchIcons("arrow", "lucide", 10)
+	results := searchIcons("arrow", assetcore.Filter{Only: []string{"lucide"}}, 10)
 	if len(results) == 0 {
 		t.Fatal("searchIcons() returned no results, want at least one")
 	}
 	for _, m := range results {
 		if m.set != "lucide" {
 			t.Errorf("searchIcons() result set = %q, want %q", m.set, "lucide")
+		}
+	}
+}
+
+func TestSearchExcludeSource(t *testing.T) {
+	// Excluding lucide must yield no lucide hits even though the query would otherwise match them.
+	results := searchIcons("arrow", assetcore.Filter{Except: []string{"lucide"}}, 200)
+	for _, m := range results {
+		if m.set == "lucide" {
+			t.Errorf("searchIcons() with lucide excluded still returned a lucide hit: %+v", m)
 		}
 	}
 }
@@ -116,23 +125,13 @@ func TestSets(t *testing.T) {
 	}
 }
 
-func newTestProvider(t *testing.T) *Provider {
-	t.Helper()
-
-	c, err := catalog.Load()
-	if err != nil {
-		t.Fatalf("catalog.Load: %v", err)
-	}
-
-	return New(c)
-}
-
 func TestSearchMapsHitsToAssets(t *testing.T) {
-	p := newTestProvider(t)
+	p := New()
 
-	page, err := p.Search(t.Context(), assetcore.IconQuery{
-		SearchOpts: assetcore.SearchOpts{Query: "arrow", Limit: 10},
-		Set:        setLucide,
+	page, err := p.Search(t.Context(), assetcore.SearchOpts{
+		Query:   "arrow",
+		Limit:   10,
+		Sources: assetcore.Filter{Only: []string{setLucide}},
 	})
 	if err != nil {
 		t.Fatalf("Search: %v", err)
@@ -142,8 +141,12 @@ func TestSearchMapsHitsToAssets(t *testing.T) {
 	}
 
 	for _, a := range page.Assets {
-		if a.Provider != providerName {
-			t.Errorf("asset.Provider = %q, want %q", a.Provider, providerName)
+		provider, local, ok := assetcore.ParseAssetID(a.ID)
+		if !ok || provider != providerName {
+			t.Errorf("asset.ID = %q, want composite id under %q", a.ID, providerName)
+		}
+		if !strings.HasPrefix(local, setLucide+"/") {
+			t.Errorf("asset local id = %q, want %s/ prefix", local, setLucide)
 		}
 		if a.Source != setLucide {
 			t.Errorf("asset.Source = %q, want %q", a.Source, setLucide)
@@ -158,13 +161,9 @@ func TestSearchMapsHitsToAssets(t *testing.T) {
 }
 
 func TestFetchRendersSVGWithLicense(t *testing.T) {
-	p := newTestProvider(t)
+	p := New()
 
-	blob, err := p.Fetch(t.Context(), assetcore.Asset{
-		Source: setLucide,
-		Title:  "a-arrow-down",
-		Ref:    map[string]string{assetcore.RefColor: "#ff0000", assetcore.RefSize: "32"},
-	})
+	blob, err := p.Fetch(t.Context(), setLucide+"/a-arrow-down", assetcore.IconFetchOpts{Color: "#ff0000", Size: 32})
 	if err != nil {
 		t.Fatalf("Fetch: %v", err)
 	}
@@ -179,20 +178,62 @@ func TestFetchRendersSVGWithLicense(t *testing.T) {
 	if blob.ContentType != "image/svg+xml" {
 		t.Errorf("blob.ContentType = %q, want image/svg+xml", blob.ContentType)
 	}
-	// lucide is catalogued as ISC; the provider must carry that through from the catalog.
+	// lucide is licensed ISC; the provider owns and carries that through.
 	if blob.Asset.License.SPDX != "ISC" {
 		t.Errorf("blob.Asset.License.SPDX = %q, want %q", blob.Asset.License.SPDX, "ISC")
+	}
+	if blob.Asset.ID != assetcore.AssetID(providerName, setLucide+"/a-arrow-down") {
+		t.Errorf("blob.Asset.ID = %q, want composite id", blob.Asset.ID)
+	}
+}
+
+func TestFetchMalformedIDIsNotFound(t *testing.T) {
+	p := New()
+
+	if _, err := p.Fetch(t.Context(), "no-slash", assetcore.IconFetchOpts{}); !errors.Is(err, assetcore.ErrNotFound) {
+		t.Errorf("Fetch(malformed) error = %v, want assetcore.ErrNotFound", err)
 	}
 }
 
 func TestFetchUnknownIconIsNotFound(t *testing.T) {
-	p := newTestProvider(t)
+	p := New()
 
-	_, err := p.Fetch(t.Context(), assetcore.Asset{
-		Source: setLucide,
-		Title:  "definitely-not-an-icon",
-	})
+	_, err := p.Fetch(t.Context(), setLucide+"/definitely-not-an-icon", assetcore.IconFetchOpts{})
 	if !errors.Is(err, assetcore.ErrNotFound) {
 		t.Errorf("Fetch unknown icon error = %v, want assetcore.ErrNotFound", err)
+	}
+}
+
+func TestSourcesReportsSetsWithLicenseAndCount(t *testing.T) {
+	p := New()
+
+	srcs := p.Sources()
+	if len(srcs) != 8 {
+		t.Fatalf("Sources() length = %d, want 8", len(srcs))
+	}
+
+	byName := make(map[string]assetcore.Source, len(srcs))
+	for _, s := range srcs {
+		byName[s.Name] = s
+	}
+
+	lucide, ok := byName["lucide"]
+	if !ok {
+		t.Fatal("Sources() missing lucide")
+	}
+	if lucide.License.SPDX != "ISC" {
+		t.Errorf("lucide license = %q, want ISC", lucide.License.SPDX)
+	}
+	if lucide.Count <= 0 {
+		t.Errorf("lucide count = %d, want a positive count derived from embedded data", lucide.Count)
+	}
+	if got := byName["simple-icons"].License.SPDX; got != "CC0-1.0" {
+		t.Errorf("simple-icons license = %q, want CC0-1.0", got)
+	}
+	if got := byName["material-symbols"].License.SPDX; got != "Apache-2.0" {
+		t.Errorf("material-symbols license = %q, want Apache-2.0", got)
+	}
+	if got := byName["feather"].License.SPDX; got != "MIT" {
+		t.Errorf("feather license = %q, want MIT", got)
 	}
 }

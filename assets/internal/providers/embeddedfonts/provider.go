@@ -1,5 +1,7 @@
 // Package embeddedfonts serves the vendored OFL-1.1 font families as woff2 files with optional
-// @font-face CSS, implementing assetcore.FontProvider and assetcore.FontFaceRenderer.
+// @font-face CSS, implementing assetcore.FontProvider, assetcore.FontFaceRenderer, and
+// assetcore.SourceLister. It owns its per-family license and category metadata (folded from the former
+// shared catalog) and derives variant counts from the embedded files.
 package embeddedfonts
 
 import (
@@ -15,7 +17,6 @@ import (
 	"sync"
 
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
-	"github.com/jbeshir/mcp-servers/assets/internal/catalog"
 )
 
 //go:embed data
@@ -30,14 +31,17 @@ const providerName = "embedded-fonts"
 // woff2ContentType is the MIME type of the vendored font files.
 const woff2ContentType = "font/woff2"
 
+// fontLicense is the license shared by every vendored family; all are distributed under OFL-1.1 with
+// no required attribution (each family's LICENSE file travels in the repo, not the served payload).
+var fontLicense = assetcore.License{SPDX: "OFL-1.1"}
+
 const (
 	dataDir       = "data"
 	latinInfix    = "-latin-"
 	normalSuffix  = "-normal.woff2"
+	woff2Suffix   = ".woff2"
 	defaultWeight = 400
 	styleNormal   = "normal"
-	defaultLimit  = 50
-	maxLimit      = 200
 
 	categorySans    = "sans"
 	categorySerif   = "serif"
@@ -170,20 +174,17 @@ func loadedFamilies() []fontFamily {
 }
 
 // searchFonts returns font families whose family, slug, or category contains query
-// (case-insensitive). limit defaults to 50 and is capped at 200.
-func searchFonts(query string, limit int) []fontFamily {
+// (case-insensitive) among the families allowed by the sources filter, capped at limit.
+func searchFonts(query string, sources assetcore.Filter, limit int) []fontFamily {
 	load()
-
-	if limit <= 0 {
-		limit = defaultLimit
-	} else if limit > maxLimit {
-		limit = maxLimit
-	}
 
 	q := strings.ToLower(query)
 
 	var results []fontFamily
 	for _, m := range families {
+		if !sources.Allows(m.family) {
+			continue
+		}
 		if strings.Contains(strings.ToLower(m.family), q) ||
 			strings.Contains(strings.ToLower(m.slug), q) ||
 			strings.Contains(strings.ToLower(m.category), q) {
@@ -254,6 +255,28 @@ func hasWeight(weights []int, weight int) bool {
 	return false
 }
 
+// parseFontFilename recovers the weight and style encoded in a vendored font filename
+// (<slug>-latin-<weight>-<style>.woff2), so @font-face CSS can be rendered from a Blob alone.
+func parseFontFilename(filename string) (weight int, style string) {
+	base := strings.TrimSuffix(filename, woff2Suffix)
+	idx := strings.LastIndex(base, latinInfix)
+	if idx < 0 {
+		return 0, ""
+	}
+
+	weightStr, style, ok := strings.Cut(base[idx+len(latinInfix):], "-")
+	if !ok {
+		return 0, ""
+	}
+
+	w, err := strconv.Atoi(weightStr)
+	if err != nil {
+		return 0, ""
+	}
+
+	return w, style
+}
+
 // fontFaceCSS returns an @font-face CSS snippet referencing f's filename, for use under
 // familyDisplay.
 func fontFaceCSS(familyDisplay string, f fontFile) string {
@@ -263,21 +286,18 @@ func fontFaceCSS(familyDisplay string, f fontFile) string {
 	)
 }
 
-// Provider satisfies assetcore.FontProvider and the optional assetcore.FontFaceRenderer capability.
+// Provider satisfies assetcore.FontProvider and the optional FontFaceRenderer/SourceLister capabilities.
 var (
 	_ assetcore.FontProvider     = (*Provider)(nil)
 	_ assetcore.FontFaceRenderer = (*Provider)(nil)
+	_ assetcore.SourceLister     = (*Provider)(nil)
 )
 
 // Provider serves the vendored OFL font families as an assetcore.FontProvider.
-type Provider struct {
-	catalog *catalog.Catalog
-}
+type Provider struct{}
 
-// New returns an embedded font provider that resolves licensing through cat.
-func New(cat *catalog.Catalog) *Provider {
-	return &Provider{catalog: cat}
-}
+// New returns an embedded font provider.
+func New() *Provider { return &Provider{} }
 
 // Name returns the provider's stable registry key.
 func (p *Provider) Name() string { return providerName }
@@ -285,46 +305,25 @@ func (p *Provider) Name() string { return providerName }
 // Kind reports that this provider serves fonts.
 func (p *Provider) Kind() assetcore.Kind { return assetcore.KindFont }
 
-// Search finds font families matching q and maps each hit onto an assetcore.Asset, carrying the
-// family's category and available weights as Ref hints for search-result display.
-func (p *Provider) Search(_ context.Context, q assetcore.FontQuery) (assetcore.Page, error) {
-	results := searchFonts(q.Query, q.Limit)
+// Search finds font families matching opts.Query among those allowed by opts.Sources and maps each
+// hit onto an assetcore.Asset, carrying the family's category and available weights as display Meta.
+func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) (assetcore.Page, error) {
+	results := searchFonts(opts.Query, opts.Sources, assetcore.ClampLimit(opts.Limit))
 
 	assets := make([]assetcore.Asset, 0, len(results))
 	for _, m := range results {
-		license, attribution, _ := p.catalog.FontLicense(m.family)
-
-		weights := make([]string, 0, len(m.weights))
-		for _, w := range m.weights {
-			weights = append(weights, strconv.Itoa(w))
-		}
-
-		assets = append(assets, assetcore.Asset{
-			Provider: providerName,
-			Source:   m.slug,
-			ID:       m.slug,
-			Kind:     assetcore.KindFont,
-			Title:    m.family,
-			License:  assetcore.License{SPDX: license, Attribution: attribution},
-			Ref: map[string]string{
-				assetcore.RefCategory: m.category,
-				assetcore.RefWeights:  strings.Join(weights, ","),
-			},
-		})
+		assets = append(assets, p.asset(m))
 	}
 
 	return assetcore.Page{Assets: assets, Total: len(assets)}, nil
 }
 
-// Fetch returns the woff2 identified by a (Source=family) with the weight/style hints carried in
-// a.Ref. The Blob's Filename is the internal font filename (referenced by @font-face CSS), not the
-// caller's output filename. An unknown family/weight/style is reported as assetcore.ErrNotFound.
-func (p *Provider) Fetch(_ context.Context, a assetcore.Asset) (assetcore.Blob, error) {
-	family := a.Source
-	weight, _ := strconv.Atoi(a.Ref[assetcore.RefWeight])
-	style := a.Ref[assetcore.RefStyle]
-
-	f, err := getFont(family, weight, style)
+// Fetch returns the woff2 for the family identified by the provider-local slug id, at the weight and
+// style in opts (defaulting to 400/normal). The Blob's Filename is the internal font filename
+// (referenced by @font-face CSS), not the caller's output filename. An unknown family/weight/style is
+// reported as assetcore.ErrNotFound.
+func (p *Provider) Fetch(_ context.Context, id string, opts assetcore.FontFetchOpts) (assetcore.Blob, error) {
+	f, err := getFont(id, opts.Weight, opts.Style)
 	if err != nil {
 		if errors.Is(err, ErrNotFound) {
 			return assetcore.Blob{}, errors.Join(assetcore.ErrNotFound, err)
@@ -333,31 +332,66 @@ func (p *Provider) Fetch(_ context.Context, a assetcore.Asset) (assetcore.Blob, 
 		return assetcore.Blob{}, err
 	}
 
-	license, attribution, _ := p.catalog.FontLicense(family)
-
-	asset := a
-	asset.Provider = providerName
-	asset.Kind = assetcore.KindFont
-	asset.License = assetcore.License{SPDX: license, Attribution: attribution}
+	meta := familyData[slugify(id)]
 
 	return assetcore.Blob{
-		Asset:       asset,
+		Asset: assetcore.Asset{
+			Source:  meta.family,
+			ID:      assetcore.AssetID(providerName, meta.slug),
+			Kind:    assetcore.KindFont,
+			Title:   meta.family,
+			License: fontLicense,
+		},
 		Content:     f.data,
 		Filename:    f.filename,
 		ContentType: woff2ContentType,
 	}, nil
 }
 
-// RenderFontFace renders an @font-face CSS snippet for a font Blob produced by Fetch, reconstructing
-// the fontFile from the Blob's internal filename and the weight/style hints on the Blob's Asset. It
-// satisfies assetcore.FontFaceRenderer.
+// RenderFontFace renders an @font-face CSS snippet for a font Blob produced by Fetch, recovering the
+// weight and style from the Blob's internal filename. It satisfies assetcore.FontFaceRenderer.
 func (p *Provider) RenderFontFace(familyDisplay string, b assetcore.Blob) string {
-	weight, _ := strconv.Atoi(b.Asset.Ref[assetcore.RefWeight])
-	style := b.Asset.Ref[assetcore.RefStyle]
+	weight, style := parseFontFilename(b.Filename)
 
 	return fontFaceCSS(familyDisplay, fontFile{
 		filename: b.Filename,
 		weight:   weight,
 		style:    style,
 	})
+}
+
+// Sources reports one assetcore.Source per vendored family, with its license, its variant count, and
+// its category as display Meta.
+func (p *Provider) Sources() []assetcore.Source {
+	fams := loadedFamilies()
+	out := make([]assetcore.Source, 0, len(fams))
+	for _, m := range fams {
+		out = append(out, assetcore.Source{
+			Name:    m.family,
+			License: fontLicense,
+			Count:   len(m.weights),
+			Meta:    map[string]string{assetcore.MetaCategory: m.category},
+		})
+	}
+	return out
+}
+
+// asset builds the search-hit assetcore.Asset for a family, carrying category and weights as Meta.
+func (p *Provider) asset(m fontFamily) assetcore.Asset {
+	weights := make([]string, 0, len(m.weights))
+	for _, w := range m.weights {
+		weights = append(weights, strconv.Itoa(w))
+	}
+
+	return assetcore.Asset{
+		Source:  m.family,
+		ID:      assetcore.AssetID(providerName, m.slug),
+		Kind:    assetcore.KindFont,
+		Title:   m.family,
+		License: fontLicense,
+		Meta: map[string]string{
+			assetcore.MetaCategory: m.category,
+			assetcore.MetaWeights:  strings.Join(weights, ","),
+		},
+	}
 }

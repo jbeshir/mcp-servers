@@ -43,13 +43,13 @@
     }
   },
   "tools": [
-    { "name": "list_asset_sources", "description": "List every asset source with its license, attribution, and count" },
-    { "name": "search_icons", "description": "Search vendored icon sets by name" },
-    { "name": "get_icon", "description": "Render an icon to SVG and write it to disk" },
-    { "name": "search_illustrations", "description": "Search vendored illustration collections by name" },
-    { "name": "get_illustration", "description": "Fetch an SVG illustration and write it to disk" },
-    { "name": "search_fonts", "description": "Search vendored font families by name, slug, or category" },
-    { "name": "get_font", "description": "Fetch a font's woff2 file (and optional @font-face CSS) and write it to disk" }
+    { "name": "list_asset_sources", "description": "List asset providers and their sources with license and count; filter by kind, provider, or source" },
+    { "name": "search_icons", "description": "Search vendored icon sets by name; returns composite ids" },
+    { "name": "get_icon", "description": "Render an icon to SVG by composite id and write it to disk" },
+    { "name": "search_illustrations", "description": "Search vendored illustration collections by name; returns composite ids" },
+    { "name": "get_illustration", "description": "Fetch an SVG illustration by composite id and write it to disk" },
+    { "name": "search_fonts", "description": "Search vendored font families by name, slug, or category; returns composite ids" },
+    { "name": "get_font", "description": "Fetch a font's woff2 file (and optional @font-face CSS) by composite id and write it to disk" }
   ],
   "compatibility": {
     "platforms": ["darwin", "win32", "linux"]

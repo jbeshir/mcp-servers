@@ -10,8 +10,12 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
-// testIconSet is the icon set exercised by the get_icon/search_icons handler tests.
-const testIconSet = "lucide"
+// Composite ids exercised by the handler tests.
+const (
+	testIconID  = "embedded-icons:lucide/a-arrow-down"
+	testIconSet = "lucide"
+	testFontID  = "embedded-fonts:inter"
+)
 
 func TestSanitizeFilename(t *testing.T) {
 	if got := sanitizeFilename("abc_DEF-123"); got != "abc_DEF-123" {
@@ -26,25 +30,6 @@ func TestSanitizeFilename(t *testing.T) {
 	}
 	if want := "a-b-c--d-e"; got != want {
 		t.Errorf("sanitizeFilename(%q) = %q, want %q", "a/b\\c..d e", got, want)
-	}
-}
-
-func TestClampLimit(t *testing.T) {
-	tests := []struct {
-		limit int
-		want  int
-	}{
-		{0, 50},
-		{-5, 50},
-		{500, 200},
-		{100, 100},
-		{200, 200},
-	}
-
-	for _, tt := range tests {
-		if got := clampLimit(tt.limit); got != tt.want {
-			t.Errorf("clampLimit(%d) = %d, want %d", tt.limit, got, tt.want)
-		}
 	}
 }
 
@@ -76,12 +61,36 @@ func TestStringArg(t *testing.T) {
 	}
 }
 
+func TestStringSliceArg(t *testing.T) {
+	args := map[string]any{
+		"list":  []any{"a", "", "b", 1, "c"},
+		"wrong": "not-a-list",
+	}
+
+	got := stringSliceArg(args, "list")
+	want := []string{"a", "b", "c"}
+	if len(got) != len(want) {
+		t.Fatalf("stringSliceArg(list) = %v, want %v", got, want)
+	}
+	for i, w := range want {
+		if got[i] != w {
+			t.Errorf("stringSliceArg(list)[%d] = %q, want %q", i, got[i], w)
+		}
+	}
+	if got := stringSliceArg(args, "wrong"); got != nil {
+		t.Errorf("stringSliceArg(wrong) = %v, want nil", got)
+	}
+	if got := stringSliceArg(args, "missing"); got != nil {
+		t.Errorf("stringSliceArg(missing) = %v, want nil", got)
+	}
+}
+
 func newTestServer(t *testing.T) *Server {
 	t.Helper()
 
 	deps := config.Setup(config.Config{})
 
-	return NewServer(deps.Registry, deps.Catalog)
+	return NewServer(deps.Registry)
 }
 
 func newRequest(args map[string]any) mcp.CallToolRequest {
@@ -96,8 +105,7 @@ func TestHandleGetIconHappyPath(t *testing.T) {
 	s := newTestServer(t)
 
 	res, err := s.handleGetIcon(t.Context(), newRequest(map[string]any{
-		"set":  testIconSet,
-		"name": "a-arrow-down",
+		"id": testIconID,
 	}))
 	if err != nil {
 		t.Fatalf("handleGetIcon: unexpected error: %v", err)
@@ -135,18 +143,16 @@ func TestHandleGetIconHappyPath(t *testing.T) {
 	}
 }
 
-func TestHandleGetIconMissingSet(t *testing.T) {
+func TestHandleGetIconMissingID(t *testing.T) {
 	t.Setenv(envOutputDir, t.TempDir())
 	s := newTestServer(t)
 
-	res, err := s.handleGetIcon(t.Context(), newRequest(map[string]any{
-		"name": "a-arrow-down",
-	}))
+	res, err := s.handleGetIcon(t.Context(), newRequest(map[string]any{}))
 	if err != nil {
 		t.Fatalf("handleGetIcon: unexpected error: %v", err)
 	}
 	if !res.IsError {
-		t.Fatal("handleGetIcon: expected IsError=true for missing set")
+		t.Fatal("handleGetIcon: expected IsError=true for missing id")
 	}
 }
 
@@ -155,14 +161,28 @@ func TestHandleGetIconNotFound(t *testing.T) {
 	s := newTestServer(t)
 
 	res, err := s.handleGetIcon(t.Context(), newRequest(map[string]any{
-		"set":  testIconSet,
-		"name": "definitely-not-an-icon",
+		"id": "embedded-icons:lucide/definitely-not-an-icon",
 	}))
 	if err != nil {
 		t.Fatalf("handleGetIcon: unexpected error: %v", err)
 	}
 	if !res.IsError {
 		t.Fatal("handleGetIcon: expected IsError=true for unknown icon")
+	}
+}
+
+func TestHandleGetIconUnknownProvider(t *testing.T) {
+	t.Setenv(envOutputDir, t.TempDir())
+	s := newTestServer(t)
+
+	res, err := s.handleGetIcon(t.Context(), newRequest(map[string]any{
+		"id": "no-such-provider:lucide/a-arrow-down",
+	}))
+	if err != nil {
+		t.Fatalf("handleGetIcon: unexpected error: %v", err)
+	}
+	if !res.IsError {
+		t.Fatal("handleGetIcon: expected IsError=true for unknown provider")
 	}
 }
 
@@ -187,6 +207,34 @@ func TestHandleSearchIconsHappyPath(t *testing.T) {
 	if strings.Contains(text.Text, "no matches") {
 		t.Errorf("handleSearchIcons text = %q, want at least one match", text.Text)
 	}
+	// Each hit must carry its composite id so the caller can round-trip it to get_icon.
+	if !strings.Contains(text.Text, "embedded-icons:") {
+		t.Errorf("handleSearchIcons text = %q, want composite ids", text.Text)
+	}
+}
+
+func TestHandleSearchIconsSourceFilter(t *testing.T) {
+	t.Setenv(envOutputDir, t.TempDir())
+	s := newTestServer(t)
+
+	res, err := s.handleSearchIcons(t.Context(), newRequest(map[string]any{
+		"query":   "arrow",
+		"sources": []any{"lucide"},
+	}))
+	if err != nil {
+		t.Fatalf("handleSearchIcons: unexpected error: %v", err)
+	}
+
+	text := res.Content[0].(mcp.TextContent).Text
+	if strings.Contains(text, "no matches") {
+		t.Fatalf("source-scoped search returned no matches: %q", text)
+	}
+	// Scoped to lucide: no other set's composite id should appear.
+	for _, other := range []string{"embedded-icons:tabler/", "embedded-icons:feather/", "embedded-icons:phosphor/"} {
+		if strings.Contains(text, other) {
+			t.Errorf("source-scoped search leaked %q: %s", other, text)
+		}
+	}
 }
 
 func TestHandleGetFontCSS(t *testing.T) {
@@ -194,7 +242,7 @@ func TestHandleGetFontCSS(t *testing.T) {
 	s := newTestServer(t)
 
 	res, err := s.handleGetFont(t.Context(), newRequest(map[string]any{
-		"family": "Inter",
+		"id":     testFontID,
 		"weight": float64(400),
 		"format": "css",
 	}))
@@ -228,5 +276,94 @@ func TestHandleGetFontCSS(t *testing.T) {
 	}
 	if !exts[".css"] {
 		t.Errorf("manifest files = %+v, missing .css", m.Files)
+	}
+}
+
+func TestHandleGetIllustration(t *testing.T) {
+	t.Setenv(envOutputDir, t.TempDir())
+	s := newTestServer(t)
+
+	res, err := s.handleGetIllustration(t.Context(), newRequest(map[string]any{
+		"id": "embedded-illustrations:open-doodles/ballet-doodle",
+	}))
+	if err != nil {
+		t.Fatalf("handleGetIllustration: unexpected error: %v", err)
+	}
+	if res.IsError {
+		t.Fatalf("handleGetIllustration: result is an error: %+v", res.Content)
+	}
+
+	m, ok := res.StructuredContent.(fileManifest)
+	if !ok {
+		t.Fatalf("StructuredContent is %T, want fileManifest", res.StructuredContent)
+	}
+	if m.Count != 1 || m.Files[0].Kind != kindIllustration {
+		t.Fatalf("unexpected manifest: %+v", m)
+	}
+	if m.Files[0].License != "CC0-1.0" {
+		t.Errorf("illustration license = %q, want CC0-1.0", m.Files[0].License)
+	}
+}
+
+func TestHandleListAssetSources(t *testing.T) {
+	s := newTestServer(t)
+
+	res, err := s.handleListAssetSources(t.Context(), newRequest(map[string]any{}))
+	if err != nil {
+		t.Fatalf("handleListAssetSources: unexpected error: %v", err)
+	}
+	if len(res.Content) != 2 {
+		t.Fatalf("content length = %d, want 2 (listing + JSON)", len(res.Content))
+	}
+
+	listing := res.Content[0].(mcp.TextContent).Text
+	for _, want := range []string{"embedded-icons", "embedded-illustrations", "embedded-fonts", "lucide", "ISC"} {
+		if !strings.Contains(listing, want) {
+			t.Errorf("listing missing %q:\n%s", want, listing)
+		}
+	}
+
+	structured := res.Content[1].(mcp.TextContent).Text
+	if !strings.Contains(structured, `"providers"`) {
+		t.Errorf("structured block missing providers key: %s", structured)
+	}
+}
+
+func TestHandleListAssetSourcesKindFilter(t *testing.T) {
+	s := newTestServer(t)
+
+	res, err := s.handleListAssetSources(t.Context(), newRequest(map[string]any{
+		"kind": "font",
+	}))
+	if err != nil {
+		t.Fatalf("handleListAssetSources: unexpected error: %v", err)
+	}
+
+	listing := res.Content[0].(mcp.TextContent).Text
+	if !strings.Contains(listing, "embedded-fonts") {
+		t.Errorf("kind=font listing missing embedded-fonts:\n%s", listing)
+	}
+	if strings.Contains(listing, "embedded-icons") || strings.Contains(listing, "embedded-illustrations") {
+		t.Errorf("kind=font listing leaked a non-font provider:\n%s", listing)
+	}
+}
+
+func TestHandleListAssetSourcesSourceFilter(t *testing.T) {
+	s := newTestServer(t)
+
+	res, err := s.handleListAssetSources(t.Context(), newRequest(map[string]any{
+		"sources": []any{"lucide"},
+	}))
+	if err != nil {
+		t.Fatalf("handleListAssetSources: unexpected error: %v", err)
+	}
+
+	listing := res.Content[0].(mcp.TextContent).Text
+	if !strings.Contains(listing, "lucide") {
+		t.Errorf("source=lucide listing missing lucide:\n%s", listing)
+	}
+	// Providers whose sources are all filtered out are omitted, so only embedded-icons should appear.
+	if strings.Contains(listing, "embedded-fonts") || strings.Contains(listing, "embedded-illustrations") {
+		t.Errorf("source=lucide listing leaked another provider:\n%s", listing)
 	}
 }
