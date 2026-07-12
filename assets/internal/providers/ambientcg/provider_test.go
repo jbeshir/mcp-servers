@@ -43,10 +43,12 @@ type stubAsset struct {
 	Attributes      []string // "<Resolution>-<Format>" strings this asset offers
 }
 
-// newStubServer serves /api/v2/full_json for both list (q= substring match against DisplayName, or all
-// when q is empty and no assetId matches) and single-asset (q=<assetId> exact match) queries, plus
-// /file.zip returning zipBytes. Each downloadLink for a stub's attributes points back at /file.zip on
-// the same server. zipRequests counts /file.zip hits.
+// newStubServer serves /api/v2/full_json plus /file.zip returning zipBytes, mirroring the real API's
+// two distinct query modes: a single-asset lookup keyed by id= (exact assetId match, as Fetch uses) and
+// a search keyed by q= (substring match against DisplayName, or all when q is empty). Crucially q= does
+// NOT match against assetId — the real full_json search does not resolve an assetId token — so a Fetch
+// that mistakenly looks an asset up by q= finds nothing. Each downloadLink for a stub's attributes
+// points back at /file.zip on the same server; zipRequests counts /file.zip hits.
 func newStubServer(t *testing.T, assets []stubAsset, zipRequests *int32) *httptest.Server {
 	t.Helper()
 
@@ -57,14 +59,21 @@ func newStubServer(t *testing.T, assets []stubAsset, zipRequests *int32) *httpte
 	})
 	mux.HandleFunc("/api/v2/full_json", func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
-		query := q.Get("q")
-
 		base := "http://" + r.Host
 
 		var matched []stubAsset
-		for _, a := range assets {
-			if query == "" || query == a.AssetID || query == a.DisplayName {
-				matched = append(matched, a)
+		if id := q.Get("id"); id != "" {
+			for _, a := range assets {
+				if a.AssetID == id {
+					matched = append(matched, a)
+				}
+			}
+		} else {
+			query := q.Get("q")
+			for _, a := range assets {
+				if query == "" || query == a.DisplayName {
+					matched = append(matched, a)
+				}
 			}
 		}
 

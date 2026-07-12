@@ -181,16 +181,17 @@ func (p *Provider) Fetch(ctx context.Context, id string, opts assetcore.TextureF
 	return blobFor(id, resolution, format, content), nil
 }
 
-// resolveDownloadLink looks up id via a single-asset full_json query and returns the downloadLink whose
-// attribute matches "<resolution>-<format>". An unknown asset id, or one with no matching download, is
-// reported as assetcore.ErrNotFound.
+// resolveDownloadLink looks up id via the full_json id= parameter (an exact single-asset lookup; the q=
+// search does not resolve an assetId) and returns the downloadLink whose attribute matches
+// "<resolution>-<format>". An unknown asset id, or one with no matching download, is reported as
+// assetcore.ErrNotFound.
 func (p *Provider) resolveDownloadLink(ctx context.Context, id, resolution, format string) (string, error) {
 	if err := p.limiter.Wait(ctx); err != nil {
 		return "", fmt.Errorf("ambientcg: lookup %s: %w", id, err)
 	}
 
 	q := url.Values{}
-	q.Set("q", id)
+	q.Set("id", id)
 	q.Set("include", "downloadData")
 
 	var env searchEnvelope
