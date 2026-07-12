@@ -66,6 +66,9 @@ func (s *Server) registerTools() {
 		mcp.WithNumber("limit",
 			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),
 		),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous search's next_cursor; omit for the first page"),
+		),
 	), s.handleSearchIcons)
 
 	s.mcpServer.AddTool(mcp.NewTool("get_icon",
@@ -118,6 +121,9 @@ func (s *Server) registerTools() {
 		mcp.WithNumber("limit",
 			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),
 		),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous search's next_cursor; omit for the first page"),
+		),
 	), s.handleSearchIllustrations)
 
 	s.mcpServer.AddTool(mcp.NewTool("get_illustration",
@@ -160,6 +166,9 @@ func (s *Server) registerTools() {
 		),
 		mcp.WithNumber("limit",
 			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),
+		),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous search's next_cursor; omit for the first page"),
 		),
 	), s.handleSearchFonts)
 

@@ -83,14 +83,18 @@ type iconSet struct {
 var (
 	loadOnce sync.Once
 	iconSets map[string]iconSet
+	loadErr  error
 )
 
-// load parses every embedded data/<set>.json file into iconSets, once.
+// load parses every embedded data/<set>.json file into iconSets, once, capturing the first read or
+// parse failure in loadErr. A missing data directory or an unreadable/unparseable set file is a
+// corrupt embed, not a legitimately empty one, so New checks loadErr and panics.
 func load() {
 	loadOnce.Do(func() {
 		iconSets = make(map[string]iconSet)
 		entries, err := dataFS.ReadDir(dataDir)
 		if err != nil {
+			loadErr = fmt.Errorf("read data dir: %w", err)
 			return
 		}
 		for _, entry := range entries {
@@ -99,11 +103,13 @@ func load() {
 			}
 			raw, err := dataFS.ReadFile(path.Join(dataDir, entry.Name()))
 			if err != nil {
-				continue
+				loadErr = fmt.Errorf("read icon set %q: %w", entry.Name(), err)
+				return
 			}
 			var s iconSet
 			if err := json.Unmarshal(raw, &s); err != nil {
-				continue
+				loadErr = fmt.Errorf("parse icon set %q: %w", entry.Name(), err)
+				return
 			}
 			iconSets[strings.TrimSuffix(entry.Name(), jsonExt)] = s
 		}
@@ -250,8 +256,15 @@ var (
 // Provider serves the vendored Iconify icon sets as an assetcore.IconProvider.
 type Provider struct{}
 
-// New returns an embedded icon provider.
-func New() *Provider { return &Provider{} }
+// New returns an embedded icon provider. It panics if the vendored icon data fails to read or parse,
+// since that indicates a corrupt embed rather than a legitimately empty data directory.
+func New() *Provider {
+	load()
+	if loadErr != nil {
+		panic(fmt.Errorf("embeddedicons: load data: %w", loadErr))
+	}
+	return &Provider{}
+}
 
 // Name returns the provider's stable registry key.
 func (p *Provider) Name() string { return providerName }
@@ -260,8 +273,8 @@ func (p *Provider) Name() string { return providerName }
 func (p *Provider) Kind() assetcore.Kind { return assetcore.KindIcon }
 
 // Search finds icons matching opts.Query within the sets allowed by opts.Sources and maps each hit
-// onto an assetcore.Asset.
-func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) ([]assetcore.Asset, error) {
+// onto an assetcore.Asset. The embedded catalogue fits in a single page, so NextCursor is always "".
+func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) (assetcore.SearchResult, error) {
 	results := searchIcons(opts.Query, opts.Sources, assetcore.ClampLimit(opts.Limit))
 
 	assets := make([]assetcore.Asset, 0, len(results))
@@ -269,7 +282,7 @@ func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) ([]asset
 		assets = append(assets, p.asset(m.set, m.name))
 	}
 
-	return assets, nil
+	return assetcore.SearchResult{Assets: assets}, nil
 }
 
 // Fetch renders the icon identified by the provider-local id "<set>/<name>", honouring the colour and

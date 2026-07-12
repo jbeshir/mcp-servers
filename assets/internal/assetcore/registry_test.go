@@ -40,7 +40,8 @@ func TestRegistryAddIconSameNameWins(t *testing.T) {
 	r.AddIcon(newIconProvider(t, "dup"))
 
 	winner := newIconProvider(t, "dup")
-	winner.EXPECT().Search(mock.Anything, mock.Anything).Return([]assetcore.Asset{{ID: "dup:b"}}, nil)
+	winner.EXPECT().Search(mock.Anything, mock.Anything).
+		Return(assetcore.SearchResult{Assets: []assetcore.Asset{{ID: "dup:b"}}}, nil)
 	r.AddIcon(winner)
 
 	got := r.Icons()
@@ -48,9 +49,9 @@ func TestRegistryAddIconSameNameWins(t *testing.T) {
 		t.Fatalf("Icons() length = %d, want 1", len(got))
 	}
 
-	assets, _ := got[0].Search(t.Context(), assetcore.SearchOpts{})
-	if len(assets) != 1 || assets[0].ID != "dup:b" {
-		t.Errorf("second registration did not win: assets = %+v, want a single asset with ID dup:b", assets)
+	res, _ := got[0].Search(t.Context(), assetcore.SearchOpts{})
+	if len(res.Assets) != 1 || res.Assets[0].ID != "dup:b" {
+		t.Errorf("second registration did not win: assets = %+v, want a single asset with ID dup:b", res.Assets)
 	}
 }
 

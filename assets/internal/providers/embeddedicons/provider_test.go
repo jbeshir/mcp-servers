@@ -128,7 +128,7 @@ func TestSets(t *testing.T) {
 func TestSearchMapsHitsToAssets(t *testing.T) {
 	p := New()
 
-	assets, err := p.Search(t.Context(), assetcore.SearchOpts{
+	res, err := p.Search(t.Context(), assetcore.SearchOpts{
 		Query:   "arrow",
 		Limit:   10,
 		Sources: assetcore.Filter{Only: []string{setLucide}},
@@ -136,11 +136,14 @@ func TestSearchMapsHitsToAssets(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Search: %v", err)
 	}
-	if len(assets) == 0 {
+	if len(res.Assets) == 0 {
 		t.Fatal("Search returned no assets, want at least one")
 	}
+	if res.NextCursor != "" {
+		t.Errorf("Search NextCursor = %q, want \"\" (single page)", res.NextCursor)
+	}
 
-	for _, a := range assets {
+	for _, a := range res.Assets {
 		provider, local, ok := assetcore.ParseAssetID(a.ID)
 		if !ok || provider != providerName {
 			t.Errorf("asset.ID = %q, want composite id under %q", a.ID, providerName)

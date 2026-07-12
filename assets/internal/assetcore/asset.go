@@ -57,6 +57,13 @@ func ParseAssetID(id string) (provider, local string, ok bool) {
 	return provider, local, true
 }
 
+// SearchResult is one provider's page of search hits plus the opaque cursor to its next page.
+// NextCursor "" means the provider has no further pages.
+type SearchResult struct {
+	Assets     []Asset
+	NextCursor string
+}
+
 // Source describes one upstream set/collection/family a provider serves, for discovery
 // (list_asset_sources). Count is the asset count, or -1 if unknown. Meta is optional display data
 // (e.g. a font family's category). Value type; copy freely.

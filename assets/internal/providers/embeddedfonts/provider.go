@@ -87,15 +87,19 @@ var (
 	loadOnce   sync.Once
 	families   []fontFamily
 	familyData map[string]fontFamily
+	loadErr    error
 )
 
-// load discovers the vendored font families by reading the embedded data/ subdirectories, once.
+// load discovers the vendored font families by reading the embedded data/ subdirectories, once,
+// capturing a read failure in loadErr so New can distinguish a corrupt embed from a legitimately
+// empty one.
 func load() {
 	loadOnce.Do(func() {
 		familyData = make(map[string]fontFamily, len(familyLookup))
 
 		entries, err := fs.ReadDir(dataFS, dataDir)
 		if err != nil {
+			loadErr = fmt.Errorf("read data dir: %w", err)
 			families = []fontFamily{}
 			return
 		}
@@ -296,8 +300,15 @@ var (
 // Provider serves the vendored OFL font families as an assetcore.FontProvider.
 type Provider struct{}
 
-// New returns an embedded font provider.
-func New() *Provider { return &Provider{} }
+// New returns an embedded font provider. It panics if the vendored font data fails to read, since that
+// indicates a corrupt embed rather than a legitimately empty data directory.
+func New() *Provider {
+	load()
+	if loadErr != nil {
+		panic(fmt.Errorf("embeddedfonts: load data: %w", loadErr))
+	}
+	return &Provider{}
+}
 
 // Name returns the provider's stable registry key.
 func (p *Provider) Name() string { return providerName }
@@ -307,7 +318,8 @@ func (p *Provider) Kind() assetcore.Kind { return assetcore.KindFont }
 
 // Search finds font families matching opts.Query among those allowed by opts.Sources and maps each
 // hit onto an assetcore.Asset, carrying the family's category and available weights as display Meta.
-func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) ([]assetcore.Asset, error) {
+// The embedded catalogue fits in a single page, so NextCursor is always "".
+func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) (assetcore.SearchResult, error) {
 	results := searchFonts(opts.Query, opts.Sources, assetcore.ClampLimit(opts.Limit))
 
 	assets := make([]assetcore.Asset, 0, len(results))
@@ -315,7 +327,7 @@ func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) ([]asset
 		assets = append(assets, p.asset(m))
 	}
 
-	return assets, nil
+	return assetcore.SearchResult{Assets: assets}, nil
 }
 
 // Fetch returns the woff2 for the family identified by the provider-local slug id, at the weight and

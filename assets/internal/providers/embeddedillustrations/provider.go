@@ -45,12 +45,16 @@ var (
 	loadOnce    sync.Once
 	collections []string
 	collSet     map[string]bool
+	loadErr     error
 )
 
+// load discovers the vendored illustration collections, once, capturing a data directory read
+// failure in loadErr so New can distinguish a corrupt embed from a legitimately empty one.
 func load() {
 	loadOnce.Do(func() {
 		entries, err := fs.ReadDir(dataFS, dataDir)
 		if err != nil {
+			loadErr = fmt.Errorf("read data dir: %w", err)
 			collections = []string{}
 			collSet = map[string]bool{}
 			return
@@ -175,8 +179,15 @@ var (
 // Provider serves the vendored SVG illustration collections as an assetcore.IllustrationProvider.
 type Provider struct{}
 
-// New returns an embedded illustration provider.
-func New() *Provider { return &Provider{} }
+// New returns an embedded illustration provider. It panics if the vendored illustration data fails to
+// read, since that indicates a corrupt embed rather than a legitimately empty data directory.
+func New() *Provider {
+	load()
+	if loadErr != nil {
+		panic(fmt.Errorf("embeddedillustrations: load data: %w", loadErr))
+	}
+	return &Provider{}
+}
 
 // Name returns the provider's stable registry key.
 func (p *Provider) Name() string { return providerName }
@@ -185,8 +196,9 @@ func (p *Provider) Name() string { return providerName }
 func (p *Provider) Kind() assetcore.Kind { return assetcore.KindIllustration }
 
 // Search finds illustrations matching opts.Query within the collections allowed by opts.Sources and
-// maps each hit onto an assetcore.Asset.
-func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) ([]assetcore.Asset, error) {
+// maps each hit onto an assetcore.Asset. The embedded catalogue fits in a single page, so NextCursor
+// is always "".
+func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) (assetcore.SearchResult, error) {
 	results := searchIllustrations(opts.Query, opts.Sources, assetcore.ClampLimit(opts.Limit))
 
 	assets := make([]assetcore.Asset, 0, len(results))
@@ -194,7 +206,7 @@ func (p *Provider) Search(_ context.Context, opts assetcore.SearchOpts) ([]asset
 		assets = append(assets, p.asset(m.collection, m.name))
 	}
 
-	return assets, nil
+	return assetcore.SearchResult{Assets: assets}, nil
 }
 
 // Fetch returns the SVG identified by the provider-local id "<collection>/<name>". A malformed id,

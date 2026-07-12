@@ -71,9 +71,10 @@ func sanitizeFilename(s string) string {
 	}, s)
 }
 
-// searchResult renders a search header plus one line per hit (or a "no matches" note) and appends a
-// note naming any providers that degraded during the aggregate search.
-func searchResult(header string, lines []string, warns []assetcore.Warning) *mcp.CallToolResult {
+// searchResult renders a search header plus one line per hit (or a "no matches" note), a next_cursor
+// line when nextCursor is non-empty, and a note naming any providers that degraded during the
+// aggregate search.
+func searchResult(header string, lines []string, nextCursor string, warns []assetcore.Warning) *mcp.CallToolResult {
 	var b strings.Builder
 	b.WriteString(header)
 
@@ -82,6 +83,10 @@ func searchResult(header string, lines []string, warns []assetcore.Warning) *mcp
 	} else {
 		b.WriteString("\n")
 		b.WriteString(strings.Join(lines, "\n"))
+	}
+
+	if nextCursor != "" {
+		fmt.Fprintf(&b, "\nnext_cursor: %s", nextCursor)
 	}
 
 	if len(warns) > 0 {
@@ -226,8 +231,9 @@ func (s *Server) handleSearchIcons(
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	assets, warns := s.registry.SearchIcons(ctx, assetcore.SearchOpts{
+	assets, nextCursor, warns := s.registry.SearchIcons(ctx, assetcore.SearchOpts{
 		Query:     query,
+		Cursor:    stringArg(args, "cursor"),
 		Limit:     intArg(args, "limit", 0),
 		Sources:   filterArg(args, "sources", "exclude_sources"),
 		Providers: filterArg(args, "providers", "exclude_providers"),
@@ -238,7 +244,7 @@ func (s *Server) handleSearchIcons(
 		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
 	}
 
-	return searchResult(fmt.Sprintf("%d icon(s) matching %q:", len(assets), query), lines, warns), nil
+	return searchResult(fmt.Sprintf("%d icon(s) matching %q:", len(assets), query), lines, nextCursor, warns), nil
 }
 
 func (s *Server) handleGetIcon(
@@ -300,8 +306,9 @@ func (s *Server) handleSearchIllustrations(
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	assets, warns := s.registry.SearchIllustrations(ctx, assetcore.SearchOpts{
+	assets, nextCursor, warns := s.registry.SearchIllustrations(ctx, assetcore.SearchOpts{
 		Query:     query,
+		Cursor:    stringArg(args, "cursor"),
 		Limit:     intArg(args, "limit", 0),
 		Sources:   filterArg(args, "sources", "exclude_sources"),
 		Providers: filterArg(args, "providers", "exclude_providers"),
@@ -312,7 +319,9 @@ func (s *Server) handleSearchIllustrations(
 		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
 	}
 
-	return searchResult(fmt.Sprintf("%d illustration(s) matching %q:", len(assets), query), lines, warns), nil
+	return searchResult(
+		fmt.Sprintf("%d illustration(s) matching %q:", len(assets), query), lines, nextCursor, warns,
+	), nil
 }
 
 func (s *Server) handleGetIllustration(
@@ -358,8 +367,9 @@ func (s *Server) handleSearchFonts(
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	assets, warns := s.registry.SearchFonts(ctx, assetcore.SearchOpts{
+	assets, nextCursor, warns := s.registry.SearchFonts(ctx, assetcore.SearchOpts{
 		Query:     query,
+		Cursor:    stringArg(args, "cursor"),
 		Limit:     intArg(args, "limit", 0),
 		Sources:   filterArg(args, "sources", "exclude_sources"),
 		Providers: filterArg(args, "providers", "exclude_providers"),
@@ -373,7 +383,9 @@ func (s *Server) handleSearchFonts(
 		))
 	}
 
-	return searchResult(fmt.Sprintf("%d font family(-ies) matching %q:", len(assets), query), lines, warns), nil
+	return searchResult(
+		fmt.Sprintf("%d font family(-ies) matching %q:", len(assets), query), lines, nextCursor, warns,
+	), nil
 }
 
 func (s *Server) handleGetFont(

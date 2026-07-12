@@ -172,24 +172,22 @@ func (_c *FontProvider_Name_Call) RunAndReturn(run func() string) *FontProvider_
 }
 
 // Search provides a mock function with given fields: ctx, opts
-func (_m *FontProvider) Search(ctx context.Context, opts assetcore.SearchOpts) ([]assetcore.Asset, error) {
+func (_m *FontProvider) Search(ctx context.Context, opts assetcore.SearchOpts) (assetcore.SearchResult, error) {
 	ret := _m.Called(ctx, opts)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Search")
 	}
 
-	var r0 []assetcore.Asset
+	var r0 assetcore.SearchResult
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, assetcore.SearchOpts) ([]assetcore.Asset, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, assetcore.SearchOpts) (assetcore.SearchResult, error)); ok {
 		return rf(ctx, opts)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, assetcore.SearchOpts) []assetcore.Asset); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, assetcore.SearchOpts) assetcore.SearchResult); ok {
 		r0 = rf(ctx, opts)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]assetcore.Asset)
-		}
+		r0 = ret.Get(0).(assetcore.SearchResult)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, assetcore.SearchOpts) error); ok {
@@ -220,12 +218,12 @@ func (_c *FontProvider_Search_Call) Run(run func(ctx context.Context, opts asset
 	return _c
 }
 
-func (_c *FontProvider_Search_Call) Return(_a0 []assetcore.Asset, _a1 error) *FontProvider_Search_Call {
+func (_c *FontProvider_Search_Call) Return(_a0 assetcore.SearchResult, _a1 error) *FontProvider_Search_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *FontProvider_Search_Call) RunAndReturn(run func(context.Context, assetcore.SearchOpts) ([]assetcore.Asset, error)) *FontProvider_Search_Call {
+func (_c *FontProvider_Search_Call) RunAndReturn(run func(context.Context, assetcore.SearchOpts) (assetcore.SearchResult, error)) *FontProvider_Search_Call {
 	_c.Call.Return(run)
 	return _c
 }

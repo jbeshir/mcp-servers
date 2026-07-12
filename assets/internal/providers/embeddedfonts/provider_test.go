@@ -165,15 +165,15 @@ func TestSearchFiltersBySource(t *testing.T) {
 func TestSearchMapsFontHits(t *testing.T) {
 	p := New()
 
-	assets, err := p.Search(t.Context(), assetcore.SearchOpts{Query: knownSlug, Limit: 10})
+	res, err := p.Search(t.Context(), assetcore.SearchOpts{Query: knownSlug, Limit: 10})
 	if err != nil {
 		t.Fatalf("Search: %v", err)
 	}
 
 	var inter *assetcore.Asset
-	for i := range assets {
-		if assets[i].Title == knownFamily {
-			inter = &assets[i]
+	for i := range res.Assets {
+		if res.Assets[i].Title == knownFamily {
+			inter = &res.Assets[i]
 		}
 	}
 	if inter == nil {
