@@ -11,12 +11,12 @@ func (s *Server) registerTools() {
 	s.mcpServer.AddTool(mcp.NewTool("list_asset_sources",
 		mcp.WithDescription(
 			"List the registered asset providers and, for each, the upstream sources it serves "+
-				"(icon sets, illustration collections, font families) with license and item count. "+
-				"Returns a human-readable listing plus a structured JSON block. Optionally filter by "+
-				"kind (icon, illustration, font), by provider, or by source. Note: providers and "+
-				"exclude_providers currently only match the offline embedded-* providers. No files are written."),
+				"(icon sets, illustration collections, font families, photo sources, texture/material "+
+				"sets) with license and item count. Returns a human-readable listing plus a structured "+
+				"JSON block. Optionally filter by kind (icon, illustration, font, photo, texture), by "+
+				"provider, or by source."),
 		mcp.WithString("kind",
-			mcp.Description("Restrict to a single asset kind: icon, illustration, or font"),
+			mcp.Description("Restrict to a single asset kind: icon, illustration, font, photo, or texture"),
 		),
 		mcp.WithArray("providers",
 			mcp.Description("Only list these providers (e.g. embedded-icons)"),
@@ -40,9 +40,10 @@ func (s *Server) registerTools() {
 	s.mcpServer.AddTool(mcp.NewTool("search_icons",
 		mcp.WithDescription(
 			"Search vendored icon sets (bootstrap-icons, feather, heroicons, lucide, material-symbols, "+
-				"phosphor, simple-icons, tabler) by name. Returns a text list of hits, each with its "+
-				"composite id (\"<provider>:<local>\", e.g. embedded-icons:lucide/camera) and a set/name "+
-				"label. No files are written; pass a hit's id to get_icon to render it."),
+				"phosphor, simple-icons, tabler) plus Iconify's remote catalogue by name. Returns a text "+
+				"list of hits, each with its composite id (\"<provider>:<local>\", e.g. "+
+				"embedded-icons:lucide/camera) and a set/name label. No files are written; pass a hit's "+
+				"id to get_icon to render it."),
 		mcp.WithString("query",
 			mcp.Required(),
 			mcp.Description("Case-insensitive substring to match against icon names"),
@@ -56,7 +57,7 @@ func (s *Server) registerTools() {
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("providers",
-			mcp.Description("Restrict to these icon providers (currently only embedded-icons)"),
+			mcp.Description("Restrict to these icon providers (embedded-icons, iconify)"),
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("exclude_providers",
@@ -141,9 +142,10 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_fonts",
 		mcp.WithDescription(
-			"Search vendored OFL-1.1 font families by name, slug, or category. Returns a text list of "+
-				"hits, each with its composite id (\"<provider>:<local>\", e.g. embedded-fonts:inter), the "+
-				"family category, and available weights. No files are written; pass a hit's id to get_font."),
+			"Search vendored OFL-1.1 font families plus the Google Fonts catalogue by name, slug, or "+
+				"category. Returns a text list of hits, each with its composite id "+
+				"(\"<provider>:<local>\", e.g. embedded-fonts:inter), the family category, and available "+
+				"weights. No files are written; pass a hit's id to get_font."),
 		mcp.WithString("query",
 			mcp.Required(),
 			mcp.Description("Case-insensitive substring to match against family name, slug, or category"),
@@ -157,7 +159,7 @@ func (s *Server) registerTools() {
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("providers",
-			mcp.Description("Restrict to these font providers (currently only embedded-fonts)"),
+			mcp.Description("Restrict to these font providers (embedded-fonts, googlefonts)"),
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("exclude_providers",

@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.jbeshir/assets-mcp",
   "title": "Assets",
-  "description": "Search and fetch offline icons, illustrations, and fonts with license metadata.",
+  "description": "Search and fetch icons, illustrations, fonts, photos and textures with license metadata.",
   "version": "0.0.0",
   "repository": {
     "url": "https://github.com/jbeshir/mcp-servers",
@@ -21,6 +21,18 @@
         {
           "name": "ASSETS_OUTPUT_DIR",
           "description": "Directory to write rendered assets to (default: OS temp dir + /assets-mcp)",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "ASSETS_DISABLE_REMOTE",
+          "description": "Set to 1 to disable the keyless remote providers and run fully offline",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "ASSETS_CACHE_DIR",
+          "description": "On-disk cache dir for remote fetches (default: OS cache dir + /assets-mcp)",
           "isRequired": false,
           "isSecret": false
         }
