@@ -50,6 +50,24 @@ func (r *Registry) SearchFonts(ctx context.Context, opts SearchOpts) ([]Asset, s
 		})
 }
 
+// SearchPhotos fans out across the photo providers named in opts.Cursor (or, on a first page, all
+// providers allowed by opts.Providers) and merges the results.
+func (r *Registry) SearchPhotos(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
+	return aggregateSearch(ctx, r.Photos(), opts,
+		func(c context.Context, p PhotoProvider, o SearchOpts) (SearchResult, error) {
+			return p.Search(c, o)
+		})
+}
+
+// SearchTextures fans out across the texture providers named in opts.Cursor (or, on a first page, all
+// providers allowed by opts.Providers) and merges the results.
+func (r *Registry) SearchTextures(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
+	return aggregateSearch(ctx, r.Textures(), opts,
+		func(c context.Context, p TextureProvider, o SearchOpts) (SearchResult, error) {
+			return p.Search(c, o)
+		})
+}
+
 // allowedProviders returns the subset of provs whose Name the filter allows, preserving order. An
 // all-allowing filter returns provs unchanged.
 func allowedProviders[P Provider](provs []P, f Filter) []P {

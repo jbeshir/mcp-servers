@@ -13,6 +13,8 @@ type Registry struct {
 	icons         map[string]IconProvider
 	illustrations map[string]IllustrationProvider
 	fonts         map[string]FontProvider
+	photos        map[string]PhotoProvider
+	textures      map[string]TextureProvider
 }
 
 // NewRegistry returns an empty registry ready for Add* calls.
@@ -21,6 +23,8 @@ func NewRegistry() *Registry {
 		icons:         map[string]IconProvider{},
 		illustrations: map[string]IllustrationProvider{},
 		fonts:         map[string]FontProvider{},
+		photos:        map[string]PhotoProvider{},
+		textures:      map[string]TextureProvider{},
 	}
 }
 
@@ -32,6 +36,12 @@ func (r *Registry) AddIllustration(p IllustrationProvider) { r.illustrations[p.N
 
 // AddFont registers a font provider under its Name.
 func (r *Registry) AddFont(p FontProvider) { r.fonts[p.Name()] = p }
+
+// AddPhoto registers a photo provider under its Name.
+func (r *Registry) AddPhoto(p PhotoProvider) { r.photos[p.Name()] = p }
+
+// AddTexture registers a texture provider under its Name.
+func (r *Registry) AddTexture(p TextureProvider) { r.textures[p.Name()] = p }
 
 // Icons returns the registered icon providers ordered deterministically by name.
 func (r *Registry) Icons() []IconProvider {
@@ -61,6 +71,28 @@ func (r *Registry) Fonts() []FontProvider {
 	out := make([]FontProvider, len(names))
 	for i, n := range names {
 		out[i] = r.fonts[n]
+	}
+
+	return out
+}
+
+// Photos returns the registered photo providers ordered deterministically by name.
+func (r *Registry) Photos() []PhotoProvider {
+	names := sortedKeys(r.photos)
+	out := make([]PhotoProvider, len(names))
+	for i, n := range names {
+		out[i] = r.photos[n]
+	}
+
+	return out
+}
+
+// Textures returns the registered texture providers ordered deterministically by name.
+func (r *Registry) Textures() []TextureProvider {
+	names := sortedKeys(r.textures)
+	out := make([]TextureProvider, len(names))
+	for i, n := range names {
+		out[i] = r.textures[n]
 	}
 
 	return out
@@ -120,6 +152,38 @@ func (r *Registry) FetchFont(ctx context.Context, id string, opts FontFetchOpts)
 	return b, p, nil
 }
 
+// FetchPhoto routes id to the provider named in its composite prefix and fetches the photo by its
+// provider-local id. A malformed id or an unknown provider name is reported as ErrNotFound.
+func (r *Registry) FetchPhoto(ctx context.Context, id string, opts PhotoFetchOpts) (Blob, error) {
+	name, local, ok := ParseAssetID(id)
+	if !ok {
+		return Blob{}, fmt.Errorf("%w: malformed asset id %q", ErrNotFound, id)
+	}
+
+	p, ok := r.photos[name]
+	if !ok {
+		return Blob{}, fmt.Errorf("%w: no photo provider %q", ErrNotFound, name)
+	}
+
+	return p.Fetch(ctx, local, opts)
+}
+
+// FetchTexture routes id to the provider named in its composite prefix and fetches the texture by its
+// provider-local id. A malformed id or an unknown provider name is reported as ErrNotFound.
+func (r *Registry) FetchTexture(ctx context.Context, id string, opts TextureFetchOpts) (Blob, error) {
+	name, local, ok := ParseAssetID(id)
+	if !ok {
+		return Blob{}, fmt.Errorf("%w: malformed asset id %q", ErrNotFound, id)
+	}
+
+	p, ok := r.textures[name]
+	if !ok {
+		return Blob{}, fmt.Errorf("%w: no texture provider %q", ErrNotFound, name)
+	}
+
+	return p.Fetch(ctx, local, opts)
+}
+
 // ProviderInfo describes a registered provider and, when it implements SourceLister, the upstream
 // sources it serves. Sources is nil for providers that cannot enumerate their catalogue.
 type ProviderInfo struct {
@@ -148,6 +212,12 @@ func (r *Registry) Providers() []ProviderInfo {
 		collect(p)
 	}
 	for _, p := range r.Fonts() {
+		collect(p)
+	}
+	for _, p := range r.Photos() {
+		collect(p)
+	}
+	for _, p := range r.Textures() {
 		collect(p)
 	}
 

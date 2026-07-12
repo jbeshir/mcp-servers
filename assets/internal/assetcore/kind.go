@@ -4,8 +4,7 @@
 // providers live under internal/providers and depend on this package, never the reverse.
 package assetcore
 
-// Kind enumerates the asset kinds this server serves. Only the three embedded kinds exist today;
-// further kinds (photo, audio) are added when their providers land.
+// Kind enumerates the asset kinds this server serves: icon, illustration, font, photo, and texture.
 type Kind string
 
 const (
@@ -15,4 +14,8 @@ const (
 	KindIllustration Kind = "illustration"
 	// KindFont is a font family variant (woff2, optionally with @font-face CSS).
 	KindFont Kind = "font"
+	// KindPhoto is a raster photograph.
+	KindPhoto Kind = "photo"
+	// KindTexture is a PBR material archive (a zip of texture maps at a given resolution/format).
+	KindTexture Kind = "texture"
 )

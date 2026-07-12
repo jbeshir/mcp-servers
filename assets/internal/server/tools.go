@@ -193,4 +193,98 @@ func (s *Server) registerTools() {
 		),
 		mcp.WithOutputSchema[fileManifest](),
 	), s.handleGetFont)
+
+	s.mcpServer.AddTool(mcp.NewTool("search_photos",
+		mcp.WithDescription(
+			"Search keyless Openverse CC-licensed photos by name. Returns a text list of hits, each "+
+				"with its composite id (\"<provider>:<local>\") and a source/title label. No files are "+
+				"written; pass a hit's id to get_photo to fetch it."),
+		mcp.WithString("query",
+			mcp.Required(),
+			mcp.Description("Case-insensitive substring to match against photo titles"),
+		),
+		mcp.WithArray("sources",
+			mcp.Description("Restrict to these upstream sources (see list_asset_sources for names)"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("exclude_sources",
+			mcp.Description("Omit these upstream sources"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("providers",
+			mcp.Description("Restrict to these photo providers"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("exclude_providers",
+			mcp.Description("Omit these photo providers"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithNumber("limit",
+			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),
+		),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous search's next_cursor; omit for the first page"),
+		),
+	), s.handleSearchPhotos)
+
+	s.mcpServer.AddTool(mcp.NewTool("get_photo",
+		mcp.WithDescription(
+			"Fetch a photo by composite id and write it to disk. The id is the composite identifier "+
+				"from search_photos, formatted \"<provider>:<local>\"."),
+		mcp.WithString("id",
+			mcp.Required(),
+			mcp.Description("Composite photo id from search_photos"),
+		),
+		mcp.WithOutputSchema[fileManifest](),
+	), s.handleGetPhoto)
+
+	s.mcpServer.AddTool(mcp.NewTool("search_textures",
+		mcp.WithDescription(
+			"Search keyless CC0 ambientCG PBR material sets by name. Returns a text list of hits, "+
+				"each with its composite id (\"<provider>:<local>\") and a source/title label. No files "+
+				"are written; pass a hit's id to get_texture to fetch it."),
+		mcp.WithString("query",
+			mcp.Required(),
+			mcp.Description("Case-insensitive substring to match against material names"),
+		),
+		mcp.WithArray("sources",
+			mcp.Description("Restrict to these upstream sources (see list_asset_sources for names)"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("exclude_sources",
+			mcp.Description("Omit these upstream sources"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("providers",
+			mcp.Description("Restrict to these texture providers"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("exclude_providers",
+			mcp.Description("Omit these texture providers"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithNumber("limit",
+			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),
+		),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous search's next_cursor; omit for the first page"),
+		),
+	), s.handleSearchTextures)
+
+	s.mcpServer.AddTool(mcp.NewTool("get_texture",
+		mcp.WithDescription(
+			"Fetch a PBR material archive (a zip of texture maps) and write it to disk. The id is the "+
+				"composite identifier from search_textures, formatted \"<provider>:<local>\"."),
+		mcp.WithString("id",
+			mcp.Required(),
+			mcp.Description("Composite texture id from search_textures"),
+		),
+		mcp.WithString("resolution",
+			mcp.Description("Texture resolution, e.g. 1K, 2K, 4K (default: 1K)"),
+		),
+		mcp.WithString("format",
+			mcp.Description("Texture map format, e.g. JPG, PNG (default: JPG)"),
+		),
+		mcp.WithOutputSchema[fileManifest](),
+	), s.handleGetTexture)
 }
