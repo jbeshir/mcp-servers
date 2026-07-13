@@ -36,7 +36,8 @@ type Provider struct {
 	limiter *ratelimit.Limiter
 	cache   *cache.Cache
 
-	collectionsOnce sync.Once
+	collectionsMu   sync.Mutex
+	collectionsDone bool
 	collections     map[string]assetcore.License
 }
 
@@ -229,28 +230,43 @@ func (p *Provider) licenseFor(
 		return info.License.toAsset()
 	}
 
-	p.ensureCollections(ctx)
+	return p.collectionLicense(ctx, prefix)
+}
+
+// collectionLicense resolves prefix's license from the in-process /collections index, lazily loading
+// the index on first use. All access to p.collections/collectionsDone is serialised through
+// collectionsMu, which is also held across the one-time fetch so a concurrent caller cannot observe a
+// half-populated index.
+func (p *Provider) collectionLicense(ctx context.Context, prefix string) assetcore.License {
+	p.collectionsMu.Lock()
+	defer p.collectionsMu.Unlock()
+
+	if !p.collectionsDone {
+		p.loadCollections(ctx)
+	}
+
 	return p.collections[prefix]
 }
 
-// ensureCollections lazily fetches the full Iconify collections index once, caching each prefix's
-// license for use as a Search/Fetch fallback when a response omits it. A fetch failure degrades to an
-// empty license set rather than failing the caller.
-func (p *Provider) ensureCollections(ctx context.Context) {
-	p.collectionsOnce.Do(func() {
-		p.collections = map[string]assetcore.License{}
+// loadCollections fetches the full Iconify /collections index and populates p.collections, marking the
+// index loaded only on success. The caller must hold collectionsMu. A fetch failure leaves the index
+// unloaded (collectionsDone stays false) so a later call retries, rather than latching an empty license
+// set for the lifetime of the process.
+func (p *Provider) loadCollections(ctx context.Context) {
+	if err := p.limiter.Wait(ctx); err != nil {
+		return
+	}
 
-		if err := p.limiter.Wait(ctx); err != nil {
-			return
-		}
+	var resp map[string]collectionInfo
+	if err := p.client.GetJSON(ctx, baseURL+"/collections", &resp); err != nil {
+		return
+	}
 
-		var resp map[string]collectionInfo
-		if err := p.client.GetJSON(ctx, baseURL+"/collections", &resp); err != nil {
-			return
-		}
+	collections := make(map[string]assetcore.License, len(resp))
+	for prefix, info := range resp {
+		collections[prefix] = info.License.toAsset()
+	}
 
-		for prefix, info := range resp {
-			p.collections[prefix] = info.License.toAsset()
-		}
-	})
+	p.collections = collections
+	p.collectionsDone = true
 }

@@ -199,6 +199,62 @@ func TestFetchMalformedID(t *testing.T) {
 	require.ErrorIs(t, err, assetcore.ErrNotFound)
 }
 
+func TestSearchRetriesCollectionsAfterTransientFailure(t *testing.T) {
+	// The /collections license fallback must survive a transient first-call failure. Previously a
+	// consumed sync.Once latched an empty index for the process lifetime, so every later Search
+	// resolved empty licenses; the load must instead retry until it succeeds.
+	var collectionsRequests int32
+
+	lucideLicense := collectionInfo{
+		Name:    "Lucide",
+		License: licenseInfo{Title: "ISC License", SPDX: "ISC", URL: "https://opensource.org/licenses/ISC"},
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/collections", func(w http.ResponseWriter, _ *http.Request) {
+		// Fail the first request (which would poison the old sync.Once), succeed on the retry.
+		if atomic.AddInt32(&collectionsRequests, 1) == 1 {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		_ = json.NewEncoder(w).Encode(map[string]collectionInfo{"lucide": lucideLicense})
+	})
+	mux.HandleFunc("/search", func(w http.ResponseWriter, _ *http.Request) {
+		// lucide is absent from the search response's own collections map, forcing the /collections fallback.
+		_ = json.NewEncoder(w).Encode(searchResponse{
+			Icons: []string{"lucide:home"},
+			Total: 1,
+			Start: 0,
+			Limit: 32,
+		})
+	})
+
+	ts := httptest.NewServer(mux)
+	t.Cleanup(ts.Close)
+
+	orig := baseURL
+	baseURL = ts.URL
+	t.Cleanup(func() { baseURL = orig })
+
+	p := newTestProvider(t)
+	ctx := context.Background()
+
+	// First search: the /collections fetch fails, so lucide's license cannot be resolved yet.
+	res1, err := p.Search(ctx, assetcore.SearchOpts{Query: "a", Limit: 1})
+	require.NoError(t, err)
+	require.Len(t, res1.Assets, 1)
+	require.Empty(t, res1.Assets[0].License.SPDX, "license must be empty while /collections is failing")
+
+	// Second search: the index load is retried (not latched empty by a consumed Once) and now succeeds.
+	res2, err := p.Search(ctx, assetcore.SearchOpts{Query: "a", Limit: 1})
+	require.NoError(t, err)
+	require.Len(t, res2.Assets, 1)
+	require.Equal(t, "ISC", res2.Assets[0].License.SPDX, "license must resolve once /collections succeeds")
+
+	require.EqualValues(t, 2, atomic.LoadInt32(&collectionsRequests),
+		"/collections must be retried after the first failure, not latched empty")
+}
+
 func TestProviderIdentity(t *testing.T) {
 	p := newTestProvider(t)
 	require.Equal(t, providerName, p.Name())
