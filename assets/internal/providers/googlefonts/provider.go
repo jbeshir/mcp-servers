@@ -46,8 +46,7 @@ const (
 	styleItalic   = "italic"
 )
 
-// css2BaseURL and css2Referer are package-level vars so tests can redirect the css2/gstatic endpoints
-// to an httptest server.
+// css2BaseURL is a package-level var so tests can redirect the css2 endpoint to an httptest server.
 var css2BaseURL = "https://fonts.googleapis.com/css2"
 
 // woff2URLPattern extracts the first woff2 src url from a css2 response body, e.g.
@@ -211,7 +210,7 @@ func (p *Provider) Fetch(ctx context.Context, id string, opts assetcore.FontFetc
 	}
 
 	filename := fontFilename(id, weight, style)
-	cacheKey := providerName + ":" + id + ":" + strconv.Itoa(weight) + ":" + style
+	cacheKey := cache.Key(providerName, id, strconv.Itoa(weight), style)
 
 	data, ok, err := p.cache.Get(cacheKey)
 	if err != nil {
@@ -264,8 +263,8 @@ func (p *Provider) download(ctx context.Context, family string, weight int, styl
 	}
 	defer func() { _ = resp.Body.Close() }()
 
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, &httpx.StatusError{StatusCode: resp.StatusCode, URL: cssURL}
+	if err := httpx.CheckStatus(resp, cssURL); err != nil {
+		return nil, err
 	}
 
 	body, err := io.ReadAll(resp.Body)

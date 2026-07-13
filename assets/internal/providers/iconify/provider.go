@@ -5,7 +5,6 @@ package iconify
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -124,8 +123,8 @@ func (p *Provider) Search(ctx context.Context, opts assetcore.SearchOpts) (asset
 	}
 
 	var next string
-	if start+len(resp.Icons) < resp.Total {
-		next = strconv.Itoa(start + len(resp.Icons))
+	if n := len(resp.Icons); n > 0 && start+n < resp.Total {
+		next = strconv.Itoa(start + n)
 	}
 
 	return assetcore.SearchResult{Assets: assets, NextCursor: next}, nil
@@ -181,8 +180,7 @@ func (p *Provider) fetchSVG(ctx context.Context, prefix, name string, opts asset
 
 	data, err := p.client.GetBytes(ctx, svgURL)
 	if err != nil {
-		var statusErr *httpx.StatusError
-		if errors.As(err, &statusErr) && statusErr.StatusCode == http.StatusNotFound {
+		if httpx.IsStatus(err, http.StatusNotFound) {
 			return nil, fmt.Errorf("%w: icon %q/%q", assetcore.ErrNotFound, prefix, name)
 		}
 
@@ -195,7 +193,7 @@ func (p *Provider) fetchSVG(ctx context.Context, prefix, name string, opts asset
 // cacheKey builds the on-disk cache key for a rendered icon, incorporating the render parameters so
 // distinct colour/size combinations are cached separately.
 func cacheKey(local, color string, size int) string {
-	return providerName + "\x00" + local + "\x00color=" + color + "\x00h=" + strconv.Itoa(size)
+	return cache.Key(providerName, local, "color="+color, "h="+strconv.Itoa(size))
 }
 
 // blob builds the Blob for a successfully fetched icon's SVG bytes, resolving its license from the

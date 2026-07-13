@@ -102,7 +102,7 @@ func (p *Provider) Kind() assetcore.Kind { return assetcore.KindTexture }
 // opaque offset cursor and honouring opts.Sources against each hit's display category.
 func (p *Provider) Search(ctx context.Context, opts assetcore.SearchOpts) (assetcore.SearchResult, error) {
 	if err := p.limiter.Wait(ctx); err != nil {
-		return assetcore.SearchResult{}, fmt.Errorf("ambientcg: search: %w", err)
+		return assetcore.SearchResult{}, fmt.Errorf("ambientcg: rate limit wait: %w", err)
 	}
 
 	limit := assetcore.ClampLimit(opts.Limit)
@@ -129,12 +129,12 @@ func (p *Provider) Search(ctx context.Context, opts assetcore.SearchOpts) (asset
 		if !opts.Sources.Allows(source) {
 			continue
 		}
-		assets = append(assets, assetToAsset(fa, source))
+		assets = append(assets, asset(fa, source))
 	}
 
 	result := assetcore.SearchResult{Assets: assets}
-	if next := offset + len(env.FoundAssets); next < env.NumberOfResults {
-		result.NextCursor = strconv.Itoa(next)
+	if n := len(env.FoundAssets); n > 0 && offset+n < env.NumberOfResults {
+		result.NextCursor = strconv.Itoa(offset + n)
 	}
 	return result, nil
 }
@@ -153,7 +153,7 @@ func (p *Provider) Fetch(ctx context.Context, id string, opts assetcore.TextureF
 		format = defaultFormat
 	}
 
-	cacheKey := providerName + ":" + id + ":" + resolution + ":" + format
+	cacheKey := cache.Key(providerName, id, resolution, format)
 	if data, ok, err := p.cache.Get(cacheKey); err != nil {
 		return assetcore.Blob{}, fmt.Errorf("ambientcg: cache get %s: %w", cacheKey, err)
 	} else if ok {
@@ -166,7 +166,7 @@ func (p *Provider) Fetch(ctx context.Context, id string, opts assetcore.TextureF
 	}
 
 	if err := p.limiter.Wait(ctx); err != nil {
-		return assetcore.Blob{}, fmt.Errorf("ambientcg: fetch %s: %w", id, err)
+		return assetcore.Blob{}, fmt.Errorf("ambientcg: rate limit wait: %w", err)
 	}
 
 	content, err := p.client.GetBytes(ctx, downloadLink)
@@ -187,7 +187,7 @@ func (p *Provider) Fetch(ctx context.Context, id string, opts assetcore.TextureF
 // assetcore.ErrNotFound.
 func (p *Provider) resolveDownloadLink(ctx context.Context, id, resolution, format string) (string, error) {
 	if err := p.limiter.Wait(ctx); err != nil {
-		return "", fmt.Errorf("ambientcg: lookup %s: %w", id, err)
+		return "", fmt.Errorf("ambientcg: rate limit wait: %w", err)
 	}
 
 	q := url.Values{}
@@ -250,9 +250,9 @@ func decodeCursor(cursor string) int {
 	return offset
 }
 
-// assetToAsset maps one full_json foundAsset onto an assetcore.Asset, stamping the composite id and the
+// asset maps one full_json foundAsset onto an assetcore.Asset, stamping the composite id and the
 // site-wide CC0 license.
-func assetToAsset(fa foundAsset, source string) assetcore.Asset {
+func asset(fa foundAsset, source string) assetcore.Asset {
 	title := fa.DisplayName
 	if title == "" {
 		title = fa.AssetID

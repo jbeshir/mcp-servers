@@ -5,7 +5,6 @@ package openverse
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -207,8 +206,8 @@ func (p *Provider) Search(ctx context.Context, opts assetcore.SearchOpts) (asset
 
 // imageCacheKey and metaCacheKey return the on-disk cache keys for id's image bytes and detail
 // metadata respectively, namespaced by provider so the two never collide.
-func imageCacheKey(id string) string { return providerName + "\x00img\x00" + id }
-func metaCacheKey(id string) string  { return providerName + "\x00meta\x00" + id }
+func imageCacheKey(id string) string { return cache.Key(providerName, "img", id) }
+func metaCacheKey(id string) string  { return cache.Key(providerName, "meta", id) }
 
 // Fetch returns the image identified by the provider-local uuid id, checking the on-disk cache for
 // both the image bytes and the detail metadata (license, title, landing/preview URLs) before making any
@@ -263,8 +262,7 @@ func (p *Provider) fetchAndCache(ctx context.Context, id, imgKey, metaKey string
 	detailURL := baseURL + "/v1/images/" + url.PathEscape(id) + "/"
 	var r imageResult
 	if err := p.client.GetJSON(ctx, detailURL, &r); err != nil {
-		var statusErr *httpx.StatusError
-		if errors.As(err, &statusErr) && statusErr.StatusCode == http.StatusNotFound {
+		if httpx.IsStatus(err, http.StatusNotFound) {
 			return assetcore.Blob{}, fmt.Errorf("openverse: image %q: %w", id, assetcore.ErrNotFound)
 		}
 		return assetcore.Blob{}, fmt.Errorf("openverse: fetch detail: %w", err)
