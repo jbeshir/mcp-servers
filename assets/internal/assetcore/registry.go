@@ -44,71 +44,42 @@ func (r *Registry) AddPhoto(p PhotoProvider) { r.photos[p.Name()] = p }
 func (r *Registry) AddTexture(p TextureProvider) { r.textures[p.Name()] = p }
 
 // Icons returns the registered icon providers ordered deterministically by name.
-func (r *Registry) Icons() []IconProvider {
-	names := sortedKeys(r.icons)
-	out := make([]IconProvider, len(names))
-	for i, n := range names {
-		out[i] = r.icons[n]
-	}
-
-	return out
-}
+func (r *Registry) Icons() []IconProvider { return sortedProviders(r.icons) }
 
 // Illustrations returns the registered illustration providers ordered deterministically by name.
-func (r *Registry) Illustrations() []IllustrationProvider {
-	names := sortedKeys(r.illustrations)
-	out := make([]IllustrationProvider, len(names))
-	for i, n := range names {
-		out[i] = r.illustrations[n]
-	}
-
-	return out
-}
+func (r *Registry) Illustrations() []IllustrationProvider { return sortedProviders(r.illustrations) }
 
 // Fonts returns the registered font providers ordered deterministically by name.
-func (r *Registry) Fonts() []FontProvider {
-	names := sortedKeys(r.fonts)
-	out := make([]FontProvider, len(names))
-	for i, n := range names {
-		out[i] = r.fonts[n]
-	}
-
-	return out
-}
+func (r *Registry) Fonts() []FontProvider { return sortedProviders(r.fonts) }
 
 // Photos returns the registered photo providers ordered deterministically by name.
-func (r *Registry) Photos() []PhotoProvider {
-	names := sortedKeys(r.photos)
-	out := make([]PhotoProvider, len(names))
-	for i, n := range names {
-		out[i] = r.photos[n]
-	}
-
-	return out
-}
+func (r *Registry) Photos() []PhotoProvider { return sortedProviders(r.photos) }
 
 // Textures returns the registered texture providers ordered deterministically by name.
-func (r *Registry) Textures() []TextureProvider {
-	names := sortedKeys(r.textures)
-	out := make([]TextureProvider, len(names))
-	for i, n := range names {
-		out[i] = r.textures[n]
+func (r *Registry) Textures() []TextureProvider { return sortedProviders(r.textures) }
+
+// route resolves id's composite provider prefix against m and reports the provider-local remainder. A
+// malformed id or an unknown provider name is reported as ErrNotFound.
+func route[P Provider](m map[string]P, kind, id string) (p P, local string, err error) {
+	name, local, ok := ParseAssetID(id)
+	if !ok {
+		return p, "", fmt.Errorf("%w: malformed asset id %q", ErrNotFound, id)
 	}
 
-	return out
+	p, ok = m[name]
+	if !ok {
+		return p, "", fmt.Errorf("%w: no %s provider %q", ErrNotFound, kind, name)
+	}
+
+	return p, local, nil
 }
 
 // FetchIcon routes id to the provider named in its composite prefix and fetches the icon by its
 // provider-local id. A malformed id or an unknown provider name is reported as ErrNotFound.
 func (r *Registry) FetchIcon(ctx context.Context, id string, opts IconFetchOpts) (Blob, error) {
-	name, local, ok := ParseAssetID(id)
-	if !ok {
-		return Blob{}, fmt.Errorf("%w: malformed asset id %q", ErrNotFound, id)
-	}
-
-	p, ok := r.icons[name]
-	if !ok {
-		return Blob{}, fmt.Errorf("%w: no icon provider %q", ErrNotFound, name)
+	p, local, err := route(r.icons, "icon", id)
+	if err != nil {
+		return Blob{}, err
 	}
 
 	return p.Fetch(ctx, local, opts)
@@ -117,14 +88,9 @@ func (r *Registry) FetchIcon(ctx context.Context, id string, opts IconFetchOpts)
 // FetchIllustration routes id to the provider named in its composite prefix and fetches the
 // illustration by its provider-local id. A malformed id or an unknown provider is ErrNotFound.
 func (r *Registry) FetchIllustration(ctx context.Context, id string) (Blob, error) {
-	name, local, ok := ParseAssetID(id)
-	if !ok {
-		return Blob{}, fmt.Errorf("%w: malformed asset id %q", ErrNotFound, id)
-	}
-
-	p, ok := r.illustrations[name]
-	if !ok {
-		return Blob{}, fmt.Errorf("%w: no illustration provider %q", ErrNotFound, name)
+	p, local, err := route(r.illustrations, "illustration", id)
+	if err != nil {
+		return Blob{}, err
 	}
 
 	return p.Fetch(ctx, local)
@@ -134,14 +100,9 @@ func (r *Registry) FetchIllustration(ctx context.Context, id string) (Blob, erro
 // provider-local id, returning that provider so the caller can type-assert an optional
 // FontFaceRenderer for @font-face CSS. A malformed id or an unknown provider is ErrNotFound.
 func (r *Registry) FetchFont(ctx context.Context, id string, opts FontFetchOpts) (Blob, FontProvider, error) {
-	name, local, ok := ParseAssetID(id)
-	if !ok {
-		return Blob{}, nil, fmt.Errorf("%w: malformed asset id %q", ErrNotFound, id)
-	}
-
-	p, ok := r.fonts[name]
-	if !ok {
-		return Blob{}, nil, fmt.Errorf("%w: no font provider %q", ErrNotFound, name)
+	p, local, err := route(r.fonts, "font", id)
+	if err != nil {
+		return Blob{}, nil, err
 	}
 
 	b, err := p.Fetch(ctx, local, opts)
@@ -155,14 +116,9 @@ func (r *Registry) FetchFont(ctx context.Context, id string, opts FontFetchOpts)
 // FetchPhoto routes id to the provider named in its composite prefix and fetches the photo by its
 // provider-local id. A malformed id or an unknown provider name is reported as ErrNotFound.
 func (r *Registry) FetchPhoto(ctx context.Context, id string, opts PhotoFetchOpts) (Blob, error) {
-	name, local, ok := ParseAssetID(id)
-	if !ok {
-		return Blob{}, fmt.Errorf("%w: malformed asset id %q", ErrNotFound, id)
-	}
-
-	p, ok := r.photos[name]
-	if !ok {
-		return Blob{}, fmt.Errorf("%w: no photo provider %q", ErrNotFound, name)
+	p, local, err := route(r.photos, "photo", id)
+	if err != nil {
+		return Blob{}, err
 	}
 
 	return p.Fetch(ctx, local, opts)
@@ -171,14 +127,9 @@ func (r *Registry) FetchPhoto(ctx context.Context, id string, opts PhotoFetchOpt
 // FetchTexture routes id to the provider named in its composite prefix and fetches the texture by its
 // provider-local id. A malformed id or an unknown provider name is reported as ErrNotFound.
 func (r *Registry) FetchTexture(ctx context.Context, id string, opts TextureFetchOpts) (Blob, error) {
-	name, local, ok := ParseAssetID(id)
-	if !ok {
-		return Blob{}, fmt.Errorf("%w: malformed asset id %q", ErrNotFound, id)
-	}
-
-	p, ok := r.textures[name]
-	if !ok {
-		return Blob{}, fmt.Errorf("%w: no texture provider %q", ErrNotFound, name)
+	p, local, err := route(r.textures, "texture", id)
+	if err != nil {
+		return Blob{}, err
 	}
 
 	return p.Fetch(ctx, local, opts)
@@ -241,4 +192,16 @@ func sortedKeys[V any](m map[string]V) []string {
 	sort.Strings(keys)
 
 	return keys
+}
+
+// sortedProviders returns the map values ordered by their key sorted ascending, giving deterministic
+// provider ordering.
+func sortedProviders[P any](m map[string]P) []P {
+	names := sortedKeys(m)
+	out := make([]P, len(names))
+	for i, n := range names {
+		out[i] = m[n]
+	}
+
+	return out
 }

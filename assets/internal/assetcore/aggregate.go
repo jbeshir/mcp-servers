@@ -9,7 +9,7 @@ import (
 
 // searchProviderTimeout bounds each provider's Search during a fan-out so one slow provider cannot
 // stall the aggregate. Embedded providers are in-process and never approach it; it is set generously
-// for the remote providers a later PR will add, which can legitimately be slow.
+// for the remote providers (iconify, googlefonts, openverse, ambientcg), which can legitimately be slow.
 const searchProviderTimeout = 30 * time.Second
 
 // cursorProvider names the pseudo-provider a Warning is attributed to when the aggregate cursor
@@ -26,46 +26,38 @@ type Warning struct {
 // SearchIcons fans out across the icon providers named in opts.Cursor (or, on a first page, all
 // providers allowed by opts.Providers) and merges the results.
 func (r *Registry) SearchIcons(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
-	return aggregateSearch(ctx, r.Icons(), opts,
-		func(c context.Context, p IconProvider, o SearchOpts) (SearchResult, error) {
-			return p.Search(c, o)
-		})
+	return aggregateSearch(ctx, r.Icons(), opts)
 }
 
 // SearchIllustrations fans out across the illustration providers named in opts.Cursor (or, on a first
 // page, all providers allowed by opts.Providers) and merges the results.
 func (r *Registry) SearchIllustrations(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
-	return aggregateSearch(ctx, r.Illustrations(), opts,
-		func(c context.Context, p IllustrationProvider, o SearchOpts) (SearchResult, error) {
-			return p.Search(c, o)
-		})
+	return aggregateSearch(ctx, r.Illustrations(), opts)
 }
 
 // SearchFonts fans out across the font providers named in opts.Cursor (or, on a first page, all
 // providers allowed by opts.Providers) and merges the results.
 func (r *Registry) SearchFonts(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
-	return aggregateSearch(ctx, r.Fonts(), opts,
-		func(c context.Context, p FontProvider, o SearchOpts) (SearchResult, error) {
-			return p.Search(c, o)
-		})
+	return aggregateSearch(ctx, r.Fonts(), opts)
 }
 
 // SearchPhotos fans out across the photo providers named in opts.Cursor (or, on a first page, all
 // providers allowed by opts.Providers) and merges the results.
 func (r *Registry) SearchPhotos(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
-	return aggregateSearch(ctx, r.Photos(), opts,
-		func(c context.Context, p PhotoProvider, o SearchOpts) (SearchResult, error) {
-			return p.Search(c, o)
-		})
+	return aggregateSearch(ctx, r.Photos(), opts)
 }
 
 // SearchTextures fans out across the texture providers named in opts.Cursor (or, on a first page, all
 // providers allowed by opts.Providers) and merges the results.
 func (r *Registry) SearchTextures(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
-	return aggregateSearch(ctx, r.Textures(), opts,
-		func(c context.Context, p TextureProvider, o SearchOpts) (SearchResult, error) {
-			return p.Search(c, o)
-		})
+	return aggregateSearch(ctx, r.Textures(), opts)
+}
+
+// searchable is the constraint aggregateSearch and recoveringSearch need: a Provider that can also
+// Search. Every per-kind provider interface already satisfies it.
+type searchable interface {
+	Provider
+	Search(context.Context, SearchOpts) (SearchResult, error)
 }
 
 // allowedProviders returns the subset of provs whose Name the filter allows, preserving order. An
@@ -93,15 +85,13 @@ func allowedProviders[P Provider](provs []P, f Filter) []P {
 // with an empty result rather than an error, matching the degrade-not-fail shape of a provider fault.
 //
 // Cross-page dedup is best-effort only: merge dedups within a single aggregateSearch call by (Source,
-// Title), but nothing tracks identities already surfaced on an earlier page, so a logical asset that
-// shifts between two providers' pages between calls could in principle reappear. This is acceptable for
-// the in-process, single-page embedded providers and is revisited if a remote provider's pagination
-// makes it a real concern.
-func aggregateSearch[P Provider](
+// Title), but nothing tracks identities already surfaced on an earlier page. The remote providers
+// paginate, so a logical asset that shifts between two providers' pages across calls can reappear; this
+// is a known limitation, accepted as best-effort.
+func aggregateSearch[P searchable](
 	ctx context.Context,
 	all []P,
 	opts SearchOpts,
-	search func(context.Context, P, SearchOpts) (SearchResult, error),
 ) ([]Asset, string, []Warning) {
 	prevCursors, err := decodeCursor(opts.Cursor)
 	if err != nil {
@@ -130,7 +120,7 @@ func aggregateSearch[P Provider](
 			cctx, cancel := context.WithTimeout(ctx, searchProviderTimeout)
 			defer cancel()
 
-			res, err := recoveringSearch(cctx, p, providerOpts, search)
+			res, err := recoveringSearch(cctx, p, providerOpts)
 			if err != nil {
 				mu.Lock()
 				warns = append(warns, Warning{Provider: p.Name(), Err: err.Error()})
@@ -173,11 +163,10 @@ func targetProviders[P Provider](all []P, f Filter, prevCursors map[string]strin
 // recoveringSearch calls search and converts a panic inside it into an error, so one misbehaving
 // provider cannot crash the whole fan-out; the caller turns the error into a Warning like any other
 // provider failure.
-func recoveringSearch[P Provider](
+func recoveringSearch[P searchable](
 	ctx context.Context,
 	p P,
 	opts SearchOpts,
-	search func(context.Context, P, SearchOpts) (SearchResult, error),
 ) (res SearchResult, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -185,7 +174,7 @@ func recoveringSearch[P Provider](
 		}
 	}()
 
-	return search(ctx, p, opts)
+	return p.Search(ctx, opts)
 }
 
 // merge concatenates lists in provider order, deduping by logical identity (Source, Title) so the
@@ -193,8 +182,13 @@ func recoveringSearch[P Provider](
 // not compose across providers because the composite ID embeds the provider name, so the same logical
 // asset carries a different ID per provider.
 func merge(lists [][]Asset) []Asset {
-	seen := make(map[string]bool)
-	var out []Asset
+	total := 0
+	for _, list := range lists {
+		total += len(list)
+	}
+
+	seen := make(map[string]bool, total)
+	out := make([]Asset, 0, total)
 
 	for _, list := range lists {
 		for _, a := range list {
