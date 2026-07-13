@@ -9,13 +9,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // dirPerm is the permission mode used when creating the cache directory.
 const dirPerm = 0o750
-
-// filePerm is the permission mode used when writing a cache entry.
-const filePerm = 0o600
 
 // Cache is a small on-disk byte cache keyed by an opaque fetch-identity string, hashed with sha256 to a
 // file under a base directory.
@@ -63,16 +61,18 @@ func (c *Cache) Put(key string, data []byte) error {
 		_ = os.Remove(tmpName)
 		return fmt.Errorf("cache: close temp file: %w", err)
 	}
-	if err := os.Chmod(tmpName, filePerm); err != nil {
-		_ = os.Remove(tmpName)
-		return fmt.Errorf("cache: chmod temp file: %w", err)
-	}
 
 	if err := os.Rename(tmpName, c.path(key)); err != nil {
 		_ = os.Remove(tmpName)
 		return fmt.Errorf("cache: rename into place for %s: %w", key, err)
 	}
 	return nil
+}
+
+// Key joins provider and parts with a "\x00" separator, a byte that cannot appear in any of them,
+// guaranteeing distinct providers or part sequences never collide on the same cache key.
+func Key(provider string, parts ...string) string {
+	return provider + "\x00" + strings.Join(parts, "\x00")
 }
 
 // path returns the on-disk path for key, hashed with sha256 to a hex filename.

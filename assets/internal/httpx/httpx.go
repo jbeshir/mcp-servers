@@ -6,6 +6,7 @@ package httpx
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -57,6 +58,20 @@ type StatusError struct {
 // Error returns a human-readable description of the failed request.
 func (e *StatusError) Error() string {
 	return fmt.Sprintf("httpx: %s: unexpected status %d", e.URL, e.StatusCode)
+}
+
+// IsStatus reports whether err is, or wraps, a *StatusError carrying the given HTTP status code.
+func IsStatus(err error, code int) bool {
+	var se *StatusError
+	return errors.As(err, &se) && se.StatusCode == code
+}
+
+// CheckStatus reports resp's status as a *StatusError for url when it is not 2xx, or nil otherwise.
+func CheckStatus(resp *http.Response, url string) error {
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return &StatusError{StatusCode: resp.StatusCode, URL: url}
+	}
+	return nil
 }
 
 // New builds a Client from cfg, applying defaults for zero fields.
@@ -129,9 +144,9 @@ func (c *Client) getOK(ctx context.Context, url string) (*http.Response, error) 
 		return nil, fmt.Errorf("httpx: get %s: %w", url, err)
 	}
 
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+	if err := CheckStatus(resp, url); err != nil {
 		_ = resp.Body.Close()
-		return nil, &StatusError{StatusCode: resp.StatusCode, URL: url}
+		return nil, err
 	}
 
 	return resp, nil
