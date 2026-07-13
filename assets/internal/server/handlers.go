@@ -84,6 +84,15 @@ func sanitizeSuffixedFilename(prefix, name string) string {
 	return sanitizeFilename(prefix+stem) + ext
 }
 
+// sourceTitleLines renders one "id — source/title" line per asset.
+func sourceTitleLines(assets []assetcore.Asset) []string {
+	lines := make([]string, 0, len(assets))
+	for _, a := range assets {
+		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
+	}
+	return lines
+}
+
 // searchResult renders a search header plus one line per hit (or a "no matches" note), a next_cursor
 // line when nextCursor is non-empty, and a note naming any providers that degraded during the
 // aggregate search.
@@ -252,10 +261,7 @@ func (s *Server) handleSearchIcons(
 		Providers: filterArg(args, "providers", "exclude_providers"),
 	})
 
-	lines := make([]string, 0, len(assets))
-	for _, a := range assets {
-		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
-	}
+	lines := sourceTitleLines(assets)
 
 	return searchResult(fmt.Sprintf("%d icon(s) matching %q:", len(assets), query), lines, nextCursor, warns), nil
 }
@@ -327,10 +333,7 @@ func (s *Server) handleSearchIllustrations(
 		Providers: filterArg(args, "providers", "exclude_providers"),
 	})
 
-	lines := make([]string, 0, len(assets))
-	for _, a := range assets {
-		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
-	}
+	lines := sourceTitleLines(assets)
 
 	return searchResult(
 		fmt.Sprintf("%d illustration(s) matching %q:", len(assets), query), lines, nextCursor, warns,
@@ -485,10 +488,7 @@ func (s *Server) handleSearchPhotos(
 		Providers: filterArg(args, "providers", "exclude_providers"),
 	})
 
-	lines := make([]string, 0, len(assets))
-	for _, a := range assets {
-		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
-	}
+	lines := sourceTitleLines(assets)
 
 	return searchResult(fmt.Sprintf("%d photo(s) matching %q:", len(assets), query), lines, nextCursor, warns), nil
 }
@@ -542,10 +542,7 @@ func (s *Server) handleSearchTextures(
 		Providers: filterArg(args, "providers", "exclude_providers"),
 	})
 
-	lines := make([]string, 0, len(assets))
-	for _, a := range assets {
-		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
-	}
+	lines := sourceTitleLines(assets)
 
 	return searchResult(fmt.Sprintf("%d texture(s) matching %q:", len(assets), query), lines, nextCursor, warns), nil
 }

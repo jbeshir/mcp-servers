@@ -185,10 +185,11 @@ func (s *Server) registerTools() {
 			mcp.Description("Composite font id from search_fonts, e.g. embedded-fonts:inter"),
 		),
 		mcp.WithNumber("weight",
-			mcp.Description("Font weight: 400 or 700 (default: 400; Bebas Neue only has 400)"),
+			mcp.Description("Font weight, e.g. 400 or 700 (default: 400); embedded families offer "+
+				"400/700, Google Fonts families vary"),
 		),
 		mcp.WithString("style",
-			mcp.Description("Font style; only \"normal\" is available (default: normal)"),
+			mcp.Description("Font style: \"normal\" or \"italic\" (default: normal); availability depends on the family"),
 		),
 		mcp.WithString("format",
 			mcp.Description("Output format: \"woff2\" (default) or \"css\" to also emit an @font-face snippet"),
