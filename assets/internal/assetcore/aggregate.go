@@ -84,6 +84,11 @@ func allowedProviders[P Provider](provs []P, f Filter) []P {
 // own per-provider cursor restored into a copy of opts. A malformed cursor is reported as a Warning
 // with an empty result rather than an error, matching the degrade-not-fail shape of a provider fault.
 //
+// A provider that errors is always reported as a Warning. If it was mid-pagination (its incoming
+// cursor was non-empty) its incoming cursor is carried forward into the returned cursor so the next
+// page retries it from where it was, rather than silently dropping it for the rest of the session; a
+// first-page failure degrades to a Warning only, since a fresh search re-queries every provider.
+//
 // Cross-page dedup is best-effort only: merge dedups within a single aggregateSearch call by (Source,
 // Title), but nothing tracks identities already surfaced on an earlier page. The remote providers
 // paginate, so a logical asset that shifts between two providers' pages across calls can reappear; this
@@ -124,6 +129,13 @@ func aggregateSearch[P searchable](
 			if err != nil {
 				mu.Lock()
 				warns = append(warns, Warning{Provider: p.Name(), Err: err.Error()})
+				// A provider mid-pagination (non-empty incoming cursor) carries that cursor forward so the
+				// next page retries it from where it was, rather than dropping it for the rest of the
+				// session. A first-page failure (empty incoming cursor) stays dropped: a fresh search
+				// re-queries every provider, so nothing is lost by omitting it.
+				if providerOpts.Cursor != "" {
+					nextCursors[p.Name()] = providerOpts.Cursor
+				}
 				mu.Unlock()
 
 				return
