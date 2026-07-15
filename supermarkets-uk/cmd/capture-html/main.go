@@ -95,7 +95,7 @@ func main() {
 		}
 	}
 
-	browser := scraper.NewBrowser()
+	browser := scraper.NewBrowser(scraper.BrowserConfig{})
 	defer browser.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)

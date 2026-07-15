@@ -8,11 +8,19 @@ An MCP server for searching and getting product details from Amazon. Supports 22
 
 - Google Chrome or Chromium installed (the server launches it in headless mode)
 
+  On Linux, avoid snap-packaged Chromium (Ubuntu's default `chromium` package). It is known to hang
+  indefinitely — both on graceful CDP tab-close and on OS-level process reaping after a forced kill —
+  when launched as a descendant of certain parent processes (observed running under Claude Desktop's
+  Electron process tree). The hang was 100% reproducible under that setup and never reproduced with
+  the same code against a non-snap Chrome/Chromium build. Install Google Chrome or a non-snap
+  Chromium build instead, and point `CHROME_EXEC_PATH` at it if it isn't picked up automatically.
+
 ### Configuration
 
 | Variable | Required | Description |
 |---|---|---|
 | `AMAZON_REGION` | No | Default Amazon region (default: `us`). Can be overridden per request. |
+| `CHROME_EXEC_PATH` | No | Path to the Chrome/Chromium binary to launch. Leave unset to use automatic detection. See the note above about snap-packaged Chromium on Linux. |
 
 ### Install from source
 

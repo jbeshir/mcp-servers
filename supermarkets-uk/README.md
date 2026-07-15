@@ -9,6 +9,13 @@ An MCP server for searching and comparing grocery prices across 9 UK supermarket
 - **Go 1.24+** (to build from source)
 - **Chrome, Chromium, or Microsoft Edge** — required for Tesco, Asda, and Waitrose (headless browser rendering), and for login to any supermarket. Sainsbury's, Ocado, Morrisons, and the Shopify stores work without a browser.
 
+  On Linux, avoid snap-packaged Chromium (Ubuntu's default `chromium` package). It is known to hang
+  indefinitely — both on graceful CDP tab-close and on OS-level process reaping after a forced kill —
+  when launched as a descendant of certain parent processes (observed running under Claude Desktop's
+  Electron process tree). The hang was 100% reproducible under that setup and never reproduced with
+  the same code against a non-snap Chrome/Chromium build. Install Google Chrome or a non-snap
+  Chromium build instead, and point `CHROME_EXEC_PATH` at it if it isn't picked up automatically.
+
 ### Installation
 
 Pre-built binaries are available from [Releases](https://github.com/jbeshir/mcp-servers/releases).
@@ -34,6 +41,12 @@ docker build -t supermarkets-uk-mcp ./supermarkets-uk
 ### Configuration
 
 No environment variables are required to get started — all supermarkets work without login.
+
+| Variable | Required | Description |
+|---|---|---|
+| `CHROME_EXEC_PATH` | No | Path to the Chrome/Chromium binary to launch. Leave unset to use automatic detection. See the note above about snap-packaged Chromium on Linux. |
+
+See [Login](#login) below for the additional variables that enable interactive login.
 
 #### Claude Desktop
 

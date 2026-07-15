@@ -49,7 +49,7 @@ func main() {
 		log.Fatal("either -query or -url is required")
 	}
 
-	browser := scraper.NewBrowser()
+	browser := scraper.NewBrowser(scraper.Config{})
 
 	rc, err := fetchWithRetry(browser, targetURL, waitSel)
 	if err != nil {

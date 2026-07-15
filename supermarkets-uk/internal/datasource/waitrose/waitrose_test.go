@@ -83,7 +83,7 @@ func TestSearchIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	browser := scraper.NewBrowser()
+	browser := scraper.NewBrowser(scraper.BrowserConfig{})
 	defer browser.Close()
 	ds := waitrose.NewDatasource(browser)
 	products, err := ds.SearchProducts(t.Context(), "milk")
@@ -95,7 +95,7 @@ func TestProductDetailsIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	browser := scraper.NewBrowser()
+	browser := scraper.NewBrowser(scraper.BrowserConfig{})
 	defer browser.Close()
 	ds := waitrose.NewDatasource(browser)
 
@@ -117,7 +117,7 @@ func TestBrowseCategoriesIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	browser := scraper.NewBrowser()
+	browser := scraper.NewBrowser(scraper.BrowserConfig{})
 	defer browser.Close()
 	ds := waitrose.NewDatasource(browser)
 

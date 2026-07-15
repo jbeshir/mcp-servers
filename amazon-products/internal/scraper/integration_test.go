@@ -15,7 +15,7 @@ func TestSearchByRegionIntegration(t *testing.T) {
 		t.Skip("skipping integration test")
 	}
 
-	browser := scraper.NewBrowser()
+	browser := scraper.NewBrowser(scraper.Config{})
 	defer browser.Close()
 
 	// Sort region IDs for deterministic test order.
@@ -60,7 +60,7 @@ func TestProductDetailsByRegionIntegration(t *testing.T) {
 		t.Skip("skipping integration test")
 	}
 
-	browser := scraper.NewBrowser()
+	browser := scraper.NewBrowser(scraper.Config{})
 	defer browser.Close()
 
 	var ids []string
