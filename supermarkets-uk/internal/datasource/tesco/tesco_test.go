@@ -105,7 +105,7 @@ func TestSearchIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	browser := scraper.NewBrowser()
+	browser := scraper.NewBrowser(scraper.BrowserConfig{})
 	defer browser.Close()
 	ds := tesco.NewDatasource(browser, &http.Client{})
 	products, err := ds.SearchProducts(t.Context(), "milk")
@@ -117,7 +117,7 @@ func TestProductDetailsIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	browser := scraper.NewBrowser()
+	browser := scraper.NewBrowser(scraper.BrowserConfig{})
 	defer browser.Close()
 	ds := tesco.NewDatasource(browser, &http.Client{})
 	products, err := ds.SearchProducts(t.Context(), "milk")
@@ -139,7 +139,7 @@ func TestBrowseCategoriesIntegration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}
-	browser := scraper.NewBrowser()
+	browser := scraper.NewBrowser(scraper.BrowserConfig{})
 	defer browser.Close()
 	ds := tesco.NewDatasource(browser, &http.Client{})
 
@@ -210,7 +210,7 @@ func tescoWithCookies(t *testing.T) *tesco.Datasource {
 	if len(cookies) == 0 {
 		t.Skip("no cached cookies for tesco")
 	}
-	ds := tesco.NewDatasource(scraper.NewBrowser(), &http.Client{})
+	ds := tesco.NewDatasource(scraper.NewBrowser(scraper.BrowserConfig{}), &http.Client{})
 	ds.SetCookies(cookies)
 	return ds
 }

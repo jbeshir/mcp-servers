@@ -17,7 +17,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	browser := scraper.NewBrowser()
+	browser := scraper.NewBrowser(scraper.Config{ExecPath: os.Getenv("CHROME_EXEC_PATH")})
 	srv := server.NewServer(browser, regionID)
 
 	err = srv.Run()

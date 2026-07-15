@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/auth"
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/client"
@@ -29,9 +30,10 @@ func main() {
 	cached := auth.LoadCachedCookies(logins, store)
 
 	c := client.NewClient(client.Config{
-		Cookies:    cached,
-		LoginFlags: logins,
-		Store:      store,
+		Cookies:        cached,
+		LoginFlags:     logins,
+		Store:          store,
+		ChromeExecPath: os.Getenv("CHROME_EXEC_PATH"),
 	})
 	srv := server.NewServer(c)
 

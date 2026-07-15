@@ -113,6 +113,9 @@ type Config struct {
 	LoginFlags map[datasource.SupermarketID]bool
 	// Store persists cookies obtained via interactive login.
 	Store *auth.CookieStore
+	// ChromeExecPath overrides the Chrome/Chromium binary the shared Browser
+	// launches. See scraper.BrowserConfig.ExecPath for why this may be needed.
+	ChromeExecPath string
 }
 
 // NewClient creates a new client with all supermarket datasources.
@@ -120,7 +123,7 @@ type Config struct {
 // flagged for login but without cached cookies get lazy auth that
 // triggers interactive login on first use.
 func NewClient(cfg Config) *Client {
-	browser := scraper.NewBrowser()
+	browser := scraper.NewBrowser(scraper.BrowserConfig{ExecPath: cfg.ChromeExecPath})
 
 	httpClient := func() *http.Client {
 		return scraper.NewRateLimitedClient(rate.NewLimiter(1, 1))

@@ -27,10 +27,28 @@ const browserRenderTimeout = 30 * time.Second
 // shrink it.
 var tabCloseTimeout = 5 * time.Second
 
+// BrowserConfig holds optional Browser overrides. The zero value uses
+// chromedp's built-in Chrome/Chromium auto-detection.
+type BrowserConfig struct {
+	// ExecPath overrides the Chrome/Chromium binary chromedp launches. Leave
+	// empty to use chromedp's default auto-detection.
+	//
+	// On Linux, snap-packaged Chromium is known to hang indefinitely on both
+	// CDP graceful tab-close and OS-level process reaping when launched as a
+	// descendant of certain parent processes (observed under Claude Desktop's
+	// Electron process tree; confirmed absent when using a non-snap Chrome or
+	// Chromium build). If fetches are hanging, point ExecPath at a non-snap
+	// build (e.g. Google Chrome) rather than relying on the bounded-timeout
+	// recovery path as the default behaviour.
+	ExecPath string
+}
+
 // Browser manages a shared headless Chrome instance for rendering JS-heavy pages.
 // A single browser context is shared across all Fetch calls so that cookies
 // set by one page persist for subsequent requests.
 type Browser struct {
+	execPath string
+
 	allocCtx    context.Context
 	allocCancel context.CancelFunc
 
@@ -51,8 +69,8 @@ type Browser struct {
 }
 
 // NewBrowser creates a new Browser. Call Close when done.
-func NewBrowser() *Browser {
-	return &Browser{}
+func NewBrowser(cfg BrowserConfig) *Browser {
+	return &Browser{execPath: cfg.ExecPath}
 }
 
 // start lazily initialises the browser allocator on first use.
@@ -74,6 +92,9 @@ func (b *Browser) start() {
 				"Chrome/145.0.0.0 Safari/537.36",
 		),
 	)
+	if b.execPath != "" {
+		opts = append(opts, chromedp.ExecPath(b.execPath))
+	}
 	b.allocCtx, b.allocCancel = chromedp.NewExecAllocator(
 		context.Background(), opts...,
 	)
