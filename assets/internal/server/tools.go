@@ -11,12 +11,12 @@ func (s *Server) registerTools() {
 	s.mcpServer.AddTool(mcp.NewTool("list_asset_sources",
 		mcp.WithDescription(
 			"List the registered asset providers and, for each, the upstream sources it serves "+
-				"(icon sets, illustration collections, font families) with license and item count. "+
-				"Returns a human-readable listing plus a structured JSON block. Optionally filter by "+
-				"kind (icon, illustration, font), by provider, or by source. Note: providers and "+
-				"exclude_providers currently only match the offline embedded-* providers. No files are written."),
+				"(icon sets, illustration collections, font families, photo sources, texture/material "+
+				"sets) with license and item count. Returns a human-readable listing plus a structured "+
+				"JSON block. Optionally filter by kind (icon, illustration, font, photo, texture), by "+
+				"provider, or by source."),
 		mcp.WithString("kind",
-			mcp.Description("Restrict to a single asset kind: icon, illustration, or font"),
+			mcp.Description("Restrict to a single asset kind: icon, illustration, font, photo, or texture"),
 		),
 		mcp.WithArray("providers",
 			mcp.Description("Only list these providers (e.g. embedded-icons)"),
@@ -40,9 +40,10 @@ func (s *Server) registerTools() {
 	s.mcpServer.AddTool(mcp.NewTool("search_icons",
 		mcp.WithDescription(
 			"Search vendored icon sets (bootstrap-icons, feather, heroicons, lucide, material-symbols, "+
-				"phosphor, simple-icons, tabler) by name. Returns a text list of hits, each with its "+
-				"composite id (\"<provider>:<local>\", e.g. embedded-icons:lucide/camera) and a set/name "+
-				"label. No files are written; pass a hit's id to get_icon to render it."),
+				"phosphor, simple-icons, tabler) plus Iconify's remote catalogue by name. Returns a text "+
+				"list of hits, each with its composite id (\"<provider>:<local>\", e.g. "+
+				"embedded-icons:lucide/camera) and a set/name label. No files are written; pass a hit's "+
+				"id to get_icon to render it."),
 		mcp.WithString("query",
 			mcp.Required(),
 			mcp.Description("Case-insensitive substring to match against icon names"),
@@ -56,7 +57,7 @@ func (s *Server) registerTools() {
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("providers",
-			mcp.Description("Restrict to these icon providers (currently only embedded-icons)"),
+			mcp.Description("Restrict to these icon providers (embedded-icons, iconify)"),
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("exclude_providers",
@@ -65,6 +66,9 @@ func (s *Server) registerTools() {
 		),
 		mcp.WithNumber("limit",
 			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),
+		),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous search's next_cursor; omit for the first page"),
 		),
 	), s.handleSearchIcons)
 
@@ -118,6 +122,9 @@ func (s *Server) registerTools() {
 		mcp.WithNumber("limit",
 			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),
 		),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous search's next_cursor; omit for the first page"),
+		),
 	), s.handleSearchIllustrations)
 
 	s.mcpServer.AddTool(mcp.NewTool("get_illustration",
@@ -135,9 +142,10 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_fonts",
 		mcp.WithDescription(
-			"Search vendored OFL-1.1 font families by name, slug, or category. Returns a text list of "+
-				"hits, each with its composite id (\"<provider>:<local>\", e.g. embedded-fonts:inter), the "+
-				"family category, and available weights. No files are written; pass a hit's id to get_font."),
+			"Search vendored OFL-1.1 font families plus the Google Fonts catalogue by name, slug, or "+
+				"category. Returns a text list of hits, each with its composite id "+
+				"(\"<provider>:<local>\", e.g. embedded-fonts:inter), the family category, and available "+
+				"weights. No files are written; pass a hit's id to get_font."),
 		mcp.WithString("query",
 			mcp.Required(),
 			mcp.Description("Case-insensitive substring to match against family name, slug, or category"),
@@ -151,7 +159,7 @@ func (s *Server) registerTools() {
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("providers",
-			mcp.Description("Restrict to these font providers (currently only embedded-fonts)"),
+			mcp.Description("Restrict to these font providers (embedded-fonts, googlefonts)"),
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("exclude_providers",
@@ -160,6 +168,9 @@ func (s *Server) registerTools() {
 		),
 		mcp.WithNumber("limit",
 			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),
+		),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous search's next_cursor; omit for the first page"),
 		),
 	), s.handleSearchFonts)
 
@@ -174,14 +185,109 @@ func (s *Server) registerTools() {
 			mcp.Description("Composite font id from search_fonts, e.g. embedded-fonts:inter"),
 		),
 		mcp.WithNumber("weight",
-			mcp.Description("Font weight: 400 or 700 (default: 400; Bebas Neue only has 400)"),
+			mcp.Description("Font weight, e.g. 400 or 700 (default: 400); embedded families offer "+
+				"400/700, Google Fonts families vary"),
 		),
 		mcp.WithString("style",
-			mcp.Description("Font style; only \"normal\" is available (default: normal)"),
+			mcp.Description("Font style: \"normal\" or \"italic\" (default: normal); availability depends on the family"),
 		),
 		mcp.WithString("format",
 			mcp.Description("Output format: \"woff2\" (default) or \"css\" to also emit an @font-face snippet"),
 		),
 		mcp.WithOutputSchema[fileManifest](),
 	), s.handleGetFont)
+
+	s.mcpServer.AddTool(mcp.NewTool("search_photos",
+		mcp.WithDescription(
+			"Search keyless Openverse CC-licensed photos by name. Returns a text list of hits, each "+
+				"with its composite id (\"<provider>:<local>\") and a source/title label. No files are "+
+				"written; pass a hit's id to get_photo to fetch it."),
+		mcp.WithString("query",
+			mcp.Required(),
+			mcp.Description("Case-insensitive substring to match against photo titles"),
+		),
+		mcp.WithArray("sources",
+			mcp.Description("Restrict to these upstream sources (see list_asset_sources for names)"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("exclude_sources",
+			mcp.Description("Omit these upstream sources"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("providers",
+			mcp.Description("Restrict to these photo providers"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("exclude_providers",
+			mcp.Description("Omit these photo providers"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithNumber("limit",
+			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),
+		),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous search's next_cursor; omit for the first page"),
+		),
+	), s.handleSearchPhotos)
+
+	s.mcpServer.AddTool(mcp.NewTool("get_photo",
+		mcp.WithDescription(
+			"Fetch a photo by composite id and write it to disk. The id is the composite identifier "+
+				"from search_photos, formatted \"<provider>:<local>\"."),
+		mcp.WithString("id",
+			mcp.Required(),
+			mcp.Description("Composite photo id from search_photos"),
+		),
+		mcp.WithOutputSchema[fileManifest](),
+	), s.handleGetPhoto)
+
+	s.mcpServer.AddTool(mcp.NewTool("search_textures",
+		mcp.WithDescription(
+			"Search keyless CC0 ambientCG PBR material sets by name. Returns a text list of hits, "+
+				"each with its composite id (\"<provider>:<local>\") and a source/title label. No files "+
+				"are written; pass a hit's id to get_texture to fetch it."),
+		mcp.WithString("query",
+			mcp.Required(),
+			mcp.Description("Case-insensitive substring to match against material names"),
+		),
+		mcp.WithArray("sources",
+			mcp.Description("Restrict to these upstream sources (see list_asset_sources for names)"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("exclude_sources",
+			mcp.Description("Omit these upstream sources"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("providers",
+			mcp.Description("Restrict to these texture providers"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("exclude_providers",
+			mcp.Description("Omit these texture providers"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithNumber("limit",
+			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),
+		),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous search's next_cursor; omit for the first page"),
+		),
+	), s.handleSearchTextures)
+
+	s.mcpServer.AddTool(mcp.NewTool("get_texture",
+		mcp.WithDescription(
+			"Fetch a PBR material archive (a zip of texture maps) and write it to disk. The id is the "+
+				"composite identifier from search_textures, formatted \"<provider>:<local>\"."),
+		mcp.WithString("id",
+			mcp.Required(),
+			mcp.Description("Composite texture id from search_textures"),
+		),
+		mcp.WithString("resolution",
+			mcp.Description("Texture resolution, e.g. 1K, 2K, 4K (default: 1K)"),
+		),
+		mcp.WithString("format",
+			mcp.Description("Texture map format, e.g. JPG, PNG (default: JPG)"),
+		),
+		mcp.WithOutputSchema[fileManifest](),
+	), s.handleGetTexture)
 }

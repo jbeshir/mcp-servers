@@ -24,11 +24,21 @@ type FontFetchOpts struct {
 	Style  string
 }
 
+// PhotoFetchOpts carries the (currently empty) fetch parameters for a photo. Photos are fetched by id
+// with no render parameters; the typed opts keeps the per-kind Fetch signature uniform.
+type PhotoFetchOpts struct{}
+
+// TextureFetchOpts selects which material archive to download. Zero values resolve to 1K/JPG.
+type TextureFetchOpts struct {
+	Resolution string
+	Format     string
+}
+
 // IconProvider serves icon assets. Search finds icons; Fetch materializes one from its provider-local
 // id (the local half of a composite Asset.ID), rendered per the typed opts.
 type IconProvider interface {
 	Provider
-	Search(ctx context.Context, opts SearchOpts) ([]Asset, error)
+	Search(ctx context.Context, opts SearchOpts) (SearchResult, error)
 	Fetch(ctx context.Context, id string, opts IconFetchOpts) (Blob, error)
 }
 
@@ -36,7 +46,7 @@ type IconProvider interface {
 // takes only the provider-local id.
 type IllustrationProvider interface {
 	Provider
-	Search(ctx context.Context, opts SearchOpts) ([]Asset, error)
+	Search(ctx context.Context, opts SearchOpts) (SearchResult, error)
 	Fetch(ctx context.Context, id string) (Blob, error)
 }
 
@@ -44,8 +54,25 @@ type IllustrationProvider interface {
 // selectors in FontFetchOpts.
 type FontProvider interface {
 	Provider
-	Search(ctx context.Context, opts SearchOpts) ([]Asset, error)
+	Search(ctx context.Context, opts SearchOpts) (SearchResult, error)
 	Fetch(ctx context.Context, id string, opts FontFetchOpts) (Blob, error)
+}
+
+// PhotoProvider serves photo assets. Photos have no render parameters, so Fetch takes the
+// provider-local id plus the (empty) PhotoFetchOpts, kept for signature uniformity with the other
+// per-kind Fetch methods.
+type PhotoProvider interface {
+	Provider
+	Search(ctx context.Context, opts SearchOpts) (SearchResult, error)
+	Fetch(ctx context.Context, id string, opts PhotoFetchOpts) (Blob, error)
+}
+
+// TextureProvider serves texture assets. Fetch takes the provider-local id plus the resolution/format
+// selectors in TextureFetchOpts.
+type TextureProvider interface {
+	Provider
+	Search(ctx context.Context, opts SearchOpts) (SearchResult, error)
+	Fetch(ctx context.Context, id string, opts TextureFetchOpts) (Blob, error)
 }
 
 // FontFaceRenderer is an optional capability a FontProvider may implement to render an @font-face CSS

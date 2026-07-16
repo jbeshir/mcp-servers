@@ -12,3 +12,5 @@ packages:
       IconProvider:
       IllustrationProvider:
       FontProvider:
+      PhotoProvider:
+      TextureProvider:

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
@@ -11,10 +12,12 @@ import (
 )
 
 const (
-	defaultFontWeight = 400
-	defaultFontStyle  = "normal"
-	cssFormat         = "css"
-	simpleIconsSet    = "simple-icons"
+	defaultFontWeight        = 400
+	defaultFontStyle         = "normal"
+	cssFormat                = "css"
+	simpleIconsSet           = "simple-icons"
+	defaultTextureResolution = "1K"
+	defaultTextureFormat     = "JPG"
 )
 
 // stringArg reads a string argument, defaulting to "" if absent or of the wrong type.
@@ -71,9 +74,29 @@ func sanitizeFilename(s string) string {
 	}, s)
 }
 
-// searchResult renders a search header plus one line per hit (or a "no matches" note) and appends a
-// note naming any providers that degraded during the aggregate search.
-func searchResult(header string, lines []string, warns []assetcore.Warning) *mcp.CallToolResult {
+// sanitizeSuffixedFilename sanitizes prefix+name's stem while preserving name's extension. It is for the
+// kinds (photo, texture) whose Blob.Filename already carries a provider-supplied extension, unlike icon/
+// illustration/font where the extension is hardcoded and appended after sanitizing the stem.
+func sanitizeSuffixedFilename(prefix, name string) string {
+	ext := filepath.Ext(name)
+	stem := strings.TrimSuffix(name, ext)
+
+	return sanitizeFilename(prefix+stem) + ext
+}
+
+// sourceTitleLines renders one "id — source/title" line per asset.
+func sourceTitleLines(assets []assetcore.Asset) []string {
+	lines := make([]string, 0, len(assets))
+	for _, a := range assets {
+		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
+	}
+	return lines
+}
+
+// searchResult renders a search header plus one line per hit (or a "no matches" note), a next_cursor
+// line when nextCursor is non-empty, and a note naming any providers that degraded during the
+// aggregate search.
+func searchResult(header string, lines []string, nextCursor string, warns []assetcore.Warning) *mcp.CallToolResult {
 	var b strings.Builder
 	b.WriteString(header)
 
@@ -82,6 +105,10 @@ func searchResult(header string, lines []string, warns []assetcore.Warning) *mcp
 	} else {
 		b.WriteString("\n")
 		b.WriteString(strings.Join(lines, "\n"))
+	}
+
+	if nextCursor != "" {
+		fmt.Fprintf(&b, "\nnext_cursor: %s", nextCursor)
 	}
 
 	if len(warns) > 0 {
@@ -226,19 +253,17 @@ func (s *Server) handleSearchIcons(
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	assets, warns := s.registry.SearchIcons(ctx, assetcore.SearchOpts{
+	assets, nextCursor, warns := s.registry.SearchIcons(ctx, assetcore.SearchOpts{
 		Query:     query,
+		Cursor:    stringArg(args, "cursor"),
 		Limit:     intArg(args, "limit", 0),
 		Sources:   filterArg(args, "sources", "exclude_sources"),
 		Providers: filterArg(args, "providers", "exclude_providers"),
 	})
 
-	lines := make([]string, 0, len(assets))
-	for _, a := range assets {
-		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
-	}
+	lines := sourceTitleLines(assets)
 
-	return searchResult(fmt.Sprintf("%d icon(s) matching %q:", len(assets), query), lines, warns), nil
+	return searchResult(fmt.Sprintf("%d icon(s) matching %q:", len(assets), query), lines, nextCursor, warns), nil
 }
 
 func (s *Server) handleGetIcon(
@@ -300,19 +325,19 @@ func (s *Server) handleSearchIllustrations(
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	assets, warns := s.registry.SearchIllustrations(ctx, assetcore.SearchOpts{
+	assets, nextCursor, warns := s.registry.SearchIllustrations(ctx, assetcore.SearchOpts{
 		Query:     query,
+		Cursor:    stringArg(args, "cursor"),
 		Limit:     intArg(args, "limit", 0),
 		Sources:   filterArg(args, "sources", "exclude_sources"),
 		Providers: filterArg(args, "providers", "exclude_providers"),
 	})
 
-	lines := make([]string, 0, len(assets))
-	for _, a := range assets {
-		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
-	}
+	lines := sourceTitleLines(assets)
 
-	return searchResult(fmt.Sprintf("%d illustration(s) matching %q:", len(assets), query), lines, warns), nil
+	return searchResult(
+		fmt.Sprintf("%d illustration(s) matching %q:", len(assets), query), lines, nextCursor, warns,
+	), nil
 }
 
 func (s *Server) handleGetIllustration(
@@ -358,8 +383,9 @@ func (s *Server) handleSearchFonts(
 		return mcp.NewToolResultError("query is required"), nil
 	}
 
-	assets, warns := s.registry.SearchFonts(ctx, assetcore.SearchOpts{
+	assets, nextCursor, warns := s.registry.SearchFonts(ctx, assetcore.SearchOpts{
 		Query:     query,
+		Cursor:    stringArg(args, "cursor"),
 		Limit:     intArg(args, "limit", 0),
 		Sources:   filterArg(args, "sources", "exclude_sources"),
 		Providers: filterArg(args, "providers", "exclude_providers"),
@@ -373,7 +399,9 @@ func (s *Server) handleSearchFonts(
 		))
 	}
 
-	return searchResult(fmt.Sprintf("%d font family(-ies) matching %q:", len(assets), query), lines, warns), nil
+	return searchResult(
+		fmt.Sprintf("%d font family(-ies) matching %q:", len(assets), query), lines, nextCursor, warns,
+	), nil
 }
 
 func (s *Server) handleGetFont(
@@ -439,4 +467,124 @@ func (s *Server) handleGetFont(
 	}
 
 	return newFileResult(summary, files)
+}
+
+func (s *Server) handleSearchPhotos(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	args := request.GetArguments()
+
+	query := stringArg(args, "query")
+	if query == "" {
+		return mcp.NewToolResultError("query is required"), nil
+	}
+
+	assets, nextCursor, warns := s.registry.SearchPhotos(ctx, assetcore.SearchOpts{
+		Query:     query,
+		Cursor:    stringArg(args, "cursor"),
+		Limit:     intArg(args, "limit", 0),
+		Sources:   filterArg(args, "sources", "exclude_sources"),
+		Providers: filterArg(args, "providers", "exclude_providers"),
+	})
+
+	lines := sourceTitleLines(assets)
+
+	return searchResult(fmt.Sprintf("%d photo(s) matching %q:", len(assets), query), lines, nextCursor, warns), nil
+}
+
+func (s *Server) handleGetPhoto(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	args := request.GetArguments()
+
+	id := stringArg(args, "id")
+	if id == "" {
+		return mcp.NewToolResultError("id is required"), nil
+	}
+
+	blob, err := s.registry.FetchPhoto(ctx, id, assetcore.PhotoFetchOpts{})
+	if err != nil {
+		if errors.Is(err, assetcore.ErrNotFound) {
+			return mcp.NewToolResultError("photo not found: " + id), nil
+		}
+
+		return nil, fmt.Errorf("get photo %s: %w", id, err)
+	}
+
+	filename := sanitizeSuffixedFilename("photo-", blob.Filename)
+
+	path, err := writeAsset(s.outputDir, filename, blob.Content)
+	if err != nil {
+		return nil, fmt.Errorf("write photo %s: %w", id, err)
+	}
+
+	return newFileResult(fmt.Sprintf("Wrote photo %s to %s", id, path), []manifestFile{manifestFileFor(path, blob)})
+}
+
+func (s *Server) handleSearchTextures(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	args := request.GetArguments()
+
+	query := stringArg(args, "query")
+	if query == "" {
+		return mcp.NewToolResultError("query is required"), nil
+	}
+
+	assets, nextCursor, warns := s.registry.SearchTextures(ctx, assetcore.SearchOpts{
+		Query:     query,
+		Cursor:    stringArg(args, "cursor"),
+		Limit:     intArg(args, "limit", 0),
+		Sources:   filterArg(args, "sources", "exclude_sources"),
+		Providers: filterArg(args, "providers", "exclude_providers"),
+	})
+
+	lines := sourceTitleLines(assets)
+
+	return searchResult(fmt.Sprintf("%d texture(s) matching %q:", len(assets), query), lines, nextCursor, warns), nil
+}
+
+func (s *Server) handleGetTexture(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	args := request.GetArguments()
+
+	id := stringArg(args, "id")
+	if id == "" {
+		return mcp.NewToolResultError("id is required"), nil
+	}
+
+	resolution := stringArg(args, "resolution")
+	if resolution == "" {
+		resolution = defaultTextureResolution
+	}
+
+	format := stringArg(args, "format")
+	if format == "" {
+		format = defaultTextureFormat
+	}
+
+	blob, err := s.registry.FetchTexture(ctx, id, assetcore.TextureFetchOpts{Resolution: resolution, Format: format})
+	if err != nil {
+		if errors.Is(err, assetcore.ErrNotFound) {
+			return mcp.NewToolResultError(
+				fmt.Sprintf("texture not found: %s resolution=%s format=%s", id, resolution, format),
+			), nil
+		}
+
+		return nil, fmt.Errorf("get texture %s: %w", id, err)
+	}
+
+	filename := sanitizeSuffixedFilename("", blob.Filename)
+
+	path, err := writeAsset(s.outputDir, filename, blob.Content)
+	if err != nil {
+		return nil, fmt.Errorf("write texture %s: %w", id, err)
+	}
+
+	return newFileResult(fmt.Sprintf("Wrote texture %s to %s", id, path), []manifestFile{manifestFileFor(path, blob)})
 }

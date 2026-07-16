@@ -2,14 +2,19 @@ package assetcore
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 )
 
 // searchProviderTimeout bounds each provider's Search during a fan-out so one slow provider cannot
 // stall the aggregate. Embedded providers are in-process and never approach it; it is set generously
-// for the remote providers a later PR will add, which can legitimately be slow.
+// for the remote providers (iconify, googlefonts, openverse, ambientcg), which can legitimately be slow.
 const searchProviderTimeout = 30 * time.Second
+
+// cursorProvider names the pseudo-provider a Warning is attributed to when the aggregate cursor
+// itself, rather than any single provider, is at fault.
+const cursorProvider = "cursor"
 
 // Warning records a single provider degrading during an aggregate search: its results are dropped
 // but the search as a whole still returns, mirroring Openverse's warnings[] envelope.
@@ -18,32 +23,41 @@ type Warning struct {
 	Err      string
 }
 
-// SearchIcons fans out across the icon providers allowed by opts.Providers and merges the results.
-func (r *Registry) SearchIcons(ctx context.Context, opts SearchOpts) ([]Asset, []Warning) {
-	provs := allowedProviders(r.Icons(), opts.Providers)
-
-	return fanOutSearch(ctx, provs, func(c context.Context, p IconProvider) ([]Asset, error) {
-		return p.Search(c, opts)
-	})
+// SearchIcons fans out across the icon providers named in opts.Cursor (or, on a first page, all
+// providers allowed by opts.Providers) and merges the results.
+func (r *Registry) SearchIcons(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
+	return aggregateSearch(ctx, r.Icons(), opts)
 }
 
-// SearchIllustrations fans out across the illustration providers allowed by opts.Providers and merges
-// the results.
-func (r *Registry) SearchIllustrations(ctx context.Context, opts SearchOpts) ([]Asset, []Warning) {
-	provs := allowedProviders(r.Illustrations(), opts.Providers)
-
-	return fanOutSearch(ctx, provs, func(c context.Context, p IllustrationProvider) ([]Asset, error) {
-		return p.Search(c, opts)
-	})
+// SearchIllustrations fans out across the illustration providers named in opts.Cursor (or, on a first
+// page, all providers allowed by opts.Providers) and merges the results.
+func (r *Registry) SearchIllustrations(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
+	return aggregateSearch(ctx, r.Illustrations(), opts)
 }
 
-// SearchFonts fans out across the font providers allowed by opts.Providers and merges the results.
-func (r *Registry) SearchFonts(ctx context.Context, opts SearchOpts) ([]Asset, []Warning) {
-	provs := allowedProviders(r.Fonts(), opts.Providers)
+// SearchFonts fans out across the font providers named in opts.Cursor (or, on a first page, all
+// providers allowed by opts.Providers) and merges the results.
+func (r *Registry) SearchFonts(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
+	return aggregateSearch(ctx, r.Fonts(), opts)
+}
 
-	return fanOutSearch(ctx, provs, func(c context.Context, p FontProvider) ([]Asset, error) {
-		return p.Search(c, opts)
-	})
+// SearchPhotos fans out across the photo providers named in opts.Cursor (or, on a first page, all
+// providers allowed by opts.Providers) and merges the results.
+func (r *Registry) SearchPhotos(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
+	return aggregateSearch(ctx, r.Photos(), opts)
+}
+
+// SearchTextures fans out across the texture providers named in opts.Cursor (or, on a first page, all
+// providers allowed by opts.Providers) and merges the results.
+func (r *Registry) SearchTextures(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
+	return aggregateSearch(ctx, r.Textures(), opts)
+}
+
+// searchable is the constraint aggregateSearch and recoveringSearch need: a Provider that can also
+// Search. Every per-kind provider interface already satisfies it.
+type searchable interface {
+	Provider
+	Search(context.Context, SearchOpts) (SearchResult, error)
 }
 
 // allowedProviders returns the subset of provs whose Name the filter allows, preserving order. An
@@ -63,16 +77,36 @@ func allowedProviders[P Provider](provs []P, f Filter) []P {
 	return out
 }
 
-// fanOutSearch runs search concurrently across provs with a per-provider timeout, collecting a
-// Warning for each provider that errors instead of failing the whole search, then merges the
-// surviving results in provider order. It is generic over the per-kind provider types so the three
-// SearchX methods share one implementation.
-func fanOutSearch[P Provider](
+// aggregateSearch runs search concurrently across the providers targeted by opts.Cursor, merges their
+// hits, and encodes their NextCursor values into the single opaque cursor a caller passes back for the
+// next page. On a first page (opts.Cursor == "") every provider allowed by opts.Providers is queried;
+// on a continuation, only the providers named as keys in the decoded cursor are queried, each with its
+// own per-provider cursor restored into a copy of opts. A malformed cursor is reported as a Warning
+// with an empty result rather than an error, matching the degrade-not-fail shape of a provider fault.
+//
+// A provider that errors is always reported as a Warning. If it was mid-pagination (its incoming
+// cursor was non-empty) its incoming cursor is carried forward into the returned cursor so the next
+// page retries it from where it was, rather than silently dropping it for the rest of the session; a
+// first-page failure degrades to a Warning only, since a fresh search re-queries every provider.
+//
+// Cross-page dedup is best-effort only: merge dedups within a single aggregateSearch call by (Source,
+// Title), but nothing tracks identities already surfaced on an earlier page. The remote providers
+// paginate, so a logical asset that shifts between two providers' pages across calls can reappear; this
+// is a known limitation, accepted as best-effort.
+func aggregateSearch[P searchable](
 	ctx context.Context,
-	provs []P,
-	search func(context.Context, P) ([]Asset, error),
-) ([]Asset, []Warning) {
-	results := make([][]Asset, len(provs))
+	all []P,
+	opts SearchOpts,
+) ([]Asset, string, []Warning) {
+	prevCursors, err := decodeCursor(opts.Cursor)
+	if err != nil {
+		return nil, "", []Warning{{Provider: cursorProvider, Err: fmt.Sprintf("invalid cursor: %v", err)}}
+	}
+
+	targets := targetProviders(all, opts.Providers, prevCursors)
+
+	results := make([][]Asset, len(targets))
+	nextCursors := make(map[string]string)
 	warns := make([]Warning, 0)
 
 	var (
@@ -80,30 +114,79 @@ func fanOutSearch[P Provider](
 		mu sync.Mutex
 	)
 
-	for i, p := range provs {
+	for i, p := range targets {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 
+			providerOpts := opts
+			providerOpts.Cursor = prevCursors[p.Name()]
+
 			cctx, cancel := context.WithTimeout(ctx, searchProviderTimeout)
 			defer cancel()
 
-			assets, err := search(cctx, p)
+			res, err := recoveringSearch(cctx, p, providerOpts)
 			if err != nil {
 				mu.Lock()
 				warns = append(warns, Warning{Provider: p.Name(), Err: err.Error()})
+				// A provider mid-pagination (non-empty incoming cursor) carries that cursor forward so the
+				// next page retries it from where it was, rather than dropping it for the rest of the
+				// session. A first-page failure (empty incoming cursor) stays dropped: a fresh search
+				// re-queries every provider, so nothing is lost by omitting it.
+				if providerOpts.Cursor != "" {
+					nextCursors[p.Name()] = providerOpts.Cursor
+				}
 				mu.Unlock()
 
 				return
 			}
 
-			results[i] = assets
+			results[i] = res.Assets
+			if res.NextCursor != "" {
+				mu.Lock()
+				nextCursors[p.Name()] = res.NextCursor
+				mu.Unlock()
+			}
 		}()
 	}
 
 	wg.Wait()
 
-	return merge(results), warns
+	return merge(results), encodeCursor(nextCursors), warns
+}
+
+// targetProviders selects which providers an aggregateSearch call queries: every provider allowed by f
+// on a first page (empty prevCursors), or only those named as keys in prevCursors on a continuation.
+func targetProviders[P Provider](all []P, f Filter, prevCursors map[string]string) []P {
+	if len(prevCursors) == 0 {
+		return allowedProviders(all, f)
+	}
+
+	targets := make([]P, 0, len(prevCursors))
+	for _, p := range all {
+		if _, ok := prevCursors[p.Name()]; ok {
+			targets = append(targets, p)
+		}
+	}
+
+	return targets
+}
+
+// recoveringSearch calls search and converts a panic inside it into an error, so one misbehaving
+// provider cannot crash the whole fan-out; the caller turns the error into a Warning like any other
+// provider failure.
+func recoveringSearch[P searchable](
+	ctx context.Context,
+	p P,
+	opts SearchOpts,
+) (res SearchResult, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("panic: %v", r)
+		}
+	}()
+
+	return p.Search(ctx, opts)
 }
 
 // merge concatenates lists in provider order, deduping by logical identity (Source, Title) so the
@@ -111,8 +194,13 @@ func fanOutSearch[P Provider](
 // not compose across providers because the composite ID embeds the provider name, so the same logical
 // asset carries a different ID per provider.
 func merge(lists [][]Asset) []Asset {
-	seen := make(map[string]bool)
-	var out []Asset
+	total := 0
+	for _, list := range lists {
+		total += len(list)
+	}
+
+	seen := make(map[string]bool, total)
+	out := make([]Asset, 0, total)
 
 	for _, list := range lists {
 		for _, a := range list {

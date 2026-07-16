@@ -1,0 +1,2377 @@
+[
+  {
+    "family": "Roboto",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Open Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Inter",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Google Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Montserrat",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Poppins",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans JP",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Roboto Mono",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Lato",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "DM Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Playfair Display",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Arimo",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Roboto Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Black Ops One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Saira",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Ubuntu",
+    "category": "sans-serif",
+    "license": "UFL-1.0"
+  },
+  {
+    "family": "Oswald",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Manrope",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Share Tech",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Smooch Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Mulish",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Raleway",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Figtree",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Archivo Black",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Nunito Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Nunito",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Heebo",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Merriweather",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Fira Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Barlow",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Changa One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Libre Franklin",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Rubik",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Prompt",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Roboto Slab",
+    "category": "serif",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Noto Sans TC",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Space Grotesk",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "EB Garamond",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Kanit",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans KR",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Alfa Slab One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Cabin",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Work Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Roboto Flex",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "JetBrains Mono",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Schibsted Grotesk",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Dosis",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Nanum Gothic",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Sora",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Bitter",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Bebas Neue",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "IBM Plex Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "M PLUS Rounded 1c",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Hind Siliguri",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Outfit",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Telugu",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Jost",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Mukta",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Color Emoji",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "PT Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Serif",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Fjalla One",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Anek Telugu",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Rajdhani",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Serif JP",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Urbanist",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Bricolage Grotesque",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Orbitron",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Instrument Serif",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Lilita One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Oxygen",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Overpass",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Fredoka",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Lora",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Exo 2",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Geist",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Crimson Text",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Libre Baskerville",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Lobster Two",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Quicksand",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Josefin Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Fraunces",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Source Sans 3",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "DM Serif Display",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Slabo 27px",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Source Code Pro",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Source Serif 4",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Plus Jakarta Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "IBM Plex Mono",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Bungee",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Arabic",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Tajawal",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Inter Tight",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Barlow Semi Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "PT Sans Narrow",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Cormorant Garamond",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Merriweather Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Arvo",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Karla",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Anton",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Inconsolata",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Instrument Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Cinzel",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Abel",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Lobster",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Archivo",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Teko",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "M PLUS 1p",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "PT Serif",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Thai",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Google Sans Flex",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Newsreader",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Titillium Web",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Ramabhadra",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Geist Mono",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Asap",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Caveat",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Almarai",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Chakra Petch",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans SC",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Comfortaa",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Lexend Deca",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Zen Kaku Gothic New",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Bodoni Moda",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Dancing Script",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Abril Fatface",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Questrial",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Hanken Grotesk",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Maven Pro",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Blinker",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "DM Mono",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Shadows Into Light",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Alumni Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Zilla Slab",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Exo",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Pacifico",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Gravitas One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "ABeeZee",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Space Mono",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Domine",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Marcellus",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Geologica",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Varela Round",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Public Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Epilogue",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Be Vietnam Pro",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Archivo Narrow",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Sofia Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Barlow Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Kalam",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Cormorant",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Satisfy",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Albert Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "League Spartan",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Rethink Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Nanum Myeongjo",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Onest",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Great Vibes",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Spectral",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Yanone Kaffeesatz",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Saira Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "IBM Plex Serif",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Cairo",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Frank Ruhl Libre",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Serif SC",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Serif TC",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Sarabun",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Lexend",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Zen Maru Gothic",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Indie Flower",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Serif KR",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Syne",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Unbounded",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Roboto Serif",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Assistant",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Permanent Marker",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Play",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Amiri",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Red Hat Display",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "IBM Plex Sans Arabic",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Crimson Pro",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Encode Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Tamil",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Luckiest Guy",
+    "category": "display",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Alegreya Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Vollkorn",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Fira Sans Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Nastaliq Urdu",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Literata",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Press Start 2P",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "News Cycle",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Atkinson Hyperlegible",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Kufi Arabic",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Signika",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Montserrat Alternates",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Rowdies",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Catamaran",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Khmer",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Unna",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Righteous",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Hammersmith One",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "DM Serif Text",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Advent Pro",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Fira Code",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Titan One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Russo One",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Libre Barcode 39",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Baskervville",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Cardo",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Yellowtail",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Readex Pro",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Gothic A1",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Shippori Mincho",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Tinos",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Viga",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Bree Serif",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Alegreya",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Hind",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Courier Prime",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Acme",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Asap Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Khand",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Devanagari",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Display",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Prata",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Amatic SC",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Antic Slab",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Red Hat Text",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Kumbh Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Bangers",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "LINE Seed JP",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Baloo 2",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Sawarabi Mincho",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Alata",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Aleo",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Tenor Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Sawarabi Gothic",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Playfair",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Naskh Arabic",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Lexend Giga",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Special Elite",
+    "category": "display",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Hind Madurai",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Crete Round",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Changa",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Rubik Mono One",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Passion One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Martel",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Mono",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "League Gothic",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Creepster",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Patua One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Chivo",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Old Standard TT",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noticia Text",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Allura",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Zeyada",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Courgette",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Cantarell",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Comic Neue",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Share Tech Mono",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "BIZ UDPGothic",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Libre Caslon Text",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "VT323",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Zen Old Mincho",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Sofia Sans Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Golos Text",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Kaushan Script",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Actor",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Fugaz One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Sacramento",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Bevan",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Yantramanav",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "PT Sans Caption",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Signika Negative",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "STIX Two Text",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Bengali",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Philosopher",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "IBM Plex Sans Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Unica One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Quattrocento",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Gruppo",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Paytone One",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Kosugi Maru",
+    "category": "sans-serif",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Sen",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Nanum Gothic Coding",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Angkor",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Francois One",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Patrick Hand",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Sanchez",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Cookie",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Kameron",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Rokkitt",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Gelasio",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Oxanium",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Neuton",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Mitr",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Google Sans Code",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Antonio",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Commissioner",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Hebrew",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "PT Mono",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Berkshire Swash",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Chelsea Market",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Oleo Script",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Alexandria",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Ubuntu Condensed",
+    "category": "sans-serif",
+    "license": "UFL-1.0"
+  },
+  {
+    "family": "Didact Gothic",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Eater",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Chango",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Playfair Display SC",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Josefin Slab",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Lustria",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Radio Canada",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Amaranth",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Libre Bodoni",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Rock Salt",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Concert One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Forum",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Tangerine",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Rammetto One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Goldman",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Poiret One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Gilda Display",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Bai Jamjuree",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Encode Sans Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Gabarito",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Staatliches",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "M PLUS 1",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Krub",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Pathway Gothic One",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Quattrocento Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans HK",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Playball",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Parisienne",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Alex Brush",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Jura",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Monoton",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Michroma",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Italianno",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Homemade Apple",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Gloria Hallelujah",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Lusitana",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Audiowide",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Hind Guntur",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Monda",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Jua",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Pinyon Script",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Serif Bengali",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Ubuntu Sans",
+    "category": "sans-serif",
+    "license": "UFL-1.0"
+  },
+  {
+    "family": "Glegoo",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "El Messiri",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Black Han Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Architects Daughter",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Merienda",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Quantico",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Saira Extra Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Ropa Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Abhaya Libre",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Malayalam",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Saira Semi Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Dela Gothic One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Vazirmatn",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Mona Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Fira Sans Extra Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Sorts Mill Goudy",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Sofia Sans Extra Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Cinzel Decorative",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Belleza",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Biryani",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Istok Web",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Arsenal",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Yeseva One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Reenie Beanie",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Faustina",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Serif Display",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Caveat Brush",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Nanum Pen Script",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Cormorant Infant",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Petrona",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Volkhov",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Alice",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "GFS Didot",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Jersey 25",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Mr Dafoe",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Anonymous Pro",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Bowlby One SC",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Lalezar",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Anek Latin",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Mada",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Hind Vadodara",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Vidaloka",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Suez One",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Afacad",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Eczar",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Familjen Grotesk",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Ubuntu Mono",
+    "category": "monospace",
+    "license": "UFL-1.0"
+  },
+  {
+    "family": "Squada One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Racing Sans One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Fira Mono",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Averia Serif Libre",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Taviraj",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Mandali",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Varela",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Syncopate",
+    "category": "sans-serif",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Cuprum",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Reddit Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Ultra",
+    "category": "serif",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Cousine",
+    "category": "monospace",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Zen Kaku Gothic Antique",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Nothing You Could Do",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "IBM Plex Sans Thai",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Economica",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Georama",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "MuseoModerno",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Symbols",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Shippori Mincho B1",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Mukta Malar",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Pragati Narrow",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Besley",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Palanquin",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Gantari",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Belanosima",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Bad Script",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Wix Madefor Display",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Pridi",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Calistoga",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Amita",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Marck Script",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Pangolin",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Arapey",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Dongle",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Host Grotesk",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Delius",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Noto Sans Myanmar",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Gochi Hand",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Kaisei Decol",
+    "category": "serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Akshar",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Martel Sans",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "M PLUS 2",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Niramit",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Anek Bangla",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Cabin Condensed",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Khula",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Pirata One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Ms Madi",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Carter One",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Six Caps",
+    "category": "sans-serif",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Londrina Solid",
+    "category": "display",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Sofia",
+    "category": "handwriting",
+    "license": "OFL-1.1"
+  },
+  {
+    "family": "Aclonica",
+    "category": "sans-serif",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Calligraffitti",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Cherry Cream Soda",
+    "category": "display",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Chewy",
+    "category": "display",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Coming Soon",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Crafty Girls",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Crushed",
+    "category": "display",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Fontdiner Swanky",
+    "category": "display",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Irish Grover",
+    "category": "display",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Just Another Hand",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Kosugi",
+    "category": "sans-serif",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Kranky",
+    "category": "display",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Maiden Orange",
+    "category": "serif",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Montez",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Mountains of Christmas",
+    "category": "display",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Rancho",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Redressed",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Rochester",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Schoolbell",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Slackey",
+    "category": "display",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Smokum",
+    "category": "display",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Sunshiney",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Ubuntu Sans Mono",
+    "category": "monospace",
+    "license": "UFL-1.0"
+  },
+  {
+    "family": "Unkempt",
+    "category": "display",
+    "license": "Apache-2.0"
+  },
+  {
+    "family": "Walter Turncoat",
+    "category": "handwriting",
+    "license": "Apache-2.0"
+  }
+]
