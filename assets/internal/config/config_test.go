@@ -81,6 +81,56 @@ func TestLoadConfigDisableRemoteDefaultsFalse(t *testing.T) {
 	}
 }
 
+func TestLoadConfigHonorsKeyedProviderEnv(t *testing.T) {
+	t.Setenv(envUnsplashAccessKey, "unsplash-key")
+	t.Setenv(envPixabayKey, "pixabay-key")
+	t.Setenv(envPexelsKey, "pexels-key")
+	t.Setenv(envPolyPizzaKey, "polypizza-key")
+	t.Setenv(envPolyHavenEnable, "1")
+
+	cfg := LoadConfig()
+	if cfg.UnsplashAccessKey != "unsplash-key" {
+		t.Errorf("LoadConfig().UnsplashAccessKey = %q, want %q", cfg.UnsplashAccessKey, "unsplash-key")
+	}
+	if cfg.PixabayKey != "pixabay-key" {
+		t.Errorf("LoadConfig().PixabayKey = %q, want %q", cfg.PixabayKey, "pixabay-key")
+	}
+	if cfg.PexelsKey != "pexels-key" {
+		t.Errorf("LoadConfig().PexelsKey = %q, want %q", cfg.PexelsKey, "pexels-key")
+	}
+	if cfg.PolyPizzaKey != "polypizza-key" {
+		t.Errorf("LoadConfig().PolyPizzaKey = %q, want %q", cfg.PolyPizzaKey, "polypizza-key")
+	}
+	if !cfg.PolyHavenEnable {
+		t.Errorf("LoadConfig().PolyHavenEnable = false, want true")
+	}
+}
+
+func TestLoadConfigKeyedProviderEnvDefaultsEmpty(t *testing.T) {
+	t.Setenv(envUnsplashAccessKey, "")
+	t.Setenv(envPixabayKey, "")
+	t.Setenv(envPexelsKey, "")
+	t.Setenv(envPolyPizzaKey, "")
+	t.Setenv(envPolyHavenEnable, "")
+
+	cfg := LoadConfig()
+	if cfg.UnsplashAccessKey != "" {
+		t.Errorf("LoadConfig().UnsplashAccessKey = %q, want empty", cfg.UnsplashAccessKey)
+	}
+	if cfg.PixabayKey != "" {
+		t.Errorf("LoadConfig().PixabayKey = %q, want empty", cfg.PixabayKey)
+	}
+	if cfg.PexelsKey != "" {
+		t.Errorf("LoadConfig().PexelsKey = %q, want empty", cfg.PexelsKey)
+	}
+	if cfg.PolyPizzaKey != "" {
+		t.Errorf("LoadConfig().PolyPizzaKey = %q, want empty", cfg.PolyPizzaKey)
+	}
+	if cfg.PolyHavenEnable {
+		t.Errorf("LoadConfig().PolyHavenEnable = true, want false")
+	}
+}
+
 var embeddedProviderNames = []string{"embedded-icons", "embedded-illustrations", "embedded-fonts"}
 
 var remoteProviderNames = []string{"iconify", "googlefonts", "openverse", "ambientcg"}

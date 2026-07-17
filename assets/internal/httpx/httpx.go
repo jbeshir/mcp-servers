@@ -102,7 +102,19 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 // GetJSON issues a GET to url and decodes the JSON response body into v. A non-2xx status is reported
 // as a *StatusError.
 func (c *Client) GetJSON(ctx context.Context, url string, v any) error {
-	resp, err := c.getOK(ctx, url)
+	return c.getJSON(ctx, url, nil, v)
+}
+
+// GetJSONHeaders issues a GET to url, setting each non-empty value in header on the request (e.g.
+// Authorization), and decodes the JSON response body into v. A non-2xx status is reported as a
+// *StatusError.
+func (c *Client) GetJSONHeaders(ctx context.Context, url string, header http.Header, v any) error {
+	return c.getJSON(ctx, url, header, v)
+}
+
+// getJSON is the shared implementation behind GetJSON and GetJSONHeaders.
+func (c *Client) getJSON(ctx context.Context, url string, header http.Header, v any) error {
+	resp, err := c.getOK(ctx, url, header)
 	if err != nil {
 		return err
 	}
@@ -117,7 +129,18 @@ func (c *Client) GetJSON(ctx context.Context, url string, v any) error {
 // GetBytes issues a GET to url and returns the raw response body. A non-2xx status is reported as a
 // *StatusError.
 func (c *Client) GetBytes(ctx context.Context, url string) ([]byte, error) {
-	resp, err := c.getOK(ctx, url)
+	return c.getBytes(ctx, url, nil)
+}
+
+// GetBytesHeaders issues a GET to url, setting each non-empty value in header on the request (e.g.
+// Authorization), and returns the raw response body. A non-2xx status is reported as a *StatusError.
+func (c *Client) GetBytesHeaders(ctx context.Context, url string, header http.Header) ([]byte, error) {
+	return c.getBytes(ctx, url, header)
+}
+
+// getBytes is the shared implementation behind GetBytes and GetBytesHeaders.
+func (c *Client) getBytes(ctx context.Context, url string, header http.Header) ([]byte, error) {
+	resp, err := c.getOK(ctx, url, header)
 	if err != nil {
 		return nil, err
 	}
@@ -130,13 +153,21 @@ func (c *Client) GetBytes(ctx context.Context, url string) ([]byte, error) {
 	return data, nil
 }
 
-// getOK issues a GET to url and returns the response, once its status has been confirmed 2xx. The
-// caller is responsible for reading and closing the response body. A non-2xx status closes the body
-// itself and returns a *StatusError.
-func (c *Client) getOK(ctx context.Context, url string) (*http.Response, error) {
+// getOK issues a GET to url, setting each non-empty value in header on the request (header may be
+// nil), and returns the response once its status has been confirmed 2xx. The caller is responsible for
+// reading and closing the response body. A non-2xx status closes the body itself and returns a
+// *StatusError.
+func (c *Client) getOK(ctx context.Context, url string, header http.Header) (*http.Response, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("httpx: build request for %s: %w", url, err)
+	}
+	for key, values := range header {
+		for _, value := range values {
+			if value != "" {
+				req.Header.Add(key, value)
+			}
+		}
 	}
 
 	resp, err := c.httpClient.Do(req)

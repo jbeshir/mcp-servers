@@ -31,6 +31,16 @@ const envDisableRemote = "ASSETS_DISABLE_REMOTE"
 // providers.
 const envCacheDir = "ASSETS_CACHE_DIR"
 
+// Environment variable names for the opt-in keyed providers: an access key/token for the first four,
+// and a plain enable flag for Poly Haven (which is keyless but gated by non-commercial API terms).
+const (
+	envUnsplashAccessKey = "ASSETS_UNSPLASH_ACCESS_KEY"
+	envPixabayKey        = "ASSETS_PIXABAY_KEY"
+	envPexelsKey         = "ASSETS_PEXELS_KEY"
+	envPolyPizzaKey      = "ASSETS_POLYPIZZA_KEY"
+	envPolyHavenEnable   = "ASSETS_POLYHAVEN_ENABLE"
+)
+
 // defaultOutputDirName is the subdirectory of the OS temp dir used when ASSETS_OUTPUT_DIR is unset.
 const defaultOutputDirName = "assets-mcp"
 
@@ -51,6 +61,30 @@ const (
 	remoteBurst = 5
 )
 
+// Rate limits for the opt-in keyed providers, sized to each upstream's documented ceiling. Each
+// provider phase wires its pair into a ratelimit.Limiter as it lands in this PR.
+const (
+	// unsplashRPS and unsplashBurst: Unsplash's demo tier caps at ~50 req/hr.
+	unsplashRPS   = 50.0 / 3600 //nolint:unused // consumed by the Unsplash provider phase landing in this PR
+	unsplashBurst = 5           //nolint:unused // consumed by the Unsplash provider phase landing in this PR
+
+	// pixabayRPS and pixabayBurst: Pixabay documents ~100 req/min.
+	pixabayRPS   = 100.0 / 60 //nolint:unused // consumed by the Pixabay provider phase landing in this PR
+	pixabayBurst = 5          //nolint:unused // consumed by the Pixabay provider phase landing in this PR
+
+	// pexelsRPS and pexelsBurst: Pexels documents ~200 req/hr.
+	pexelsRPS   = 200.0 / 3600 //nolint:unused // consumed by the Pexels provider phase landing in this PR
+	pexelsBurst = 5            //nolint:unused // consumed by the Pexels provider phase landing in this PR
+
+	// polyPizzaRPS and polyPizzaBurst: Poly Pizza documents no limit; stay modest.
+	polyPizzaRPS   = 1 //nolint:unused // consumed by the Poly Pizza provider phase landing in this PR
+	polyPizzaBurst = 3 //nolint:unused // consumed by the Poly Pizza provider phase landing in this PR
+
+	// polyHavenRPS and polyHavenBurst: Poly Haven's API is non-commercial use only; stay modest.
+	polyHavenRPS   = 1 //nolint:unused // consumed by the Poly Haven provider phase landing in this PR
+	polyHavenBurst = 3 //nolint:unused // consumed by the Poly Haven provider phase landing in this PR
+)
+
 // Config holds the server's resolved configuration: the output directory, and the remote-provider
 // toggle and cache directory used when remote providers are enabled.
 type Config struct {
@@ -63,14 +97,39 @@ type Config struct {
 
 	// CacheDir is the raw ASSETS_CACHE_DIR value; empty means "use the default OS cache directory".
 	CacheDir string
+
+	// UnsplashAccessKey gates the opt-in Unsplash provider: empty means it is simply not registered,
+	// leaving the free providers as the default.
+	UnsplashAccessKey string
+
+	// PixabayKey gates the opt-in Pixabay provider: empty means it is simply not registered, leaving
+	// the free providers as the default.
+	PixabayKey string
+
+	// PexelsKey gates the opt-in Pexels provider: empty means it is simply not registered, leaving the
+	// free providers as the default.
+	PexelsKey string
+
+	// PolyPizzaKey gates the opt-in Poly Pizza provider: empty means it is simply not registered,
+	// leaving the free providers as the default.
+	PolyPizzaKey string
+
+	// PolyHavenEnable gates the opt-in Poly Haven provider: unset means it is simply not registered,
+	// leaving the free providers as the default.
+	PolyHavenEnable bool
 }
 
 // LoadConfig reads the server configuration from the environment.
 func LoadConfig() Config {
 	return Config{
-		OutputDir:     os.Getenv(envOutputDir),
-		DisableRemote: os.Getenv(envDisableRemote) != "",
-		CacheDir:      os.Getenv(envCacheDir),
+		OutputDir:         os.Getenv(envOutputDir),
+		DisableRemote:     os.Getenv(envDisableRemote) != "",
+		CacheDir:          os.Getenv(envCacheDir),
+		UnsplashAccessKey: os.Getenv(envUnsplashAccessKey),
+		PixabayKey:        os.Getenv(envPixabayKey),
+		PexelsKey:         os.Getenv(envPexelsKey),
+		PolyPizzaKey:      os.Getenv(envPolyPizzaKey),
+		PolyHavenEnable:   os.Getenv(envPolyHavenEnable) != "",
 	}
 }
 

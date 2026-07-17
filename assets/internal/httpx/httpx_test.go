@@ -96,6 +96,56 @@ func TestGetJSONDecodesBody(t *testing.T) {
 	}
 }
 
+func TestGetJSONHeadersSetsRequestHeaders(t *testing.T) {
+	var gotAuth string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotAuth = r.Header.Get("Authorization")
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"name":"lucide","count":42}`))
+	}))
+	defer srv.Close()
+
+	c := New(Config{})
+	header := http.Header{"Authorization": {"Client-ID x"}}
+	var got struct {
+		Name  string `json:"name"`
+		Count int    `json:"count"`
+	}
+	if err := c.GetJSONHeaders(t.Context(), srv.URL, header, &got); err != nil {
+		t.Fatalf("GetJSONHeaders: %v", err)
+	}
+	if gotAuth != "Client-ID x" {
+		t.Fatalf("Authorization = %q, want %q", gotAuth, "Client-ID x")
+	}
+	if got.Name != "lucide" || got.Count != 42 {
+		t.Fatalf("got %+v, want Name=lucide Count=42", got)
+	}
+}
+
+func TestGetBytesHeadersSetsRequestHeaders(t *testing.T) {
+	const want = "raw svg bytes"
+
+	var gotAuth string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotAuth = r.Header.Get("Authorization")
+		_, _ = w.Write([]byte(want))
+	}))
+	defer srv.Close()
+
+	c := New(Config{})
+	header := http.Header{"Authorization": {"Client-ID x"}}
+	got, err := c.GetBytesHeaders(t.Context(), srv.URL, header)
+	if err != nil {
+		t.Fatalf("GetBytesHeaders: %v", err)
+	}
+	if gotAuth != "Client-ID x" {
+		t.Fatalf("Authorization = %q, want %q", gotAuth, "Client-ID x")
+	}
+	if string(got) != want {
+		t.Fatalf("GetBytesHeaders = %q, want %q", got, want)
+	}
+}
+
 func TestGetBytesReturnsRawBody(t *testing.T) {
 	const want = "raw svg bytes"
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
