@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 // providerNames returns the Name() of every provider registered on r, across all kinds.
@@ -167,6 +169,56 @@ func TestSetupDefaultRegistersRemoteProviders(t *testing.T) {
 		if !names[name] {
 			t.Errorf("DisableRemote=false: provider %q not registered", name)
 		}
+	}
+}
+
+var keyedProviderNames = []string{"unsplash", "pixabay", "pexels", "polypizza", "polyhaven"}
+
+func TestSetupRegistersKeyedProvidersWhenCredentialsSet(t *testing.T) {
+	deps := Setup(Config{
+		UnsplashAccessKey: "k",
+		PixabayKey:        "k",
+		PexelsKey:         "k",
+		PolyPizzaKey:      "k",
+		PolyHavenEnable:   true,
+	})
+	names := providerNames(t, deps)
+
+	for _, name := range keyedProviderNames {
+		require.True(t, names[name], "provider %q should be registered when its key/flag is set", name)
+	}
+}
+
+func TestSetupOmitsKeyedProvidersWithoutCredentials(t *testing.T) {
+	deps := Setup(Config{})
+	names := providerNames(t, deps)
+
+	for _, name := range keyedProviderNames {
+		require.False(t, names[name], "provider %q should not be registered without its key/flag", name)
+	}
+	require.True(t, names["openverse"], "keyless remote %q should still be registered", "openverse")
+	require.True(t, names["ambientcg"], "keyless remote %q should still be registered", "ambientcg")
+}
+
+func TestSetupDisableRemoteOmitsKeyedProvidersEvenWithCredentials(t *testing.T) {
+	deps := Setup(Config{
+		DisableRemote:     true,
+		UnsplashAccessKey: "k",
+		PixabayKey:        "k",
+		PexelsKey:         "k",
+		PolyPizzaKey:      "k",
+		PolyHavenEnable:   true,
+	})
+	names := providerNames(t, deps)
+
+	for _, name := range keyedProviderNames {
+		require.False(t, names[name], "DisableRemote=true: keyed provider %q should not be registered", name)
+	}
+	for _, name := range remoteProviderNames {
+		require.False(t, names[name], "DisableRemote=true: keyless remote %q should not be registered", name)
+	}
+	for _, name := range embeddedProviderNames {
+		require.True(t, names[name], "DisableRemote=true: embedded provider %q should still be registered", name)
 	}
 }
 

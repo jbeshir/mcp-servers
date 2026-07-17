@@ -17,6 +17,10 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/googlefonts"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/iconify"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/openverse"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/pexels"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/pixabay"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/polyhaven"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/polypizza"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/unsplash"
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
@@ -70,20 +74,20 @@ const (
 	unsplashBurst = 5
 
 	// pixabayRPS and pixabayBurst: Pixabay documents ~100 req/min.
-	pixabayRPS   = 100.0 / 60 //nolint:unused // consumed by the Pixabay provider phase landing in this PR
-	pixabayBurst = 5          //nolint:unused // consumed by the Pixabay provider phase landing in this PR
+	pixabayRPS   = 100.0 / 60
+	pixabayBurst = 5
 
 	// pexelsRPS and pexelsBurst: Pexels documents ~200 req/hr.
-	pexelsRPS   = 200.0 / 3600 //nolint:unused // consumed by the Pexels provider phase landing in this PR
-	pexelsBurst = 5            //nolint:unused // consumed by the Pexels provider phase landing in this PR
+	pexelsRPS   = 200.0 / 3600
+	pexelsBurst = 5
 
 	// polyPizzaRPS and polyPizzaBurst: Poly Pizza documents no limit; stay modest.
-	polyPizzaRPS   = 1 //nolint:unused // consumed by the Poly Pizza provider phase landing in this PR
-	polyPizzaBurst = 3 //nolint:unused // consumed by the Poly Pizza provider phase landing in this PR
+	polyPizzaRPS   = 1
+	polyPizzaBurst = 3
 
 	// polyHavenRPS and polyHavenBurst: Poly Haven's API is non-commercial use only; stay modest.
-	polyHavenRPS   = 1 //nolint:unused // consumed by the Poly Haven provider phase landing in this PR
-	polyHavenBurst = 3 //nolint:unused // consumed by the Poly Haven provider phase landing in this PR
+	polyHavenRPS   = 1
+	polyHavenBurst = 3
 )
 
 // Config holds the server's resolved configuration: the output directory, and the remote-provider
@@ -177,12 +181,25 @@ func addRemoteProviders(r *assetcore.Registry, client *httpx.Client, c *cache.Ca
 	r.AddTexture(ambientcg.New(client, ratelimit.New(remoteRPS, remoteBurst), c))
 }
 
-// addKeyedProviders registers the opt-in keyed remote providers onto r behind the shared HTTP client and
-// on-disk cache, each with its own polite rate limiter. A provider is registered only when its
-// corresponding cfg credential is set, leaving the free providers as the default.
+// addKeyedProviders registers each opt-in keyed remote provider onto r behind the shared HTTP client
+// and on-disk cache, each with its own polite rate limiter. A provider is registered only when its
+// corresponding cfg credential (or, for Poly Haven, its enable flag) is set, leaving the free providers
+// as the default.
 func addKeyedProviders(r *assetcore.Registry, cfg Config, client *httpx.Client, c *cache.Cache) {
 	if cfg.UnsplashAccessKey != "" {
 		r.AddPhoto(unsplash.New(client, ratelimit.New(unsplashRPS, unsplashBurst), c, cfg.UnsplashAccessKey))
+	}
+	if cfg.PixabayKey != "" {
+		r.AddPhoto(pixabay.New(client, ratelimit.New(pixabayRPS, pixabayBurst), c, cfg.PixabayKey))
+	}
+	if cfg.PexelsKey != "" {
+		r.AddPhoto(pexels.New(client, ratelimit.New(pexelsRPS, pexelsBurst), c, cfg.PexelsKey))
+	}
+	if cfg.PolyPizzaKey != "" {
+		r.AddModel(polypizza.New(client, ratelimit.New(polyPizzaRPS, polyPizzaBurst), c, cfg.PolyPizzaKey))
+	}
+	if cfg.PolyHavenEnable {
+		r.AddModel(polyhaven.New(client, ratelimit.New(polyHavenRPS, polyHavenBurst), c))
 	}
 }
 
