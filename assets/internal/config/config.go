@@ -17,6 +17,7 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/googlefonts"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/iconify"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/openverse"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/unsplash"
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
 
@@ -65,8 +66,8 @@ const (
 // provider phase wires its pair into a ratelimit.Limiter as it lands in this PR.
 const (
 	// unsplashRPS and unsplashBurst: Unsplash's demo tier caps at ~50 req/hr.
-	unsplashRPS   = 50.0 / 3600 //nolint:unused // consumed by the Unsplash provider phase landing in this PR
-	unsplashBurst = 5           //nolint:unused // consumed by the Unsplash provider phase landing in this PR
+	unsplashRPS   = 50.0 / 3600
+	unsplashBurst = 5
 
 	// pixabayRPS and pixabayBurst: Pixabay documents ~100 req/min.
 	pixabayRPS   = 100.0 / 60 //nolint:unused // consumed by the Pixabay provider phase landing in this PR
@@ -143,8 +144,9 @@ type Deps struct {
 // Setup builds the provider registry from cfg and resolves the asset output directory. It registers
 // the three self-contained embedded providers unconditionally (the zero-config, offline base), then,
 // unless cfg.DisableRemote is set, additionally registers the keyless remote providers (iconify,
-// googlefonts, openverse, ambientcg) behind a shared HTTP client and on-disk cache. Each provider owns
-// its own license metadata, so there is no catalog to load.
+// googlefonts, openverse, ambientcg) and any opt-in keyed providers whose credential is configured
+// (e.g. Unsplash), all behind a shared HTTP client and on-disk cache. Each provider owns its own license
+// metadata, so there is no catalog to load.
 func Setup(cfg Config) *Deps {
 	r := assetcore.NewRegistry()
 	r.AddIcon(embeddedicons.New())
@@ -152,7 +154,10 @@ func Setup(cfg Config) *Deps {
 	r.AddFont(embeddedfonts.New())
 
 	if !cfg.DisableRemote {
-		addRemoteProviders(r, cfg)
+		client := httpx.New(httpx.Config{})
+		c := cache.New(resolveCacheDir(cfg))
+		addRemoteProviders(r, client, c)
+		addKeyedProviders(r, cfg, client, c)
 	}
 
 	outputDir := cfg.OutputDir
@@ -163,16 +168,22 @@ func Setup(cfg Config) *Deps {
 	return &Deps{Registry: r, OutputDir: outputDir}
 }
 
-// addRemoteProviders registers the keyless remote providers onto r behind a shared HTTP client and
+// addRemoteProviders registers the keyless remote providers onto r behind the shared HTTP client and
 // on-disk cache, each with its own polite rate limiter.
-func addRemoteProviders(r *assetcore.Registry, cfg Config) {
-	client := httpx.New(httpx.Config{})
-	c := cache.New(resolveCacheDir(cfg))
-
+func addRemoteProviders(r *assetcore.Registry, client *httpx.Client, c *cache.Cache) {
 	r.AddIcon(iconify.New(client, ratelimit.New(remoteRPS, remoteBurst), c))
 	r.AddFont(googlefonts.New(client, ratelimit.New(remoteRPS, remoteBurst), c))
 	r.AddPhoto(openverse.New(client, ratelimit.New(openverseRPS, openverseBurst), c))
 	r.AddTexture(ambientcg.New(client, ratelimit.New(remoteRPS, remoteBurst), c))
+}
+
+// addKeyedProviders registers the opt-in keyed remote providers onto r behind the shared HTTP client and
+// on-disk cache, each with its own polite rate limiter. A provider is registered only when its
+// corresponding cfg credential is set, leaving the free providers as the default.
+func addKeyedProviders(r *assetcore.Registry, cfg Config, client *httpx.Client, c *cache.Cache) {
+	if cfg.UnsplashAccessKey != "" {
+		r.AddPhoto(unsplash.New(client, ratelimit.New(unsplashRPS, unsplashBurst), c, cfg.UnsplashAccessKey))
+	}
 }
 
 // resolveCacheDir picks the on-disk directory remote providers cache fetched bytes in: cfg.CacheDir
