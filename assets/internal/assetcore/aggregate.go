@@ -9,7 +9,7 @@ import (
 
 // searchProviderTimeout bounds each provider's Search during a fan-out so one slow provider cannot
 // stall the aggregate. Embedded providers are in-process and never approach it; it is set generously
-// for the remote providers (iconify, googlefonts, openverse, ambientcg), which can legitimately be slow.
+// for the remote providers, keyless and opt-in keyed alike, which can legitimately be slow.
 const searchProviderTimeout = 30 * time.Second
 
 // cursorProvider names the pseudo-provider a Warning is attributed to when the aggregate cursor

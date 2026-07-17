@@ -67,7 +67,8 @@ const (
 )
 
 // Rate limits for the opt-in keyed providers, sized to each upstream's documented ceiling. Each
-// provider phase wires its pair into a ratelimit.Limiter as it lands in this PR.
+// provider's pair is wired into its own ratelimit.Limiter, pacing that provider independently of
+// the others.
 const (
 	// unsplashRPS and unsplashBurst: Unsplash's demo tier caps at ~50 req/hr.
 	unsplashRPS   = 50.0 / 3600

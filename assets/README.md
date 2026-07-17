@@ -91,7 +91,7 @@ Set `ASSETS_DISABLE_REMOTE=1` to disable all four and run fully offline against 
 
 ## Keyed providers
 
-Five further remote providers are opt-in: each is OFF by default and registers only when its API key or flag is configured (see [Configuration](#configuration)), leaving the free keyless providers above as the default. They add photos and, for the first time, 3D models:
+Five further remote providers are opt-in: each is OFF by default and registers only when its API key or flag is configured (see [Configuration](#configuration)), leaving the free keyless providers above as the default. They add photos and 3D models:
 
 - **Unsplash** (`ASSETS_UNSPLASH_ACCESS_KEY`) — photos under the Unsplash License; credit is required. `get_photo` fires the ToS-mandated download-tracking request before returning bytes.
 - **Pixabay** (`ASSETS_PIXABAY_KEY`) — photos under the Pixabay Content License; credit is appreciated, not required. Images are downloaded and cached rather than hotlinked, per Pixabay's ToS.
