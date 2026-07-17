@@ -14,3 +14,4 @@ packages:
       FontProvider:
       PhotoProvider:
       TextureProvider:
+      ModelProvider:

@@ -53,6 +53,12 @@ func (r *Registry) SearchTextures(ctx context.Context, opts SearchOpts) ([]Asset
 	return aggregateSearch(ctx, r.Textures(), opts)
 }
 
+// SearchModels fans out across the model providers named in opts.Cursor (or, on a first page, all
+// providers allowed by opts.Providers) and merges the results.
+func (r *Registry) SearchModels(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
+	return aggregateSearch(ctx, r.Models(), opts)
+}
+
 // searchable is the constraint aggregateSearch and recoveringSearch need: a Provider that can also
 // Search. Every per-kind provider interface already satisfies it.
 type searchable interface {

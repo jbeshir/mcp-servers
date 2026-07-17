@@ -75,8 +75,8 @@ func sanitizeFilename(s string) string {
 }
 
 // sanitizeSuffixedFilename sanitizes prefix+name's stem while preserving name's extension. It is for the
-// kinds (photo, texture) whose Blob.Filename already carries a provider-supplied extension, unlike icon/
-// illustration/font where the extension is hardcoded and appended after sanitizing the stem.
+// kinds (photo, texture, model) whose Blob.Filename already carries a provider-supplied extension,
+// unlike icon/illustration/font where the extension is hardcoded and appended after sanitizing the stem.
 func sanitizeSuffixedFilename(prefix, name string) string {
 	ext := filepath.Ext(name)
 	stem := strings.TrimSuffix(name, ext)
@@ -587,4 +587,63 @@ func (s *Server) handleGetTexture(
 	}
 
 	return newFileResult(fmt.Sprintf("Wrote texture %s to %s", id, path), []manifestFile{manifestFileFor(path, blob)})
+}
+
+func (s *Server) handleSearchModels(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	args := request.GetArguments()
+
+	query := stringArg(args, "query")
+	if query == "" {
+		return mcp.NewToolResultError("query is required"), nil
+	}
+
+	assets, nextCursor, warns := s.registry.SearchModels(ctx, assetcore.SearchOpts{
+		Query:     query,
+		Cursor:    stringArg(args, "cursor"),
+		Limit:     intArg(args, "limit", 0),
+		Sources:   filterArg(args, "sources", "exclude_sources"),
+		Providers: filterArg(args, "providers", "exclude_providers"),
+	})
+
+	lines := sourceTitleLines(assets)
+
+	return searchResult(fmt.Sprintf("%d model(s) matching %q:", len(assets), query), lines, nextCursor, warns), nil
+}
+
+func (s *Server) handleGetModel(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	args := request.GetArguments()
+
+	id := stringArg(args, "id")
+	if id == "" {
+		return mcp.NewToolResultError("id is required"), nil
+	}
+
+	format := stringArg(args, "format")
+	resolution := stringArg(args, "resolution")
+
+	blob, err := s.registry.FetchModel(ctx, id, assetcore.ModelFetchOpts{Format: format, Resolution: resolution})
+	if err != nil {
+		if errors.Is(err, assetcore.ErrNotFound) {
+			return mcp.NewToolResultError(
+				fmt.Sprintf("model not found: %s format=%s resolution=%s", id, format, resolution),
+			), nil
+		}
+
+		return nil, fmt.Errorf("get model %s: %w", id, err)
+	}
+
+	filename := sanitizeSuffixedFilename("model-", blob.Filename)
+
+	path, err := writeAsset(s.outputDir, filename, blob.Content)
+	if err != nil {
+		return nil, fmt.Errorf("write model %s: %w", id, err)
+	}
+
+	return newFileResult(fmt.Sprintf("Wrote model %s to %s", id, path), []manifestFile{manifestFileFor(path, blob)})
 }
