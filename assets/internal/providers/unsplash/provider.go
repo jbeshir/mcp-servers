@@ -41,11 +41,8 @@ type searchResult struct {
 
 // photoURLs is the set of sized image URLs carried by a photo record.
 type photoURLs struct {
-	Raw     string `json:"raw"`
-	Full    string `json:"full"`
-	Regular string `json:"regular"`
-	Small   string `json:"small"`
-	Thumb   string `json:"thumb"`
+	Full  string `json:"full"`
+	Thumb string `json:"thumb"`
 }
 
 // photoLinks is the set of related links carried by a photo record.
@@ -56,8 +53,7 @@ type photoLinks struct {
 
 // photoUser identifies a photo's creator.
 type photoUser struct {
-	Name     string `json:"name"`
-	Username string `json:"username"`
+	Name string `json:"name"`
 }
 
 // photo is a single Unsplash photo record, shared by the search envelope and the detail endpoint
@@ -132,6 +128,7 @@ func asset(p photo) assetcore.Asset {
 		ID:         assetcore.AssetID(providerName, p.ID),
 		Kind:       assetcore.KindPhoto,
 		Title:      title(p),
+		Source:     p.User.Name,
 		License:    license(p.User.Name),
 		LandingURL: p.Links.HTML,
 		PreviewURL: p.Urls.Thumb,

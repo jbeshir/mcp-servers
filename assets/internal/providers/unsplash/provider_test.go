@@ -126,7 +126,7 @@ func testServer(t *testing.T) *counters {
 		AltDescription: strPtr("A photo of something"),
 		Links:          photoLinks{HTML: "https://unsplash.com/photos/" + knownID},
 		Urls:           photoURLs{Thumb: "https://example.com/thumb.jpg"},
-		User:           photoUser{Name: creatorNm, Username: "someone"},
+		User:           photoUser{Name: creatorNm},
 	}
 
 	mux := http.NewServeMux()
@@ -222,6 +222,7 @@ func TestSearchMapsAssetsAndAttribution(t *testing.T) {
 	require.Equal(t, "unsplash:"+knownID, a.ID)
 	require.Equal(t, assetcore.KindPhoto, a.Kind)
 	require.Equal(t, "A Photo", a.Title)
+	require.Equal(t, creatorNm, a.Source)
 	require.Equal(t, "https://unsplash.com/photos/"+knownID, a.LandingURL)
 	require.Equal(t, "https://example.com/thumb.jpg", a.PreviewURL)
 	require.Empty(t, a.License.SPDX)
@@ -286,6 +287,7 @@ func TestFetchColdTriggersDownloadBeforeImage(t *testing.T) {
 	require.Equal(t, knownID+".jpg", blob.Filename)
 	require.Equal(t, "image/jpeg", blob.ContentType)
 	require.Equal(t, []byte("fake-jpeg-bytes"), blob.Content)
+	require.Equal(t, creatorNm, blob.Asset.Source)
 	require.Equal(t, "Photo by Someone on Unsplash", blob.Asset.License.Attribution)
 	require.True(t, blob.Asset.License.RequiresAttribution)
 
@@ -310,6 +312,7 @@ func TestFetchWarmCacheMakesNoHTTPRequests(t *testing.T) {
 	blob2, err := p.Fetch(ctx, knownID, assetcore.PhotoFetchOpts{})
 	require.NoError(t, err)
 	require.Equal(t, []byte("fake-jpeg-bytes"), blob2.Content)
+	require.Equal(t, creatorNm, blob2.Asset.Source)
 	require.Equal(t, warmTotal, atomic.LoadInt32(&c.totalRequests))
 	require.Equal(t, warmTrack, atomic.LoadInt32(&c.trackRequests))
 	require.Equal(t, warmImg, atomic.LoadInt32(&c.imgRequests))

@@ -133,6 +133,7 @@ func TestSearchMapsAssetsAndLicense(t *testing.T) {
 	require.Equal(t, "polypizza:"+byID, ccBy.ID)
 	require.Equal(t, assetcore.KindModel, ccBy.Kind)
 	require.Equal(t, "A Chair", ccBy.Title)
+	require.Equal(t, "Someone", ccBy.Source)
 	require.Equal(t, "https://example.com/chair-thumb.png", ccBy.PreviewURL)
 	require.Equal(t, "https://poly.pizza/m/"+byID, ccBy.LandingURL)
 	require.Equal(t, "CC-BY-3.0", ccBy.License.SPDX)
@@ -142,6 +143,7 @@ func TestSearchMapsAssetsAndLicense(t *testing.T) {
 
 	cc0 := res.Assets[1]
 	require.Equal(t, "polypizza:"+cc0ID, cc0.ID)
+	require.Equal(t, "Someone Else", cc0.Source)
 	require.Equal(t, "CC0-1.0", cc0.License.SPDX)
 	require.False(t, cc0.License.RequiresAttribution)
 	require.Empty(t, cc0.License.Attribution)
@@ -180,6 +182,7 @@ func TestFetchColdDownloadsGLB(t *testing.T) {
 	require.Equal(t, byID+".glb", blob.Filename)
 	require.Equal(t, "model/gltf-binary", blob.ContentType)
 	require.Equal(t, "polypizza:"+byID, blob.Asset.ID)
+	require.Equal(t, "Someone", blob.Asset.Source)
 	require.Equal(t, "CC-BY-3.0", blob.Asset.License.SPDX)
 	require.Equal(t, []byte("fake-glb-bytes"), blob.Content)
 	require.EqualValues(t, 1, atomic.LoadInt32(dlRequests))

@@ -28,6 +28,9 @@ var baseURL = "https://pixabay.com"
 // defaultPage is the page number used when a SearchOpts.Cursor is empty or unparseable.
 const defaultPage = 1
 
+// minPerPage is the smallest per_page value Pixabay's search endpoint accepts.
+const minPerPage = 3
+
 // searchResult is the Pixabay search envelope returned by GET /api/, shared by the paged search query
 // and the single-hit id lookup used by Fetch.
 type searchResult struct {
@@ -43,7 +46,6 @@ type hit struct {
 	PageURL       string `json:"pageURL"`
 	Tags          string `json:"tags"`
 	PreviewURL    string `json:"previewURL"`
-	WebformatURL  string `json:"webformatURL"`
 	LargeImageURL string `json:"largeImageURL"`
 	User          string `json:"user"`
 }
@@ -92,15 +94,15 @@ func license(user string) assetcore.License {
 	}
 }
 
-// title picks the display title for h: the first comma-separated segment of its tags string, trimmed,
-// falling back to its numeric id when tags is empty or blank.
+// title picks the display title for h: its full tags string, trimmed, falling back to its numeric id
+// when tags is empty or blank. A partial (first-tag-only) title collides too easily with other hits
+// sharing a common leading tag, so the whole string is used to keep (Source, Title) distinctive.
 func title(h hit) string {
-	first, _, _ := strings.Cut(h.Tags, ",")
-	first = strings.TrimSpace(first)
-	if first == "" {
+	trimmed := strings.TrimSpace(h.Tags)
+	if trimmed == "" {
 		return strconv.Itoa(h.ID)
 	}
-	return first
+	return trimmed
 }
 
 // tags splits h.Tags, Pixabay's comma-space-separated keyword string, into individual tags. An empty
@@ -119,6 +121,7 @@ func asset(h hit) assetcore.Asset {
 		Kind:       assetcore.KindPhoto,
 		Title:      title(h),
 		Tags:       tags(h),
+		Source:     h.User,
 		License:    license(h.User),
 		LandingURL: h.PageURL,
 		PreviewURL: h.PreviewURL,
@@ -162,6 +165,11 @@ func (p *Provider) Search(ctx context.Context, opts assetcore.SearchOpts) (asset
 		page = n
 	}
 	perPage := assetcore.ClampLimit(opts.Limit)
+	// Pixabay's API rejects per_page < 3 with a 400, so raise it to the minimum it accepts even
+	// when a caller asked for fewer results.
+	if perPage < minPerPage {
+		perPage = minPerPage
+	}
 
 	q := url.Values{
 		"key":        {p.apiKey},

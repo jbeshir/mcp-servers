@@ -47,11 +47,10 @@ var cc0License = assetcore.License{
 
 // assetMeta is one entry of the object GET /assets?type=models returns, keyed by slug.
 type assetMeta struct {
-	Name         string            `json:"name"`
-	Categories   []string          `json:"categories"`
-	Tags         []string          `json:"tags"`
-	Authors      map[string]string `json:"authors"`
-	ThumbnailURL string            `json:"thumbnail_url"`
+	Name         string   `json:"name"`
+	Categories   []string `json:"categories"`
+	Tags         []string `json:"tags"`
+	ThumbnailURL string   `json:"thumbnail_url"`
 }
 
 // filesManifest is the GET /files/{slug} download manifest, narrowed to the gltf branch this provider
@@ -64,16 +63,12 @@ type filesManifest struct {
 // binary buffer) it references, keyed by the relative path the .gltf expects to find it at.
 type gltfEntry struct {
 	URL     string             `json:"url"`
-	MD5     string             `json:"md5"`
-	Size    int                `json:"size"`
 	Include map[string]fileRef `json:"include"`
 }
 
 // fileRef is one auxiliary file referenced by a gltfEntry's Include map.
 type fileRef struct {
-	URL  string `json:"url"`
-	MD5  string `json:"md5"`
-	Size int    `json:"size"`
+	URL string `json:"url"`
 }
 
 // asset maps one Poly Haven slug and its assetMeta onto an assetcore.Asset, stamping the composite id
@@ -87,6 +82,7 @@ func asset(slug string, m assetMeta) assetcore.Asset {
 		ID:         assetcore.AssetID(providerName, slug),
 		Kind:       assetcore.KindModel,
 		Title:      title,
+		Source:     providerName,
 		Tags:       m.Tags,
 		License:    cc0License,
 		LandingURL: "https://polyhaven.com/a/" + slug,
@@ -248,12 +244,13 @@ func (p *Provider) Fetch(ctx context.Context, id string, opts assetcore.ModelFet
 		return assetcore.Blob{}, fmt.Errorf("polyhaven: asset %q has no gltf files: %w", id, assetcore.ErrNotFound)
 	}
 
-	var mainName string
-	var entry gltfEntry
-	for name, e := range bucket {
-		mainName, entry = name, e
-		break
+	names := make([]string, 0, len(bucket))
+	for name := range bucket {
+		names = append(names, name)
 	}
+	sort.Strings(names)
+	mainName := names[0]
+	entry := bucket[mainName]
 
 	zipData, err := p.assembleZip(ctx, mainName, entry)
 	if err != nil {
@@ -279,7 +276,7 @@ func gltfBucket(m filesManifest, resolution string) (map[string]gltfEntry, bool)
 	for res := range m.Gltf {
 		resolutions = append(resolutions, res)
 	}
-	sort.Strings(resolutions)
+	sortResolutions(resolutions)
 
 	for _, res := range resolutions {
 		if bucket, ok := nonEmptyGltfBucket(m.Gltf[res]); ok {
@@ -287,6 +284,37 @@ func gltfBucket(m filesManifest, resolution string) (map[string]gltfEntry, bool)
 		}
 	}
 	return nil, false
+}
+
+// sortResolutions sorts resolution keys (e.g. "1k", "2k", "4k", "16k") by their leading numeric value
+// ascending, so "16k" doesn't precede "2k" as it would under plain lexicographic order. Keys whose
+// leading run isn't numeric, or that tie numerically, fall back to lexicographic comparison.
+func sortResolutions(resolutions []string) {
+	sort.Slice(resolutions, func(i, j int) bool {
+		a, aOK := leadingInt(resolutions[i])
+		b, bOK := leadingInt(resolutions[j])
+		if aOK && bOK && a != b {
+			return a < b
+		}
+		return resolutions[i] < resolutions[j]
+	})
+}
+
+// leadingInt parses the leading run of ASCII digits in s (e.g. "16k" -> 16), reporting false if s does
+// not begin with a digit.
+func leadingInt(s string) (int, bool) {
+	end := 0
+	for end < len(s) && s[end] >= '0' && s[end] <= '9' {
+		end++
+	}
+	if end == 0 {
+		return 0, false
+	}
+	n, err := strconv.Atoi(s[:end])
+	if err != nil {
+		return 0, false
+	}
+	return n, true
 }
 
 // nonEmptyGltfBucket extracts the literal "gltf" bucket from one resolution's entry in

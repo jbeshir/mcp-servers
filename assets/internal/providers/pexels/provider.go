@@ -43,14 +43,8 @@ type searchResult struct {
 
 // photoSrc is the set of sized image URLs carried by a photo record.
 type photoSrc struct {
-	Original  string `json:"original"`
-	Large2X   string `json:"large2x"`
-	Large     string `json:"large"`
-	Medium    string `json:"medium"`
-	Small     string `json:"small"`
-	Portrait  string `json:"portrait"`
-	Landscape string `json:"landscape"`
-	Tiny      string `json:"tiny"`
+	Original string `json:"original"`
+	Tiny     string `json:"tiny"`
 }
 
 // photo is a single Pexels photo record, shared by the search envelope and the detail endpoint
@@ -120,6 +114,7 @@ func asset(p photo) assetcore.Asset {
 		ID:         assetcore.AssetID(providerName, strconv.Itoa(p.ID)),
 		Kind:       assetcore.KindPhoto,
 		Title:      title(p),
+		Source:     p.Photographer,
 		License:    license(p.Photographer),
 		LandingURL: p.URL,
 		PreviewURL: p.Src.Tiny,

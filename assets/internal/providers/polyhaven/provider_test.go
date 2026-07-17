@@ -37,7 +37,6 @@ func testServer(t *testing.T) (fileRequests, totalRequests *int32) {
 			Name:         "Arm Chair 01",
 			Categories:   []string{"furniture", "seating"},
 			Tags:         []string{"chair", "wood"},
-			Authors:      map[string]string{"Kirill Sannikov": "All"},
 			ThumbnailURL: "https://cdn.example.com/armchair.png",
 		},
 		"WoodenBarrel_01": {
@@ -131,6 +130,7 @@ func TestSearchMapsAssets(t *testing.T) {
 	require.Equal(t, "polyhaven:"+knownSlug, a.ID)
 	require.Equal(t, assetcore.KindModel, a.Kind)
 	require.Equal(t, "Arm Chair 01", a.Title)
+	require.Equal(t, providerName, a.Source)
 	require.Equal(t, []string{"chair", "wood"}, a.Tags)
 	require.Equal(t, "https://cdn.example.com/armchair.png", a.PreviewURL)
 	require.Equal(t, "https://polyhaven.com/a/"+knownSlug, a.LandingURL)
@@ -183,6 +183,7 @@ func TestFetchAssemblesZip(t *testing.T) {
 	require.Equal(t, "application/zip", blob.ContentType)
 	require.Equal(t, knownSlug+"_1k.zip", blob.Filename)
 	require.Equal(t, "polyhaven:"+knownSlug, blob.Asset.ID)
+	require.Equal(t, providerName, blob.Asset.Source)
 	require.EqualValues(t, 3, atomic.LoadInt32(fileRequests))
 
 	zr, err := zip.NewReader(bytes.NewReader(blob.Content), int64(len(blob.Content)))
@@ -217,7 +218,25 @@ func TestFetchWarmCacheMakesNoHTTPRequests(t *testing.T) {
 	blob2, err := p.Fetch(t.Context(), knownSlug, assetcore.ModelFetchOpts{})
 	require.NoError(t, err)
 	require.Equal(t, knownSlug+"_1k.zip", blob2.Filename)
+	require.Equal(t, providerName, blob2.Asset.Source)
 	require.Equal(t, warmCount, atomic.LoadInt32(totalRequests))
+}
+
+// TestGltfBucketFallsBackToNumericallySmallestResolution proves the missing-resolution fallback picks
+// the smallest resolution by numeric value, not lexicographic order — plain string sorting would rank
+// "16k" before "2k".
+func TestGltfBucketFallsBackToNumericallySmallestResolution(t *testing.T) {
+	manifest := filesManifest{
+		Gltf: map[string]map[string]map[string]gltfEntry{
+			"16k": {"gltf": {"big.gltf": {URL: "https://example.com/big.gltf"}}},
+			"2k":  {"gltf": {"small.gltf": {URL: "https://example.com/small.gltf"}}},
+		},
+	}
+
+	bucket, ok := gltfBucket(manifest, "1k")
+	require.True(t, ok)
+	require.Contains(t, bucket, "small.gltf")
+	require.NotContains(t, bucket, "big.gltf")
 }
 
 func TestFetchUnknownSlugReturnsErrNotFound(t *testing.T) {

@@ -17,6 +17,10 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
 
+// lastPerPage records the per_page query param of the most recent search request, for the min-per_page
+// clamp assertion. A package-level atomic.Value since it's written from the test server's own goroutine.
+var lastPerPage atomic.Value
+
 const (
 	knownID   = "12345"
 	testKey   = "test-api-key"
@@ -36,8 +40,7 @@ func testServer(t *testing.T) (imgRequests, totalRequests *int32) {
 
 	byHit := hit{
 		ID: 12345, PageURL: "https://pixabay.com/photos/cat-12345/", Tags: "cat, kitten, animal",
-		PreviewURL:   "https://cdn.pixabay.com/photo/preview_12345.jpg",
-		WebformatURL: "https://cdn.pixabay.com/photo/webformat_12345.jpg", User: "someuser",
+		PreviewURL: "https://cdn.pixabay.com/photo/preview_12345.jpg", User: "someuser",
 	}
 
 	mux := http.NewServeMux()
@@ -51,16 +54,17 @@ func testServer(t *testing.T) (imgRequests, totalRequests *int32) {
 		case "":
 			// Search branch.
 			page := r.URL.Query().Get("page")
+			lastPerPage.Store(r.URL.Query().Get("per_page"))
 			var resp searchResult
 			switch page {
 			case "", "1":
 				resp = searchResult{
-					Total: 3, TotalHits: 3,
+					Total: 5, TotalHits: 5,
 					Hits: []hit{byHit, withID(byHit, 67890)},
 				}
 			case "2":
 				resp = searchResult{
-					Total: 3, TotalHits: 3,
+					Total: 5, TotalHits: 5,
 					Hits: []hit{withID(byHit, 11111)},
 				}
 			default:
@@ -131,8 +135,9 @@ func TestSearchMapsAssetsAndAttribution(t *testing.T) {
 	a := res.Assets[0]
 	require.Equal(t, "pixabay:12345", a.ID)
 	require.Equal(t, assetcore.KindPhoto, a.Kind)
-	require.Equal(t, "cat", a.Title)
+	require.Equal(t, "cat, kitten, animal", a.Title)
 	require.Equal(t, []string{"cat", "kitten", "animal"}, a.Tags)
+	require.Equal(t, "someuser", a.Source)
 	require.Equal(t, "https://pixabay.com/photos/cat-12345/", a.LandingURL)
 	require.Equal(t, "https://cdn.pixabay.com/photo/preview_12345.jpg", a.PreviewURL)
 	require.Empty(t, a.License.SPDX)
@@ -158,6 +163,16 @@ func TestSearchPaginationAdvancesThenStops(t *testing.T) {
 	require.Equal(t, "pixabay:11111", page2.Assets[0].ID)
 }
 
+func TestSearchClampsPerPageToPixabayMinimum(t *testing.T) {
+	testServer(t)
+	p := newTestProvider(t)
+	ctx := context.Background()
+
+	_, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 1})
+	require.NoError(t, err)
+	require.Equal(t, "3", lastPerPage.Load())
+}
+
 func TestFetchDerivesContentTypeAndCaches(t *testing.T) {
 	imgRequests, _ := testServer(t)
 	p := newTestProvider(t)
@@ -168,6 +183,7 @@ func TestFetchDerivesContentTypeAndCaches(t *testing.T) {
 	require.Equal(t, knownID+".jpg", blob.Filename)
 	require.Equal(t, "image/jpeg", blob.ContentType)
 	require.Equal(t, "pixabay:"+knownID, blob.Asset.ID)
+	require.Equal(t, "someuser", blob.Asset.Source)
 	require.False(t, blob.Asset.License.RequiresAttribution)
 	require.NotEmpty(t, blob.Asset.License.Attribution)
 	require.Equal(t, []byte("fake-jpeg-bytes"), blob.Content)
@@ -196,6 +212,7 @@ func TestFetchWarmCacheMakesNoHTTPRequests(t *testing.T) {
 	blob2, err := p.Fetch(ctx, knownID, assetcore.PhotoFetchOpts{})
 	require.NoError(t, err)
 	require.Equal(t, []byte("fake-jpeg-bytes"), blob2.Content)
+	require.Equal(t, "someuser", blob2.Asset.Source)
 	require.Equal(t, warmCount, atomic.LoadInt32(totalRequests))
 }
 
@@ -218,5 +235,5 @@ func TestProviderIdentity(t *testing.T) {
 func TestTitleFallsBackToIDWhenTagsBlank(t *testing.T) {
 	require.Equal(t, strconv.Itoa(42), title(hit{ID: 42, Tags: ""}))
 	require.Equal(t, strconv.Itoa(42), title(hit{ID: 42, Tags: "   "}))
-	require.Equal(t, "cat", title(hit{ID: 42, Tags: "cat, kitten"}))
+	require.Equal(t, "cat, kitten", title(hit{ID: 42, Tags: "cat, kitten"}))
 }

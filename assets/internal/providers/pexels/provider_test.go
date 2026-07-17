@@ -101,9 +101,11 @@ func testServer(t *testing.T) *counters {
 				NextPage: baseURL + "/v1/search?page=2",
 			}
 		case "2":
+			noAlt := withID(byPhoto, 33333)
+			noAlt.Alt = ""
 			resp = searchResult{
 				TotalResults: 3, Page: 2, PerPage: 2,
-				Photos: []photo{withID(byPhoto, 33333)},
+				Photos: []photo{noAlt},
 			}
 		default:
 			t.Fatalf("unexpected page %q", page)
@@ -172,6 +174,7 @@ func TestSearchMapsAssetsAndAttribution(t *testing.T) {
 	require.Equal(t, "pexels:"+strconv.Itoa(knownID), a.ID)
 	require.Equal(t, assetcore.KindPhoto, a.Kind)
 	require.Equal(t, "A Photo", a.Title)
+	require.Equal(t, photographerName, a.Source)
 	require.Equal(t, "https://www.pexels.com/photo/"+strconv.Itoa(knownID), a.LandingURL)
 	require.Equal(t, "https://example.com/tiny.jpg", a.PreviewURL)
 	require.Empty(t, a.License.SPDX)
@@ -191,7 +194,7 @@ func TestSearchTitleFallsBackToPhotographerCredit(t *testing.T) {
 	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2, Cursor: "2"})
 	require.NoError(t, err)
 	require.Len(t, res.Assets, 1)
-	require.Equal(t, "A Photo", res.Assets[0].Title)
+	require.Equal(t, "Photo by "+photographerName, res.Assets[0].Title)
 }
 
 func TestSearchPaginationAdvancesThenStops(t *testing.T) {
@@ -232,6 +235,7 @@ func TestFetchColdDownloadsOriginal(t *testing.T) {
 	require.Equal(t, strconv.Itoa(knownID)+".jpg", blob.Filename)
 	require.Equal(t, "image/jpeg", blob.ContentType)
 	require.Equal(t, []byte("fake-jpeg-bytes"), blob.Content)
+	require.Equal(t, photographerName, blob.Asset.Source)
 	require.Equal(t, "Photo by Someone on Pexels", blob.Asset.License.Attribution)
 	require.True(t, blob.Asset.License.RequiresAttribution)
 
@@ -255,6 +259,7 @@ func TestFetchWarmCacheMakesNoHTTPRequests(t *testing.T) {
 	blob2, err := p.Fetch(ctx, strconv.Itoa(knownID), assetcore.PhotoFetchOpts{})
 	require.NoError(t, err)
 	require.Equal(t, []byte("fake-jpeg-bytes"), blob2.Content)
+	require.Equal(t, photographerName, blob2.Asset.Source)
 	require.Equal(t, warmTotal, atomic.LoadInt32(&c.totalRequests))
 	require.Equal(t, warmImg, atomic.LoadInt32(&c.imgRequests))
 }

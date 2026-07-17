@@ -103,6 +103,7 @@ func asset(m model) assetcore.Asset {
 		ID:         assetcore.AssetID(providerName, m.ID),
 		Kind:       assetcore.KindModel,
 		Title:      title,
+		Source:     m.Creator.Username,
 		License:    license(m),
 		LandingURL: "https://poly.pizza/m/" + m.ID,
 		PreviewURL: m.Thumbnail,
