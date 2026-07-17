@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"path"
 	"sort"
 	"strconv"
 	"strings"
@@ -54,12 +55,18 @@ type assetMeta struct {
 }
 
 // filesManifest is the GET /files/{slug} download manifest, narrowed to the gltf branch this provider
-// assembles. Gltf maps resolution (e.g. "1k") -> the literal "gltf" bucket -> main filename -> entry.
+// assembles. Gltf maps resolution (e.g. "1k") to that resolution's glTF bundle.
 type filesManifest struct {
-	Gltf map[string]map[string]map[string]gltfEntry `json:"gltf"`
+	Gltf map[string]gltfResolution `json:"gltf"`
 }
 
-// gltfEntry describes one main .gltf file: its own download plus every auxiliary file (textures, a
+// gltfResolution is one resolution's entry under filesManifest.Gltf. The API nests the main glTF file
+// under a literal "gltf" key, alongside sibling format keys (blend, fbx, usd) this provider ignores.
+type gltfResolution struct {
+	Gltf gltfEntry `json:"gltf"`
+}
+
+// gltfEntry describes the main .gltf file: its own download plus every auxiliary file (textures, a
 // binary buffer) it references, keyed by the relative path the .gltf expects to find it at.
 type gltfEntry struct {
 	URL     string             `json:"url"`
@@ -239,20 +246,12 @@ func (p *Provider) Fetch(ctx context.Context, id string, opts assetcore.ModelFet
 		return assetcore.Blob{}, fmt.Errorf("polyhaven: fetch files manifest: %w", err)
 	}
 
-	bucket, ok := gltfBucket(manifest, resolution)
+	entry, ok := gltfEntryFor(manifest, resolution)
 	if !ok {
 		return assetcore.Blob{}, fmt.Errorf("polyhaven: asset %q has no gltf files: %w", id, assetcore.ErrNotFound)
 	}
 
-	names := make([]string, 0, len(bucket))
-	for name := range bucket {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-	mainName := names[0]
-	entry := bucket[mainName]
-
-	zipData, err := p.assembleZip(ctx, mainName, entry)
+	zipData, err := p.assembleZip(ctx, gltfFilename(id, entry.URL), entry)
 	if err != nil {
 		return assetcore.Blob{}, err
 	}
@@ -264,12 +263,12 @@ func (p *Provider) Fetch(ctx context.Context, id string, opts assetcore.ModelFet
 	return blobFor(id, resolution, zipData), nil
 }
 
-// gltfBucket returns the main-file bucket (filename -> entry) for resolution, falling back to the
-// bucket of the smallest resolution key the manifest actually offers when resolution is absent or
-// empty. It reports false when no resolution in the manifest carries a non-empty gltf bucket.
-func gltfBucket(m filesManifest, resolution string) (map[string]gltfEntry, bool) {
-	if bucket, ok := nonEmptyGltfBucket(m.Gltf[resolution]); ok {
-		return bucket, true
+// gltfEntryFor returns the main glTF entry for resolution, falling back to the numerically smallest
+// resolution the manifest actually offers when resolution is absent or carries no glTF file. It reports
+// false when no resolution in the manifest has a glTF file.
+func gltfEntryFor(m filesManifest, resolution string) (gltfEntry, bool) {
+	if entry := m.Gltf[resolution].Gltf; entry.URL != "" {
+		return entry, true
 	}
 
 	resolutions := make([]string, 0, len(m.Gltf))
@@ -279,11 +278,20 @@ func gltfBucket(m filesManifest, resolution string) (map[string]gltfEntry, bool)
 	sortResolutions(resolutions)
 
 	for _, res := range resolutions {
-		if bucket, ok := nonEmptyGltfBucket(m.Gltf[res]); ok {
-			return bucket, true
+		if entry := m.Gltf[res].Gltf; entry.URL != "" {
+			return entry, true
 		}
 	}
-	return nil, false
+	return gltfEntry{}, false
+}
+
+// gltfFilename derives the ZIP entry name for the main .gltf from its download URL basename, falling
+// back to "<slug>.gltf" when the URL has no usable basename.
+func gltfFilename(slug, gltfURL string) string {
+	if base := path.Base(gltfURL); base != "" && base != "." && base != "/" {
+		return base
+	}
+	return slug + ".gltf"
 }
 
 // sortResolutions sorts resolution keys (e.g. "1k", "2k", "4k", "16k") by their leading numeric value
@@ -315,16 +323,6 @@ func leadingInt(s string) (int, bool) {
 		return 0, false
 	}
 	return n, true
-}
-
-// nonEmptyGltfBucket extracts the literal "gltf" bucket from one resolution's entry in
-// filesManifest.Gltf, reporting false if it is absent or empty.
-func nonEmptyGltfBucket(byBucket map[string]map[string]gltfEntry) (map[string]gltfEntry, bool) {
-	bucket, ok := byBucket["gltf"]
-	if !ok || len(bucket) == 0 {
-		return nil, false
-	}
-	return bucket, true
 }
 
 // assembleZip downloads mainEntry's own file plus every file in its Include map, and packs them into an

@@ -68,15 +68,13 @@ func testServer(t *testing.T) (fileRequests, totalRequests *int32) {
 
 		base := "http://" + r.Host
 		manifest := filesManifest{
-			Gltf: map[string]map[string]map[string]gltfEntry{
+			Gltf: map[string]gltfResolution{
 				"1k": {
-					"gltf": {
-						knownSlug + "_1k.gltf": {
-							URL: base + "/main.gltf",
-							Include: map[string]fileRef{
-								"textures/diff_1k.jpg": {URL: base + "/tex.jpg"},
-								"Model.bin":            {URL: base + "/model.bin"},
-							},
+					Gltf: gltfEntry{
+						URL: base + "/" + knownSlug + "_1k.gltf",
+						Include: map[string]fileRef{
+							"textures/diff_1k.jpg": {URL: base + "/tex.jpg"},
+							"Model.bin":            {URL: base + "/model.bin"},
 						},
 					},
 				},
@@ -84,7 +82,7 @@ func testServer(t *testing.T) (fileRequests, totalRequests *int32) {
 		}
 		_ = json.NewEncoder(w).Encode(manifest)
 	})
-	mux.HandleFunc("/main.gltf", servesFile(fileRequests, "main gltf bytes"))
+	mux.HandleFunc("/"+knownSlug+"_1k.gltf", servesFile(fileRequests, "main gltf bytes"))
 	mux.HandleFunc("/tex.jpg", servesFile(fileRequests, "texture bytes"))
 	mux.HandleFunc("/model.bin", servesFile(fileRequests, "binary bytes"))
 
@@ -222,21 +220,20 @@ func TestFetchWarmCacheMakesNoHTTPRequests(t *testing.T) {
 	require.Equal(t, warmCount, atomic.LoadInt32(totalRequests))
 }
 
-// TestGltfBucketFallsBackToNumericallySmallestResolution proves the missing-resolution fallback picks
+// TestGltfEntryFallsBackToNumericallySmallestResolution proves the missing-resolution fallback picks
 // the smallest resolution by numeric value, not lexicographic order — plain string sorting would rank
 // "16k" before "2k".
-func TestGltfBucketFallsBackToNumericallySmallestResolution(t *testing.T) {
+func TestGltfEntryFallsBackToNumericallySmallestResolution(t *testing.T) {
 	manifest := filesManifest{
-		Gltf: map[string]map[string]map[string]gltfEntry{
-			"16k": {"gltf": {"big.gltf": {URL: "https://example.com/big.gltf"}}},
-			"2k":  {"gltf": {"small.gltf": {URL: "https://example.com/small.gltf"}}},
+		Gltf: map[string]gltfResolution{
+			"16k": {Gltf: gltfEntry{URL: "https://example.com/big.gltf"}},
+			"2k":  {Gltf: gltfEntry{URL: "https://example.com/small.gltf"}},
 		},
 	}
 
-	bucket, ok := gltfBucket(manifest, "1k")
+	entry, ok := gltfEntryFor(manifest, "1k")
 	require.True(t, ok)
-	require.Contains(t, bucket, "small.gltf")
-	require.NotContains(t, bucket, "big.gltf")
+	require.Equal(t, "https://example.com/small.gltf", entry.URL)
 }
 
 func TestFetchUnknownSlugReturnsErrNotFound(t *testing.T) {
