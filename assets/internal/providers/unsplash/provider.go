@@ -83,19 +83,44 @@ const (
 	defaultContentType = "application/octet-stream"
 )
 
-// contentTypeForURL derives the MIME type and file extension (including the leading dot) from imgURL's
-// path extension, falling back to defaultContentType/defaultExt when unrecognized.
-func contentTypeForURL(imgURL string) (contentType, ext string) {
+// contentTypeToExt maps a MIME type detected from image bytes back to the filename extension (with
+// leading dot) to label them with.
+var contentTypeToExt = map[string]string{
+	"image/jpeg": ".jpg",
+	"image/png":  ".png",
+	"image/gif":  ".gif",
+	"image/webp": ".webp",
+}
+
+// contentTypeAndExt resolves the MIME type and file extension (including the leading dot) for a fetched
+// image. It prefers the extension in imgURL's path; when that is absent or unrecognized — Unsplash's
+// images.unsplash.com URLs carry no path extension — it sniffs the leading bytes with
+// http.DetectContentType. It falls back to defaultContentType/defaultExt only when neither yields a
+// known image type.
+func contentTypeAndExt(imgURL string, content []byte) (contentType, ext string) {
+	if ct, e, ok := typeFromURLExt(imgURL); ok {
+		return ct, e
+	}
+	detected := http.DetectContentType(content)
+	if e, ok := contentTypeToExt[detected]; ok {
+		return detected, e
+	}
+	return defaultContentType, defaultExt
+}
+
+// typeFromURLExt derives the MIME type and extension from imgURL's path extension, reporting false when
+// the path has no extension or an unrecognized one.
+func typeFromURLExt(imgURL string) (contentType, ext string, ok bool) {
 	parsed, err := url.Parse(imgURL)
 	if err != nil {
-		return defaultContentType, defaultExt
+		return "", "", false
 	}
 	ext = strings.ToLower(path.Ext(parsed.Path))
-	contentType, ok := extToContentType[strings.TrimPrefix(ext, ".")]
+	ct, ok := extToContentType[strings.TrimPrefix(ext, ".")]
 	if !ok {
-		return defaultContentType, defaultExt
+		return "", "", false
 	}
-	return contentType, ext
+	return ct, ext, true
 }
 
 // title picks the display title for p: the first non-empty of its description, its alt description, or
@@ -309,9 +334,10 @@ func (p *Provider) fetchAndCache(ctx context.Context, id, imgKey, metaKey string
 }
 
 // blobFor builds the assetcore.Blob for a fetched (or cache-rebuilt) image, deriving the content type
-// and filename extension from p's full-resolution image URL.
+// and filename extension from p's full-resolution image URL, or from the image bytes when the URL has no
+// usable extension.
 func blobFor(id string, p photo, content []byte) assetcore.Blob {
-	contentType, ext := contentTypeForURL(p.Urls.Full)
+	contentType, ext := contentTypeAndExt(p.Urls.Full, content)
 	return assetcore.Blob{
 		Asset:       asset(p),
 		Content:     content,

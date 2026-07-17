@@ -21,12 +21,20 @@ const (
 	knownID   = "Dwu85P9SOIk"
 	testKey   = "test-access-key"
 	creatorNm = "Someone"
+	// imgPath is the extension-less path the stub serves the full image at, mirroring Unsplash's real
+	// images.unsplash.com URLs whose path carries no file extension.
+	imgPath = "/photo-" + knownID
 )
+
+// jpegBytes is a stub image body beginning with the JPEG magic number, so http.DetectContentType
+// classifies it as image/jpeg — the content type the provider must sniff from the bytes because imgPath
+// has no extension to read it from.
+var jpegBytes = []byte("\xff\xd8\xff\xe0\x00\x10JFIF fake jpeg body")
 
 func strPtr(s string) *string { return &s }
 
 // counters tracks the HTTP calls made against a testServer double, guarded for use across the server's
-// request-handling goroutines and the test goroutine. seq assigns each observed /track or /img.jpg hit
+// request-handling goroutines and the test goroutine. seq assigns each observed /track or image hit
 // a monotonically increasing position, so a test can assert the download-tracking trigger fires strictly
 // before the image download on a cold fetch.
 type counters struct {
@@ -165,17 +173,17 @@ func testServer(t *testing.T) *counters {
 			HTML:             "https://unsplash.com/photos/" + knownID,
 			DownloadLocation: "http://" + r.Host + "/track",
 		}
-		with.Urls = photoURLs{Full: "http://" + r.Host + "/img.jpg", Thumb: "https://example.com/thumb.jpg"}
+		with.Urls = photoURLs{Full: "http://" + r.Host + imgPath, Thumb: "https://example.com/thumb.jpg"}
 		_ = json.NewEncoder(w).Encode(with)
 	})
 	mux.HandleFunc("/track", func(w http.ResponseWriter, _ *http.Request) {
 		c.recordTrackHit()
 		_ = json.NewEncoder(w).Encode(map[string]string{"url": "http://example.com/tracked"})
 	})
-	mux.HandleFunc("/img.jpg", func(w http.ResponseWriter, _ *http.Request) {
+	mux.HandleFunc(imgPath, func(w http.ResponseWriter, _ *http.Request) {
 		c.recordImgHit()
-		w.Header().Set("Content-Type", "image/jpeg")
-		_, _ = w.Write([]byte("fake-jpeg-bytes"))
+		// No Content-Type header: the provider derives it by sniffing the bytes, not from the response.
+		_, _ = w.Write(jpegBytes)
 	})
 
 	countingMux := http.NewServeMux()
@@ -286,7 +294,7 @@ func TestFetchColdTriggersDownloadBeforeImage(t *testing.T) {
 
 	require.Equal(t, knownID+".jpg", blob.Filename)
 	require.Equal(t, "image/jpeg", blob.ContentType)
-	require.Equal(t, []byte("fake-jpeg-bytes"), blob.Content)
+	require.Equal(t, jpegBytes, blob.Content)
 	require.Equal(t, creatorNm, blob.Asset.Source)
 	require.Equal(t, "Photo by Someone on Unsplash", blob.Asset.License.Attribution)
 	require.True(t, blob.Asset.License.RequiresAttribution)
@@ -311,7 +319,7 @@ func TestFetchWarmCacheMakesNoHTTPRequests(t *testing.T) {
 
 	blob2, err := p.Fetch(ctx, knownID, assetcore.PhotoFetchOpts{})
 	require.NoError(t, err)
-	require.Equal(t, []byte("fake-jpeg-bytes"), blob2.Content)
+	require.Equal(t, jpegBytes, blob2.Content)
 	require.Equal(t, creatorNm, blob2.Asset.Source)
 	require.Equal(t, warmTotal, atomic.LoadInt32(&c.totalRequests))
 	require.Equal(t, warmTrack, atomic.LoadInt32(&c.trackRequests))
