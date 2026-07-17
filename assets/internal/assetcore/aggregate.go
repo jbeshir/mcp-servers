@@ -9,7 +9,7 @@ import (
 
 // searchProviderTimeout bounds each provider's Search during a fan-out so one slow provider cannot
 // stall the aggregate. Embedded providers are in-process and never approach it; it is set generously
-// for the remote providers (iconify, googlefonts, openverse, ambientcg), which can legitimately be slow.
+// for the remote providers, keyless and opt-in keyed alike, which can legitimately be slow.
 const searchProviderTimeout = 30 * time.Second
 
 // cursorProvider names the pseudo-provider a Warning is attributed to when the aggregate cursor
@@ -51,6 +51,12 @@ func (r *Registry) SearchPhotos(ctx context.Context, opts SearchOpts) ([]Asset, 
 // providers allowed by opts.Providers) and merges the results.
 func (r *Registry) SearchTextures(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
 	return aggregateSearch(ctx, r.Textures(), opts)
+}
+
+// SearchModels fans out across the model providers named in opts.Cursor (or, on a first page, all
+// providers allowed by opts.Providers) and merges the results.
+func (r *Registry) SearchModels(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
+	return aggregateSearch(ctx, r.Models(), opts)
 }
 
 // searchable is the constraint aggregateSearch and recoveringSearch need: a Provider that can also

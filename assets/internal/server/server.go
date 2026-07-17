@@ -5,8 +5,9 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 )
 
-// Server is the MCP server for offline design assets (icons, illustrations, fonts). It serves assets
-// entirely through the provider registry; providers self-describe their sources for discovery.
+// Server is the MCP server for offline design assets (icons, illustrations, fonts, photos, textures,
+// 3D models). It serves assets entirely through the provider registry; providers self-describe their
+// sources for discovery.
 type Server struct {
 	mcpServer *server.MCPServer
 	registry  *assetcore.Registry

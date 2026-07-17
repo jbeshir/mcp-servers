@@ -34,6 +34,14 @@ type TextureFetchOpts struct {
 	Format     string
 }
 
+// ModelFetchOpts selects which variant of a 3D model to download. An empty Format resolves to the
+// provider's default (e.g. "glb"/"gltf"); an empty Resolution resolves to the provider's default, for
+// providers whose models carry PBR textures at multiple resolutions.
+type ModelFetchOpts struct {
+	Format     string
+	Resolution string
+}
+
 // IconProvider serves icon assets. Search finds icons; Fetch materializes one from its provider-local
 // id (the local half of a composite Asset.ID), rendered per the typed opts.
 type IconProvider interface {
@@ -73,6 +81,14 @@ type TextureProvider interface {
 	Provider
 	Search(ctx context.Context, opts SearchOpts) (SearchResult, error)
 	Fetch(ctx context.Context, id string, opts TextureFetchOpts) (Blob, error)
+}
+
+// ModelProvider serves 3D model assets. Fetch takes the provider-local id plus the format/resolution
+// selectors in ModelFetchOpts.
+type ModelProvider interface {
+	Provider
+	Search(ctx context.Context, opts SearchOpts) (SearchResult, error)
+	Fetch(ctx context.Context, id string, opts ModelFetchOpts) (Blob, error)
 }
 
 // FontFaceRenderer is an optional capability a FontProvider may implement to render an @font-face CSS

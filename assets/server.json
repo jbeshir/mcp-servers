@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.jbeshir/assets-mcp",
   "title": "Assets",
-  "description": "Search and fetch icons, illustrations, fonts, photos and textures with license metadata.",
+  "description": "Search and fetch icons, illustrations, fonts, photos, textures and 3D models with license metadata.",
   "version": "0.0.0",
   "repository": {
     "url": "https://github.com/jbeshir/mcp-servers",
@@ -33,6 +33,36 @@
         {
           "name": "ASSETS_CACHE_DIR",
           "description": "On-disk cache dir for remote fetches (default: OS cache dir + /assets-mcp)",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "ASSETS_UNSPLASH_ACCESS_KEY",
+          "description": "Unsplash Access Key; enables the Unsplash photo provider when set",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "ASSETS_PIXABAY_KEY",
+          "description": "Pixabay API key; enables the Pixabay photo provider when set",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "ASSETS_PEXELS_KEY",
+          "description": "Pexels API key; enables the Pexels photo provider when set",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "ASSETS_POLYPIZZA_KEY",
+          "description": "Poly Pizza API key; enables the Poly Pizza 3D model provider when set",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "ASSETS_POLYHAVEN_ENABLE",
+          "description": "Set to 1 to enable Poly Haven models (its API terms are non-commercial)",
           "isRequired": false,
           "isSecret": false
         }

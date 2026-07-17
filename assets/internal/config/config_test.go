@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 // providerNames returns the Name() of every provider registered on r, across all kinds.
@@ -81,6 +83,56 @@ func TestLoadConfigDisableRemoteDefaultsFalse(t *testing.T) {
 	}
 }
 
+func TestLoadConfigHonorsKeyedProviderEnv(t *testing.T) {
+	t.Setenv(envUnsplashAccessKey, "unsplash-key")
+	t.Setenv(envPixabayKey, "pixabay-key")
+	t.Setenv(envPexelsKey, "pexels-key")
+	t.Setenv(envPolyPizzaKey, "polypizza-key")
+	t.Setenv(envPolyHavenEnable, "1")
+
+	cfg := LoadConfig()
+	if cfg.UnsplashAccessKey != "unsplash-key" {
+		t.Errorf("LoadConfig().UnsplashAccessKey = %q, want %q", cfg.UnsplashAccessKey, "unsplash-key")
+	}
+	if cfg.PixabayKey != "pixabay-key" {
+		t.Errorf("LoadConfig().PixabayKey = %q, want %q", cfg.PixabayKey, "pixabay-key")
+	}
+	if cfg.PexelsKey != "pexels-key" {
+		t.Errorf("LoadConfig().PexelsKey = %q, want %q", cfg.PexelsKey, "pexels-key")
+	}
+	if cfg.PolyPizzaKey != "polypizza-key" {
+		t.Errorf("LoadConfig().PolyPizzaKey = %q, want %q", cfg.PolyPizzaKey, "polypizza-key")
+	}
+	if !cfg.PolyHavenEnable {
+		t.Errorf("LoadConfig().PolyHavenEnable = false, want true")
+	}
+}
+
+func TestLoadConfigKeyedProviderEnvDefaultsEmpty(t *testing.T) {
+	t.Setenv(envUnsplashAccessKey, "")
+	t.Setenv(envPixabayKey, "")
+	t.Setenv(envPexelsKey, "")
+	t.Setenv(envPolyPizzaKey, "")
+	t.Setenv(envPolyHavenEnable, "")
+
+	cfg := LoadConfig()
+	if cfg.UnsplashAccessKey != "" {
+		t.Errorf("LoadConfig().UnsplashAccessKey = %q, want empty", cfg.UnsplashAccessKey)
+	}
+	if cfg.PixabayKey != "" {
+		t.Errorf("LoadConfig().PixabayKey = %q, want empty", cfg.PixabayKey)
+	}
+	if cfg.PexelsKey != "" {
+		t.Errorf("LoadConfig().PexelsKey = %q, want empty", cfg.PexelsKey)
+	}
+	if cfg.PolyPizzaKey != "" {
+		t.Errorf("LoadConfig().PolyPizzaKey = %q, want empty", cfg.PolyPizzaKey)
+	}
+	if cfg.PolyHavenEnable {
+		t.Errorf("LoadConfig().PolyHavenEnable = true, want false")
+	}
+}
+
 var embeddedProviderNames = []string{"embedded-icons", "embedded-illustrations", "embedded-fonts"}
 
 var remoteProviderNames = []string{"iconify", "googlefonts", "openverse", "ambientcg"}
@@ -117,6 +169,56 @@ func TestSetupDefaultRegistersRemoteProviders(t *testing.T) {
 		if !names[name] {
 			t.Errorf("DisableRemote=false: provider %q not registered", name)
 		}
+	}
+}
+
+var keyedProviderNames = []string{"unsplash", "pixabay", "pexels", "polypizza", "polyhaven"}
+
+func TestSetupRegistersKeyedProvidersWhenCredentialsSet(t *testing.T) {
+	deps := Setup(Config{
+		UnsplashAccessKey: "k",
+		PixabayKey:        "k",
+		PexelsKey:         "k",
+		PolyPizzaKey:      "k",
+		PolyHavenEnable:   true,
+	})
+	names := providerNames(t, deps)
+
+	for _, name := range keyedProviderNames {
+		require.True(t, names[name], "provider %q should be registered when its key/flag is set", name)
+	}
+}
+
+func TestSetupOmitsKeyedProvidersWithoutCredentials(t *testing.T) {
+	deps := Setup(Config{})
+	names := providerNames(t, deps)
+
+	for _, name := range keyedProviderNames {
+		require.False(t, names[name], "provider %q should not be registered without its key/flag", name)
+	}
+	require.True(t, names["openverse"], "keyless remote %q should still be registered", "openverse")
+	require.True(t, names["ambientcg"], "keyless remote %q should still be registered", "ambientcg")
+}
+
+func TestSetupDisableRemoteOmitsKeyedProvidersEvenWithCredentials(t *testing.T) {
+	deps := Setup(Config{
+		DisableRemote:     true,
+		UnsplashAccessKey: "k",
+		PixabayKey:        "k",
+		PexelsKey:         "k",
+		PolyPizzaKey:      "k",
+		PolyHavenEnable:   true,
+	})
+	names := providerNames(t, deps)
+
+	for _, name := range keyedProviderNames {
+		require.False(t, names[name], "DisableRemote=true: keyed provider %q should not be registered", name)
+	}
+	for _, name := range remoteProviderNames {
+		require.False(t, names[name], "DisableRemote=true: keyless remote %q should not be registered", name)
+	}
+	for _, name := range embeddedProviderNames {
+		require.True(t, names[name], "DisableRemote=true: embedded provider %q should still be registered", name)
 	}
 }
 

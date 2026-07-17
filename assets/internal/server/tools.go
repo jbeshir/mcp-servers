@@ -12,11 +12,11 @@ func (s *Server) registerTools() {
 		mcp.WithDescription(
 			"List the registered asset providers and, for each, the upstream sources it serves "+
 				"(icon sets, illustration collections, font families, photo sources, texture/material "+
-				"sets) with license and item count. Returns a human-readable listing plus a structured "+
-				"JSON block. Optionally filter by kind (icon, illustration, font, photo, texture), by "+
-				"provider, or by source."),
+				"sets, 3D model sources) with license and item count. Returns a human-readable listing "+
+				"plus a structured JSON block. Optionally filter by kind (icon, illustration, font, "+
+				"photo, texture, model), by provider, or by source."),
 		mcp.WithString("kind",
-			mcp.Description("Restrict to a single asset kind: icon, illustration, font, photo, or texture"),
+			mcp.Description("Restrict to a single asset kind: icon, illustration, font, photo, texture, or model"),
 		),
 		mcp.WithArray("providers",
 			mcp.Description("Only list these providers (e.g. embedded-icons)"),
@@ -290,4 +290,57 @@ func (s *Server) registerTools() {
 		),
 		mcp.WithOutputSchema[fileManifest](),
 	), s.handleGetTexture)
+
+	s.mcpServer.AddTool(mcp.NewTool("search_models",
+		mcp.WithDescription(
+			"Search 3D model providers (Poly Pizza, Poly Haven) by name. Returns a text list of hits, "+
+				"each with its composite id (\"<provider>:<local>\") and a source/title label. Results "+
+				"come from keyed/opt-in providers only, so an empty result may mean no provider is "+
+				"configured. No files are written; pass a hit's id to get_model to fetch it."),
+		mcp.WithString("query",
+			mcp.Required(),
+			mcp.Description("Case-insensitive substring to match against model names"),
+		),
+		mcp.WithArray("sources",
+			mcp.Description("Restrict to these upstream sources (see list_asset_sources for names)"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("exclude_sources",
+			mcp.Description("Omit these upstream sources"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("providers",
+			mcp.Description("Restrict to these model providers"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("exclude_providers",
+			mcp.Description("Omit these model providers"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithNumber("limit",
+			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),
+		),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous search's next_cursor; omit for the first page"),
+		),
+	), s.handleSearchModels)
+
+	s.mcpServer.AddTool(mcp.NewTool("get_model",
+		mcp.WithDescription(
+			"Fetch a 3D model (a glTF/GLB file, or a zip of a glTF plus its referenced assets) and "+
+				"write it to disk. The id is the composite identifier from search_models, formatted "+
+				"\"<provider>:<local>\"."),
+		mcp.WithString("id",
+			mcp.Required(),
+			mcp.Description("Composite model id from search_models"),
+		),
+		mcp.WithString("format",
+			mcp.Description("Model file format, e.g. glb, gltf (default: provider default)"),
+		),
+		mcp.WithString("resolution",
+			mcp.Description("Texture resolution for models with multi-resolution PBR textures "+
+				"(default: provider default)"),
+		),
+		mcp.WithOutputSchema[fileManifest](),
+	), s.handleGetModel)
 }
