@@ -54,11 +54,11 @@ Read-only access to [Bunpro](https://bunpro.jp) Japanese grammar SRS data — us
 
 ### [Assets](assets/)
 
-Offline design assets — search and fetch icons (8 sets: Bootstrap Icons, Feather, Heroicons, Lucide, Material Symbols, Phosphor, Simple Icons, Tabler), illustrations (Open Doodles, Humaaans, Open Peeps), and fonts (14 OFL-1.1 families) with license/attribution metadata. Renders SVGs and writes files to disk; no network access required.
+Design assets — search and fetch icons, illustrations, fonts, photos, textures, 3D models, and audio, with license/attribution metadata. An embedded offline base (icons, illustrations, fonts) plus four keyless remote APIs work with no configuration; seven further opt-in keyed providers (Unsplash, Pixabay, Pexels, Poly Pizza, Poly Haven, Jamendo, Freesound) unlock more photos, 3D models, and audio when their API key is set. Writes files to disk.
 
-**7 tools:** `list_asset_sources`, `search_icons`, `get_icon`, `search_illustrations`, `get_illustration`, `search_fonts`, `get_font`
+**15 tools:** `list_asset_sources`, `search_icons`, `get_icon`, `search_illustrations`, `get_illustration`, `search_fonts`, `get_font`, `search_photos`, `get_photo`, `search_textures`, `get_texture`, `search_models`, `get_model`, `search_audio`, `get_audio`
 
-**Requires:** none (offline)
+**Requires:** none for the offline/keyless base; optional API keys unlock further keyed providers (see assets/README.md)
 
 ## Installation
 

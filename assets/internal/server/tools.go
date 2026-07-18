@@ -343,4 +343,53 @@ func (s *Server) registerTools() {
 		),
 		mcp.WithOutputSchema[fileManifest](),
 	), s.handleGetModel)
+
+	s.mcpServer.AddTool(mcp.NewTool("search_audio",
+		mcp.WithDescription(
+			"Search audio providers (Jamendo, Freesound) by name. Returns a text list of hits, each "+
+				"with its composite id (\"<provider>:<local>\") and a source/title label. Results come "+
+				"from keyed/opt-in providers only, so an empty result may mean no provider is "+
+				"configured. No files are written; pass a hit's id to get_audio to fetch it."),
+		mcp.WithString("query",
+			mcp.Required(),
+			mcp.Description("Case-insensitive substring to match against audio clip names"),
+		),
+		mcp.WithArray("sources",
+			mcp.Description("Restrict to these upstream sources (see list_asset_sources for names)"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("exclude_sources",
+			mcp.Description("Omit these upstream sources"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("providers",
+			mcp.Description("Restrict to these audio providers"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithArray("exclude_providers",
+			mcp.Description("Omit these audio providers"),
+			mcp.Items(stringArrayItems),
+		),
+		mcp.WithNumber("limit",
+			mcp.Description("Maximum number of results to return (default: 50, max: 200)"),
+		),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous search's next_cursor; omit for the first page"),
+		),
+	), s.handleSearchAudio)
+
+	s.mcpServer.AddTool(mcp.NewTool("get_audio",
+		mcp.WithDescription(
+			"Fetch an audio clip (mp3 or ogg) and write it to disk. The id is the composite identifier "+
+				"from search_audio, formatted \"<provider>:<local>\". Note: for Freesound, the fetched "+
+				"audio is its high-quality preview, not the original master file."),
+		mcp.WithString("id",
+			mcp.Required(),
+			mcp.Description("Composite audio id from search_audio"),
+		),
+		mcp.WithString("format",
+			mcp.Description("Audio encoding: \"mp3\" (default) or \"ogg\""),
+		),
+		mcp.WithOutputSchema[fileManifest](),
+	), s.handleGetAudio)
 }

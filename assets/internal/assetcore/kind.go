@@ -4,8 +4,8 @@
 // providers live under internal/providers and depend on this package, never the reverse.
 package assetcore
 
-// Kind enumerates the asset kinds this server serves: icon, illustration, font, photo, texture, and
-// model.
+// Kind enumerates the asset kinds this server serves: icon, illustration, font, photo, texture,
+// model, and audio.
 type Kind string
 
 const (
@@ -22,4 +22,6 @@ const (
 	// KindModel is a 3D model, delivered as a glTF/GLB file or a zip of a glTF plus its referenced
 	// assets.
 	KindModel Kind = "model"
+	// KindAudio is an audio clip (an mp3 or ogg file).
+	KindAudio Kind = "audio"
 )

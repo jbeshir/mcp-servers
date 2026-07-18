@@ -14,8 +14,10 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedfonts"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedicons"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedillustrations"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/freesound"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/googlefonts"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/iconify"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/jamendo"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/openverse"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/pexels"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/pixabay"
@@ -36,14 +38,16 @@ const envDisableRemote = "ASSETS_DISABLE_REMOTE"
 // providers.
 const envCacheDir = "ASSETS_CACHE_DIR"
 
-// Environment variable names for the opt-in keyed providers: an access key/token for the first four,
-// and a plain enable flag for Poly Haven (which is keyless but gated by non-commercial API terms).
+// Environment variable names for the opt-in keyed providers: an access key/token for most, and a plain
+// enable flag for Poly Haven (which is keyless but gated by non-commercial API terms).
 const (
 	envUnsplashAccessKey = "ASSETS_UNSPLASH_ACCESS_KEY"
 	envPixabayKey        = "ASSETS_PIXABAY_KEY"
 	envPexelsKey         = "ASSETS_PEXELS_KEY"
 	envPolyPizzaKey      = "ASSETS_POLYPIZZA_KEY"
 	envPolyHavenEnable   = "ASSETS_POLYHAVEN_ENABLE"
+	envJamendoClientID   = "ASSETS_JAMENDO_CLIENT_ID"
+	envFreesoundAPIKey   = "ASSETS_FREESOUND_API_KEY"
 )
 
 // defaultOutputDirName is the subdirectory of the OS temp dir used when ASSETS_OUTPUT_DIR is unset.
@@ -89,6 +93,15 @@ const (
 	// polyHavenRPS and polyHavenBurst: Poly Haven's API is non-commercial use only; stay modest.
 	polyHavenRPS   = 1
 	polyHavenBurst = 3
+
+	// jamendoRPS and jamendoBurst: Jamendo's free API documents no hard limit; stay modest.
+	jamendoRPS   = 1
+	jamendoBurst = 3
+
+	// freesoundRPS and freesoundBurst: Freesound documents ~60 req/min for token-authenticated
+	// callers; stay modest.
+	freesoundRPS   = 1
+	freesoundBurst = 3
 )
 
 // Config holds the server's resolved configuration: the output directory, and the remote-provider
@@ -123,6 +136,14 @@ type Config struct {
 	// PolyHavenEnable gates the opt-in Poly Haven provider: unset means it is simply not registered,
 	// leaving the free providers as the default.
 	PolyHavenEnable bool
+
+	// JamendoClientID gates the opt-in Jamendo provider: empty means it is simply not registered,
+	// leaving the free providers as the default.
+	JamendoClientID string
+
+	// FreesoundAPIKey gates the opt-in Freesound provider: empty means it is simply not registered,
+	// leaving the free providers as the default.
+	FreesoundAPIKey string
 }
 
 // LoadConfig reads the server configuration from the environment.
@@ -136,6 +157,8 @@ func LoadConfig() Config {
 		PexelsKey:         os.Getenv(envPexelsKey),
 		PolyPizzaKey:      os.Getenv(envPolyPizzaKey),
 		PolyHavenEnable:   os.Getenv(envPolyHavenEnable) != "",
+		JamendoClientID:   os.Getenv(envJamendoClientID),
+		FreesoundAPIKey:   os.Getenv(envFreesoundAPIKey),
 	}
 }
 
@@ -201,6 +224,12 @@ func addKeyedProviders(r *assetcore.Registry, cfg Config, client *httpx.Client, 
 	}
 	if cfg.PolyHavenEnable {
 		r.AddModel(polyhaven.New(client, ratelimit.New(polyHavenRPS, polyHavenBurst), c))
+	}
+	if cfg.JamendoClientID != "" {
+		r.AddAudio(jamendo.New(client, ratelimit.New(jamendoRPS, jamendoBurst), c, cfg.JamendoClientID))
+	}
+	if cfg.FreesoundAPIKey != "" {
+		r.AddAudio(freesound.New(client, ratelimit.New(freesoundRPS, freesoundBurst), c, cfg.FreesoundAPIKey))
 	}
 }
 

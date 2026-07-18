@@ -16,6 +16,7 @@ type Registry struct {
 	photos        map[string]PhotoProvider
 	textures      map[string]TextureProvider
 	models        map[string]ModelProvider
+	audio         map[string]AudioProvider
 }
 
 // NewRegistry returns an empty registry ready for Add* calls.
@@ -27,6 +28,7 @@ func NewRegistry() *Registry {
 		photos:        map[string]PhotoProvider{},
 		textures:      map[string]TextureProvider{},
 		models:        map[string]ModelProvider{},
+		audio:         map[string]AudioProvider{},
 	}
 }
 
@@ -48,6 +50,9 @@ func (r *Registry) AddTexture(p TextureProvider) { r.textures[p.Name()] = p }
 // AddModel registers a model provider under its Name.
 func (r *Registry) AddModel(p ModelProvider) { r.models[p.Name()] = p }
 
+// AddAudio registers an audio provider under its Name.
+func (r *Registry) AddAudio(p AudioProvider) { r.audio[p.Name()] = p }
+
 // Icons returns the registered icon providers ordered deterministically by name.
 func (r *Registry) Icons() []IconProvider { return sortedProviders(r.icons) }
 
@@ -65,6 +70,9 @@ func (r *Registry) Textures() []TextureProvider { return sortedProviders(r.textu
 
 // Models returns the registered model providers ordered deterministically by name.
 func (r *Registry) Models() []ModelProvider { return sortedProviders(r.models) }
+
+// Audio returns the registered audio providers ordered deterministically by name.
+func (r *Registry) Audio() []AudioProvider { return sortedProviders(r.audio) }
 
 // route resolves id's composite provider prefix against m and reports the provider-local remainder. A
 // malformed id or an unknown provider name is reported as ErrNotFound.
@@ -154,6 +162,17 @@ func (r *Registry) FetchModel(ctx context.Context, id string, opts ModelFetchOpt
 	return p.Fetch(ctx, local, opts)
 }
 
+// FetchAudio routes id to the provider named in its composite prefix and fetches the audio by its
+// provider-local id. A malformed id or an unknown provider name is reported as ErrNotFound.
+func (r *Registry) FetchAudio(ctx context.Context, id string, opts AudioFetchOpts) (Blob, error) {
+	p, local, err := route(r.audio, "audio", id)
+	if err != nil {
+		return Blob{}, err
+	}
+
+	return p.Fetch(ctx, local, opts)
+}
+
 // ProviderInfo describes a registered provider and, when it implements SourceLister, the upstream
 // sources it serves. Sources is nil for providers that cannot enumerate their catalogue.
 type ProviderInfo struct {
@@ -191,6 +210,9 @@ func (r *Registry) Providers() []ProviderInfo {
 		collect(p)
 	}
 	for _, p := range r.Models() {
+		collect(p)
+	}
+	for _, p := range r.Audio() {
 		collect(p)
 	}
 
