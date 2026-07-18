@@ -18,6 +18,7 @@ const (
 	simpleIconsSet           = "simple-icons"
 	defaultTextureResolution = "1K"
 	defaultTextureFormat     = "JPG"
+	defaultAudioFormat       = "mp3"
 )
 
 // stringArg reads a string argument, defaulting to "" if absent or of the wrong type.
@@ -646,4 +647,63 @@ func (s *Server) handleGetModel(
 	}
 
 	return newFileResult(fmt.Sprintf("Wrote model %s to %s", id, path), []manifestFile{manifestFileFor(path, blob)})
+}
+
+func (s *Server) handleSearchAudio(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	args := request.GetArguments()
+
+	query := stringArg(args, "query")
+	if query == "" {
+		return mcp.NewToolResultError("query is required"), nil
+	}
+
+	assets, nextCursor, warns := s.registry.SearchAudio(ctx, assetcore.SearchOpts{
+		Query:     query,
+		Cursor:    stringArg(args, "cursor"),
+		Limit:     intArg(args, "limit", 0),
+		Sources:   filterArg(args, "sources", "exclude_sources"),
+		Providers: filterArg(args, "providers", "exclude_providers"),
+	})
+
+	lines := sourceTitleLines(assets)
+
+	return searchResult(fmt.Sprintf("%d audio clip(s) matching %q:", len(assets), query), lines, nextCursor, warns), nil
+}
+
+func (s *Server) handleGetAudio(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	args := request.GetArguments()
+
+	id := stringArg(args, "id")
+	if id == "" {
+		return mcp.NewToolResultError("id is required"), nil
+	}
+
+	format := stringArg(args, "format")
+	if format == "" {
+		format = defaultAudioFormat
+	}
+
+	blob, err := s.registry.FetchAudio(ctx, id, assetcore.AudioFetchOpts{Format: format})
+	if err != nil {
+		if errors.Is(err, assetcore.ErrNotFound) {
+			return mcp.NewToolResultError(fmt.Sprintf("audio not found: %s format=%s", id, format)), nil
+		}
+
+		return nil, fmt.Errorf("get audio %s: %w", id, err)
+	}
+
+	filename := sanitizeSuffixedFilename("audio-", blob.Filename)
+
+	path, err := writeAsset(s.outputDir, filename, blob.Content)
+	if err != nil {
+		return nil, fmt.Errorf("write audio %s: %w", id, err)
+	}
+
+	return newFileResult(fmt.Sprintf("Wrote audio %s to %s", id, path), []manifestFile{manifestFileFor(path, blob)})
 }

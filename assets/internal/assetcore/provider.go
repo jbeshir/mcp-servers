@@ -42,6 +42,13 @@ type ModelFetchOpts struct {
 	Resolution string
 }
 
+// AudioFetchOpts selects which encoding of an audio clip to download. An empty Format resolves to
+// the provider's default of "mp3"; the only other supported value is "ogg". Providers map these to
+// their own format selectors and treat any unrecognized value as the "mp3" default.
+type AudioFetchOpts struct {
+	Format string
+}
+
 // IconProvider serves icon assets. Search finds icons; Fetch materializes one from its provider-local
 // id (the local half of a composite Asset.ID), rendered per the typed opts.
 type IconProvider interface {
@@ -89,6 +96,14 @@ type ModelProvider interface {
 	Provider
 	Search(ctx context.Context, opts SearchOpts) (SearchResult, error)
 	Fetch(ctx context.Context, id string, opts ModelFetchOpts) (Blob, error)
+}
+
+// AudioProvider serves audio assets. Fetch takes the provider-local id plus the encoding selector
+// in AudioFetchOpts.
+type AudioProvider interface {
+	Provider
+	Search(ctx context.Context, opts SearchOpts) (SearchResult, error)
+	Fetch(ctx context.Context, id string, opts AudioFetchOpts) (Blob, error)
 }
 
 // FontFaceRenderer is an optional capability a FontProvider may implement to render an @font-face CSS
