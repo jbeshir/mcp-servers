@@ -762,8 +762,13 @@ func (s *Server) handleSearchSprites(ctx context.Context, request mcp.CallToolRe
 	if query == "" {
 		return mcp.NewToolResultError("query is required"), nil
 	}
-	assets, next, warns := s.registry.SearchSprites(ctx, assetcore.SearchOpts{Query: query, Cursor: stringArg(args, "cursor"), Limit: intArg(args, "limit", 0), Sources: filterArg(args, "sources", "exclude_sources"), Providers: filterArg(args, "providers", "exclude_providers")})
-	return searchResult(fmt.Sprintf("%d sprite(s) matching %q:", len(assets), query), sourceTitleLines(assets), next, warns), nil
+	assets, next, warns := s.registry.SearchSprites(ctx, assetcore.SearchOpts{
+		Query: query, Cursor: stringArg(args, "cursor"), Limit: intArg(args, "limit", 0),
+		Sources:   filterArg(args, "sources", "exclude_sources"),
+		Providers: filterArg(args, "providers", "exclude_providers"),
+	})
+	message := fmt.Sprintf("%d sprite(s) matching %q:", len(assets), query)
+	return searchResult(message, sourceTitleLines(assets), next, warns), nil
 }
 
 func (s *Server) handleGetSprite(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -809,7 +814,12 @@ func (s *Server) handleGetPack(_ context.Context, request mcp.CallToolRequest) (
 	if closeErr != nil {
 		return nil, fmt.Errorf("close pack %s: %w", id, closeErr)
 	}
-	blob := assetcore.Blob{Asset: assetcore.Asset{ID: "assetsdb:" + id, Kind: assetcore.Kind("pack"), Source: id, Title: p.Title, License: p.License}, Content: data, Filename: sanitizeFilename(id) + ".zip", ContentType: "application/zip"}
+	blob := assetcore.Blob{
+		Asset: assetcore.Asset{
+			ID: "assetsdb:" + id, Kind: assetcore.Kind("pack"), Source: id, Title: p.Title, License: p.License,
+		},
+		Content: data, Filename: sanitizeFilename(id) + ".zip", ContentType: "application/zip",
+	}
 	out, err := writeAsset(s.outputDir, blob.Filename, data)
 	if err != nil {
 		return nil, fmt.Errorf("write pack %s: %w", id, err)

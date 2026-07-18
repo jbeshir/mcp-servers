@@ -121,7 +121,9 @@ func (p *provider) fetch(id string) (assetcore.Blob, error) {
 	if closeErr != nil {
 		return assetcore.Blob{}, fmt.Errorf("close assetsdb item %s: %w", id, closeErr)
 	}
-	return assetcore.Blob{Asset: p.asset(item), Content: b, Filename: path.Base(item.Path), ContentType: item.MediaType}, nil
+	return assetcore.Blob{
+		Asset: p.asset(item), Content: b, Filename: path.Base(item.Path), ContentType: item.MediaType,
+	}, nil
 }
 
 func (p *provider) Sources() []assetcore.Source {

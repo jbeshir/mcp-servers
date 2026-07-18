@@ -44,7 +44,7 @@ func newGameartTestServer(t *testing.T) (*Server, []byte, string) {
 	src := format.Source{Name: "tiny-pack", Title: "Tiny Pack", Path: "sources/tiny-pack.zip", Licenses: []format.License{{Name: "CC0-1.0", Title: "CC Zero"}}}
 	item := format.Item{Name: "hero", Title: "Hero", ID: "assetsdb:tiny-pack/sprites/sheet.png#hero", Source: src.Name, Kind: format.KindSprite2D, Path: "sprites/sheet.png", MediaType: "image/png", Region: &format.Region{X: 1, Y: 2, Width: 8, Height: 9}}
 	require.NoError(t, format.Write(dbDir, &format.DataPackage{Name: "fixture", Title: "Fixture", Version: "1", Created: "2026-07-18T00:00:00Z", SchemaVersion: 1, Sources: []format.Source{src}, Resources: []format.Item{item}}))
-	require.NoError(t, os.MkdirAll(filepath.Join(dbDir, "sources"), 0o755))
+	require.NoError(t, os.MkdirAll(filepath.Join(dbDir, "sources"), 0o750))
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
 	w, err := zw.Create(item.Path)

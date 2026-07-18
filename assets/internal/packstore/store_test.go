@@ -16,7 +16,8 @@ func TestStoreOpensOnlyIndexedOriginalZIP(t *testing.T) {
 	src := format.Source{Name: "pack", Title: "Pack", Path: "sources/pack.zip", Licenses: []format.License{{Name: "CC0-1.0"}}}
 	item := format.Item{Name: "a", Title: "A", ID: "assetsdb:pack/a.png", Source: "pack", Kind: format.KindSprite2D, Path: "a.png"}
 	require.NoError(t, format.Write(dir, &format.DataPackage{Name: "fixture", Title: "Fixture", Version: "1", Created: "now", SchemaVersion: 1, Sources: []format.Source{src}, Resources: []format.Item{item}}))
-	require.NoError(t, os.MkdirAll(filepath.Join(dir, "sources"), 0o755))
+	require.NoError(t, os.MkdirAll(filepath.Join(dir, "sources"), 0o750))
+	// #nosec G304 -- the path is a fixed test fixture beneath t.TempDir.
 	f, err := os.Create(filepath.Join(dir, src.Path))
 	require.NoError(t, err)
 	z := zip.NewWriter(f)

@@ -94,6 +94,7 @@ func (f *FS) Open(id string) (io.ReadCloser, Pack, error) {
 	if !ok {
 		return nil, Pack{}, fmt.Errorf("%w: unsafe pack path", assetcore.ErrNotFound)
 	}
+	// #nosec G304 -- name is accepted only when New has verified it is within the configured database root.
 	r, err := os.Open(name)
 	if os.IsNotExist(err) {
 		err = fmt.Errorf("%w: pack file", assetcore.ErrNotFound)

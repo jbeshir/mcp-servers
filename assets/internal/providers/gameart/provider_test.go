@@ -3,7 +3,6 @@ package gameart
 import (
 	"archive/zip"
 	"context"
-	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -24,7 +23,8 @@ func fixtureDB(t *testing.T) *format.DB {
 		{Name: "pixel", Title: "Pixel Font", ID: "assetsdb:tiny-pack/fonts/pixel.ttf", Source: pack.Name, Kind: format.KindFont, Path: "fonts/pixel.ttf", MediaType: "font/ttf"},
 	}
 	require.NoError(t, format.Write(dir, &format.DataPackage{Name: "fixture", Title: "Fixture", Version: "1", Created: "2026-07-18T00:00:00Z", SchemaVersion: 1, Sources: []format.Source{pack}, Resources: items}))
-	require.NoError(t, os.MkdirAll(filepath.Join(dir, "sources"), 0o755))
+	require.NoError(t, os.MkdirAll(filepath.Join(dir, "sources"), 0o750))
+	// #nosec G304 -- the path is a fixed test fixture beneath t.TempDir.
 	f, err := os.Create(filepath.Join(dir, pack.Path))
 	require.NoError(t, err)
 	zw := zip.NewWriter(f)
@@ -63,5 +63,5 @@ func TestProvidersSearchAndFetchRealZIP(t *testing.T) {
 	require.NotEmpty(t, NewAudio(db).Sources())
 	require.NotEmpty(t, NewFonts(db).Sources())
 	_, err = sprites.Search(context.Background(), assetcore.SearchOpts{Providers: assetcore.Filter{Except: []string{"assetsdb"}}})
-	require.False(t, errors.Is(err, assetcore.ErrNotFound))
+	require.NotErrorIs(t, err, assetcore.ErrNotFound)
 }
