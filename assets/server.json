@@ -65,6 +65,18 @@
           "description": "Set to 1 to enable Poly Haven models (its API terms are non-commercial)",
           "isRequired": false,
           "isSecret": false
+        },
+        {
+          "name": "ASSETS_JAMENDO_CLIENT_ID",
+          "description": "Jamendo client id; enables the Jamendo audio provider when set",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "ASSETS_FREESOUND_API_KEY",
+          "description": "Freesound API key; enables the Freesound audio provider when set",
+          "isRequired": false,
+          "isSecret": true
         }
       ]
     }
