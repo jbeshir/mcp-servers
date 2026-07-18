@@ -35,17 +35,10 @@ func TestClientDoesNotOverrideCallerUserAgent(t *testing.T) {
 	defer srv.Close()
 
 	c := New(Config{})
-	req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, srv.URL, nil)
+	_, err := c.GetBytesHeaders(t.Context(), srv.URL, http.Header{"User-Agent": []string{customUA}})
 	if err != nil {
-		t.Fatalf("NewRequestWithContext: %v", err)
+		t.Fatalf("GetBytesHeaders: %v", err)
 	}
-	req.Header.Set("User-Agent", customUA)
-
-	resp, err := c.Do(req)
-	if err != nil {
-		t.Fatalf("Do: %v", err)
-	}
-	_ = resp.Body.Close()
 
 	if gotUA != customUA {
 		t.Fatalf("User-Agent = %q, want %q", gotUA, customUA)

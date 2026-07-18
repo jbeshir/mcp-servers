@@ -45,6 +45,7 @@ func loginHandler(t *testing.T, loginPage []byte) http.Handler {
 
 func handleSignIn(t *testing.T, w http.ResponseWriter, r *http.Request) {
 	t.Helper()
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "bad form", http.StatusBadRequest)
 		return

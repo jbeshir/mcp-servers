@@ -20,7 +20,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
-          version: v2.8.0
+          version: v2.11.4
           install-mode: goinstall
           args: --config .golangci.yml ./workflowy/... ./manifold/... ./supermarkets-uk/... ./amazon-products/... ./wanikani/... ./bunpro/... ./assets/...
 

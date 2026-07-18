@@ -196,16 +196,18 @@ func TestPagination(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	var serverURL string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		if strings.Contains(r.URL.RawQuery, "page_after_id") {
 			_, _ = w.Write(page2)
 		} else {
 			body := strings.ReplaceAll(string(page1), "NEXT_URL_PLACEHOLDER",
-				"http://"+r.Host+"/v2/assignments?levels=1&page_after_id=3")
+				serverURL+"/v2/assignments?levels=1&page_after_id=3")
 			_, _ = w.Write([]byte(body))
 		}
 	}))
+	serverURL = srv.URL
 	t.Cleanup(srv.Close)
 
 	c := NewClient(srv.URL, "test-token")
@@ -227,12 +229,14 @@ func TestPaginationRespectsLimit(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	var serverURL string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		body := strings.ReplaceAll(string(page1), "NEXT_URL_PLACEHOLDER",
-			"http://"+r.Host+"/v2/assignments?levels=1&page_after_id=3")
+			serverURL+"/v2/assignments?levels=1&page_after_id=3")
 		_, _ = w.Write([]byte(body))
 	}))
+	serverURL = srv.URL
 	t.Cleanup(srv.Close)
 
 	c := NewClient(srv.URL, "test-token")

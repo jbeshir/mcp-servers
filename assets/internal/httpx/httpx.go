@@ -93,12 +93,6 @@ func New(cfg Config) *Client {
 	}
 }
 
-// Do sends req and returns the raw response, for callers needing a custom request (e.g. a per-request
-// User-Agent override). The caller is responsible for reading and closing the response body.
-func (c *Client) Do(req *http.Request) (*http.Response, error) {
-	return c.httpClient.Do(req)
-}
-
 // GetJSON issues a GET to url and decodes the JSON response body into v. A non-2xx status is reported
 // as a *StatusError.
 func (c *Client) GetJSON(ctx context.Context, url string, v any) error {
