@@ -14,6 +14,7 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedfonts"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedicons"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedillustrations"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/freesound"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/googlefonts"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/iconify"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/jamendo"
@@ -46,6 +47,7 @@ const (
 	envPolyPizzaKey      = "ASSETS_POLYPIZZA_KEY"
 	envPolyHavenEnable   = "ASSETS_POLYHAVEN_ENABLE"
 	envJamendoClientID   = "ASSETS_JAMENDO_CLIENT_ID"
+	envFreesoundAPIKey   = "ASSETS_FREESOUND_API_KEY"
 )
 
 // defaultOutputDirName is the subdirectory of the OS temp dir used when ASSETS_OUTPUT_DIR is unset.
@@ -95,6 +97,11 @@ const (
 	// jamendoRPS and jamendoBurst: Jamendo's free API documents no hard limit; stay modest.
 	jamendoRPS   = 1
 	jamendoBurst = 3
+
+	// freesoundRPS and freesoundBurst: Freesound documents ~60 req/min for token-authenticated
+	// callers; stay modest.
+	freesoundRPS   = 1
+	freesoundBurst = 3
 )
 
 // Config holds the server's resolved configuration: the output directory, and the remote-provider
@@ -133,6 +140,10 @@ type Config struct {
 	// JamendoClientID gates the opt-in Jamendo provider: empty means it is simply not registered,
 	// leaving the free providers as the default.
 	JamendoClientID string
+
+	// FreesoundAPIKey gates the opt-in Freesound provider: empty means it is simply not registered,
+	// leaving the free providers as the default.
+	FreesoundAPIKey string
 }
 
 // LoadConfig reads the server configuration from the environment.
@@ -147,6 +158,7 @@ func LoadConfig() Config {
 		PolyPizzaKey:      os.Getenv(envPolyPizzaKey),
 		PolyHavenEnable:   os.Getenv(envPolyHavenEnable) != "",
 		JamendoClientID:   os.Getenv(envJamendoClientID),
+		FreesoundAPIKey:   os.Getenv(envFreesoundAPIKey),
 	}
 }
 
@@ -215,6 +227,9 @@ func addKeyedProviders(r *assetcore.Registry, cfg Config, client *httpx.Client, 
 	}
 	if cfg.JamendoClientID != "" {
 		r.AddAudio(jamendo.New(client, ratelimit.New(jamendoRPS, jamendoBurst), c, cfg.JamendoClientID))
+	}
+	if cfg.FreesoundAPIKey != "" {
+		r.AddAudio(freesound.New(client, ratelimit.New(freesoundRPS, freesoundBurst), c, cfg.FreesoundAPIKey))
 	}
 }
 
