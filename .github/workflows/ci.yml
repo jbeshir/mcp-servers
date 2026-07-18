@@ -15,7 +15,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.25"
+          go-version: "1.26.5"
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
@@ -33,7 +33,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.25"
+          go-version: "1.26.5"
 
       - name: Run tests
         run: make test-short
@@ -48,7 +48,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.25"
+          go-version: "1.26.5"
 
       - name: Build all servers
         run: make build
@@ -63,7 +63,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.25"
+          go-version: "1.26.5"
 
       - name: Check generated mocks are up to date
         run: make check-mocks
