@@ -4,17 +4,21 @@
 package config
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 
+	"github.com/jbeshir/assetsdb/format"
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/jbeshir/mcp-servers/assets/internal/cache"
 	"github.com/jbeshir/mcp-servers/assets/internal/httpx"
+	"github.com/jbeshir/mcp-servers/assets/internal/packstore"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/ambientcg"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedfonts"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedicons"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedillustrations"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/freesound"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/gameart"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/googlefonts"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/iconify"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/jamendo"
@@ -37,6 +41,9 @@ const envDisableRemote = "ASSETS_DISABLE_REMOTE"
 // envCacheDir names the environment variable selecting the on-disk cache directory used by remote
 // providers.
 const envCacheDir = "ASSETS_CACHE_DIR"
+
+// envAssetsDB selects an optional local assetsdb database root.
+const envAssetsDB = "ASSETS_DB"
 
 // Environment variable names for the opt-in keyed providers: an access key/token for most, and a plain
 // enable flag for Poly Haven (which is keyless but gated by non-commercial API terms).
@@ -107,6 +114,8 @@ const (
 // Config holds the server's resolved configuration: the output directory, and the remote-provider
 // toggle and cache directory used when remote providers are enabled.
 type Config struct {
+	// AssetsDB is the optional local assetsdb database root.
+	AssetsDB string
 	// OutputDir is the raw ASSETS_OUTPUT_DIR value; empty means "use the default temp directory".
 	OutputDir string
 
@@ -149,6 +158,7 @@ type Config struct {
 // LoadConfig reads the server configuration from the environment.
 func LoadConfig() Config {
 	return Config{
+		AssetsDB:          os.Getenv(envAssetsDB),
 		OutputDir:         os.Getenv(envOutputDir),
 		DisableRemote:     os.Getenv(envDisableRemote) != "",
 		CacheDir:          os.Getenv(envCacheDir),
@@ -167,6 +177,7 @@ func LoadConfig() Config {
 type Deps struct {
 	Registry  *assetcore.Registry
 	OutputDir string
+	PackStore packstore.Store
 }
 
 // Setup builds the provider registry from cfg and resolves the asset output directory. It registers
@@ -180,6 +191,19 @@ func Setup(cfg Config) *Deps {
 	r.AddIcon(embeddedicons.New())
 	r.AddIllustration(embeddedillustrations.New())
 	r.AddFont(embeddedfonts.New())
+	var packs packstore.Store
+	if cfg.AssetsDB != "" {
+		db, err := format.Read(cfg.AssetsDB)
+		if err != nil {
+			log.Printf("assetsdb: unable to load %s: %v", cfg.AssetsDB, err)
+		} else {
+			r.AddModel(gameart.NewModels(db))
+			r.AddAudio(gameart.NewAudio(db))
+			r.AddFont(gameart.NewFonts(db))
+			r.AddSprite(gameart.NewSprites(db))
+			packs = packstore.New(cfg.AssetsDB, db)
+		}
+	}
 
 	if !cfg.DisableRemote {
 		client := httpx.New(httpx.Config{})
@@ -193,7 +217,7 @@ func Setup(cfg Config) *Deps {
 		outputDir = filepath.Join(os.TempDir(), defaultOutputDirName)
 	}
 
-	return &Deps{Registry: r, OutputDir: outputDir}
+	return &Deps{Registry: r, OutputDir: outputDir, PackStore: packs}
 }
 
 // addRemoteProviders registers the keyless remote providers onto r behind the shared HTTP client and

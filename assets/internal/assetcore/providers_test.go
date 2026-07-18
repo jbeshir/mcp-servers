@@ -35,6 +35,13 @@ func newIllustrationProvider(t *testing.T, name string) *mocks.IllustrationProvi
 	return m
 }
 
+func newSpriteProvider(t *testing.T, name string) *mocks.SpriteProvider {
+	m := mocks.NewSpriteProvider(t)
+	m.EXPECT().Name().Return(name)
+
+	return m
+}
+
 // expectIconFetchEcho makes m's Fetch return a Blob whose Asset.ID is the provider-local id it was
 // given and whose Content is the provider name, so routing tests can assert both.
 func expectIconFetchEcho(m *mocks.IconProvider, name string) {

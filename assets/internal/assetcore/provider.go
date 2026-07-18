@@ -28,6 +28,9 @@ type FontFetchOpts struct {
 // with no render parameters; the typed opts keeps the per-kind Fetch signature uniform.
 type PhotoFetchOpts struct{}
 
+// SpriteFetchOpts carries the (currently empty) fetch parameters for a sprite.
+type SpriteFetchOpts struct{}
+
 // TextureFetchOpts selects which material archive to download. Zero values resolve to 1K/JPG.
 type TextureFetchOpts struct {
 	Resolution string
@@ -104,6 +107,14 @@ type AudioProvider interface {
 	Provider
 	Search(ctx context.Context, opts SearchOpts) (SearchResult, error)
 	Fetch(ctx context.Context, id string, opts AudioFetchOpts) (Blob, error)
+}
+
+// SpriteProvider serves raster game-art sprites. Atlas sprites return their complete sheet and
+// describe the selected region in Asset.Meta.
+type SpriteProvider interface {
+	Provider
+	Search(ctx context.Context, opts SearchOpts) (SearchResult, error)
+	Fetch(ctx context.Context, id string, opts SpriteFetchOpts) (Blob, error)
 }
 
 // FontFaceRenderer is an optional capability a FontProvider may implement to render an @font-face CSS

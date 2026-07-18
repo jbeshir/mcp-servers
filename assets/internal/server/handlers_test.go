@@ -1,14 +1,18 @@
 package server
 
 import (
+	"archive/zip"
+	"bytes"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/jbeshir/assetsdb/format"
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/jbeshir/mcp-servers/assets/internal/config"
 	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/stretchr/testify/require"
 )
 
 // Composite ids exercised by the handler tests.
@@ -32,6 +36,26 @@ func TestSanitizeFilename(t *testing.T) {
 	if want := "a-b-c--d-e"; got != want {
 		t.Errorf("sanitizeFilename(%q) = %q, want %q", "a/b\\c..d e", got, want)
 	}
+}
+
+func newGameartTestServer(t *testing.T) (*Server, []byte, string) {
+	t.Helper()
+	dbDir := t.TempDir()
+	src := format.Source{Name: "tiny-pack", Title: "Tiny Pack", Path: "sources/tiny-pack.zip", Licenses: []format.License{{Name: "CC0-1.0", Title: "CC Zero"}}}
+	item := format.Item{Name: "hero", Title: "Hero", ID: "assetsdb:tiny-pack/sprites/sheet.png#hero", Source: src.Name, Kind: format.KindSprite2D, Path: "sprites/sheet.png", MediaType: "image/png", Region: &format.Region{X: 1, Y: 2, Width: 8, Height: 9}}
+	require.NoError(t, format.Write(dbDir, &format.DataPackage{Name: "fixture", Title: "Fixture", Version: "1", Created: "2026-07-18T00:00:00Z", SchemaVersion: 1, Sources: []format.Source{src}, Resources: []format.Item{item}}))
+	require.NoError(t, os.MkdirAll(filepath.Join(dbDir, "sources"), 0o755))
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	w, err := zw.Create(item.Path)
+	require.NoError(t, err)
+	_, err = w.Write([]byte("sprite-bytes"))
+	require.NoError(t, err)
+	require.NoError(t, zw.Close())
+	zipPath := filepath.Join(dbDir, filepath.FromSlash(src.Path))
+	require.NoError(t, os.WriteFile(zipPath, buf.Bytes(), 0o600))
+	deps := config.Setup(config.Config{AssetsDB: dbDir, OutputDir: t.TempDir(), DisableRemote: true})
+	return NewServer(deps.Registry, deps.OutputDir, deps.PackStore), buf.Bytes(), zipPath
 }
 
 func TestIntArg(t *testing.T) {
@@ -402,4 +426,66 @@ func TestHandleListAssetSourcesSourceFilter(t *testing.T) {
 	if strings.Contains(listing, "embedded-fonts") || strings.Contains(listing, "embedded-illustrations") {
 		t.Errorf("source=lucide listing leaked another provider:\n%s", listing)
 	}
+}
+
+func TestHandleSearchAndGetSpriteFromAssetsDB(t *testing.T) {
+	s, _, _ := newGameartTestServer(t)
+	res, err := s.handleSearchSprites(t.Context(), newRequest(map[string]any{"query": "hero"}))
+	require.NoError(t, err)
+	require.False(t, res.IsError)
+	listing := res.Content[0].(mcp.TextContent).Text
+	for _, want := range []string{"assetsdb:tiny-pack/sprites/sheet.png#hero", `pack=tiny-pack`, `pack_title="Tiny Pack"`, "region=1,2,8,9"} {
+		require.Contains(t, listing, want)
+	}
+
+	res, err = s.handleGetSprite(t.Context(), newRequest(map[string]any{"id": "assetsdb:tiny-pack/sprites/sheet.png#hero"}))
+	require.NoError(t, err)
+	require.False(t, res.IsError)
+	m := res.StructuredContent.(fileManifest)
+	require.Len(t, m.Files, 1)
+	assertManifestFileShape(t, m.Files[0], "assetsdb:tiny-pack/sprites/sheet.png#hero", string(assetcore.KindSprite), "tiny-pack", "CC0-1.0")
+	got, err := os.ReadFile(m.Files[0].Path)
+	require.NoError(t, err)
+	require.Equal(t, []byte("sprite-bytes"), got)
+}
+
+func TestHandleGetPackWritesByteIdenticalInspectableZIP(t *testing.T) {
+	s, original, _ := newGameartTestServer(t)
+	res, err := s.handleGetPack(t.Context(), newRequest(map[string]any{"pack_id": "tiny-pack"}))
+	require.NoError(t, err)
+	require.False(t, res.IsError)
+	m := res.StructuredContent.(fileManifest)
+	require.Len(t, m.Files, 1)
+	require.Equal(t, "application/zip", m.Files[0].ContentType)
+	require.Equal(t, "CC0-1.0", m.Files[0].License.SPDX)
+	got, err := os.ReadFile(m.Files[0].Path)
+	require.NoError(t, err)
+	require.Equal(t, original, got)
+	zr, err := zip.NewReader(bytes.NewReader(got), int64(len(got)))
+	require.NoError(t, err)
+	require.Len(t, zr.File, 1)
+	require.Equal(t, "sprites/sheet.png", zr.File[0].Name)
+}
+
+func TestHandleGetPackErrors(t *testing.T) {
+	s, _, zipPath := newGameartTestServer(t)
+	for name, args := range map[string]map[string]any{
+		"missing argument": {},
+		"unknown pack":     {"pack_id": "unknown"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			res, err := s.handleGetPack(t.Context(), newRequest(args))
+			require.NoError(t, err)
+			require.True(t, res.IsError)
+		})
+	}
+	require.NoError(t, os.Remove(zipPath))
+	res, err := s.handleGetPack(t.Context(), newRequest(map[string]any{"pack_id": "tiny-pack"}))
+	require.NoError(t, err)
+	require.True(t, res.IsError)
+
+	unconfigured := NewServer(assetcore.NewRegistry(), t.TempDir())
+	res, err = unconfigured.handleGetPack(t.Context(), newRequest(map[string]any{"pack_id": "tiny-pack"}))
+	require.NoError(t, err)
+	require.True(t, res.IsError)
 }

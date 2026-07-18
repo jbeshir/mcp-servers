@@ -5,8 +5,24 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/jbeshir/assetsdb/format"
+	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/stretchr/testify/require"
 )
+
+func writeAssetsDBFixture(t *testing.T) string {
+	t.Helper()
+	dir := t.TempDir()
+	src := format.Source{Name: "pack", Title: "Pack", Path: "sources/pack.zip", Licenses: []format.License{{Name: "CC0-1.0"}}}
+	resources := []format.Item{
+		{Name: "model", ID: "assetsdb:pack/model.glb", Source: "pack", Kind: format.KindModel3D, Path: "model.glb"},
+		{Name: "audio", ID: "assetsdb:pack/audio.ogg", Source: "pack", Kind: format.KindAudio, Path: "audio.ogg"},
+		{Name: "font", ID: "assetsdb:pack/font.ttf", Source: "pack", Kind: format.KindFont, Path: "font.ttf"},
+		{Name: "sprite", ID: "assetsdb:pack/sprite.png", Source: "pack", Kind: format.KindSprite2D, Path: "sprite.png"},
+	}
+	require.NoError(t, format.Write(dir, &format.DataPackage{Name: "fixture", Title: "Fixture", Version: "1", Created: "2026-07-18T00:00:00Z", SchemaVersion: 1, Sources: []format.Source{src}, Resources: resources}))
+	return dir
+}
 
 // providerNames returns the Name() of every provider registered on r, across all kinds.
 func providerNames(t *testing.T, deps *Deps) map[string]bool {
@@ -23,10 +39,39 @@ func providerNames(t *testing.T, deps *Deps) map[string]bool {
 func TestLoadConfigHonorsEnv(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv(envOutputDir, dir)
+	t.Setenv(envAssetsDB, "/tmp/assetsdb-fixture")
 
 	cfg := LoadConfig()
 	if cfg.OutputDir != dir {
 		t.Errorf("LoadConfig().OutputDir = %q, want %q", cfg.OutputDir, dir)
+	}
+	if cfg.AssetsDB != "/tmp/assetsdb-fixture" {
+		t.Errorf("LoadConfig().AssetsDB = %q", cfg.AssetsDB)
+	}
+}
+
+func TestSetupInvalidAssetsDBIsNonFatal(t *testing.T) {
+	deps := Setup(Config{AssetsDB: filepath.Join(t.TempDir(), "missing"), DisableRemote: true})
+	require.NotNil(t, deps.Registry)
+	require.Nil(t, deps.PackStore)
+	require.Empty(t, deps.Registry.Sprites())
+}
+
+func TestSetupValidAssetsDBRegistersAllKindsWithRemoteDisabled(t *testing.T) {
+	deps := Setup(Config{AssetsDB: writeAssetsDBFixture(t), DisableRemote: true})
+	require.NotNil(t, deps.PackStore)
+	require.Len(t, deps.Registry.Models(), 1)
+	require.Len(t, deps.Registry.Audio(), 1)
+	require.Len(t, deps.Registry.Sprites(), 1)
+	require.Len(t, deps.Registry.Fonts(), 2) // embedded and assetsdb
+	kinds := map[assetcore.Kind]bool{}
+	for _, info := range deps.Registry.Providers() {
+		if info.Name == "assetsdb" {
+			kinds[info.Kind] = true
+		}
+	}
+	for _, kind := range []assetcore.Kind{assetcore.KindModel, assetcore.KindAudio, assetcore.KindFont, assetcore.KindSprite} {
+		require.True(t, kinds[kind], "assetsdb provider missing kind %q", kind)
 	}
 }
 

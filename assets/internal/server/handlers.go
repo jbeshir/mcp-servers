@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"path/filepath"
 	"strings"
 
@@ -89,9 +90,23 @@ func sanitizeSuffixedFilename(prefix, name string) string {
 func sourceTitleLines(assets []assetcore.Asset) []string {
 	lines := make([]string, 0, len(assets))
 	for _, a := range assets {
-		lines = append(lines, fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title))
+		line := fmt.Sprintf("%s — %s/%s", a.ID, a.Source, a.Title)
+		if pack := a.Meta[assetcore.MetaPack]; pack != "" {
+			line += fmt.Sprintf(" [pack=%s pack_title=%q]", pack, a.Meta[assetcore.MetaPackTitle])
+		}
+		if region := regionText(a.Meta); region != "" {
+			line += " [region=" + region + "]"
+		}
+		lines = append(lines, line)
 	}
 	return lines
+}
+
+func regionText(m map[string]string) string {
+	if m["region_width"] == "" {
+		return ""
+	}
+	return strings.Join([]string{m["region_x"], m["region_y"], m["region_width"], m["region_height"]}, ",")
 }
 
 // searchResult renders a search header plus one line per hit (or a "no matches" note), a next_cursor
@@ -141,6 +156,15 @@ type providerJSON struct {
 // providersManifest is the JSON shape emitted as native structured content by list_asset_sources.
 type providersManifest struct {
 	Providers []providerJSON `json:"providers"`
+	Packs     []packJSON     `json:"packs,omitempty"`
+}
+
+type packJSON struct {
+	ID      string   `json:"id"`
+	Title   string   `json:"title"`
+	Tags    []string `json:"tags,omitempty"`
+	Count   int      `json:"count"`
+	License string   `json:"license"`
 }
 
 func (s *Server) handleListAssetSources(
@@ -179,12 +203,36 @@ func (s *Server) handleListAssetSources(
 		b.WriteString("(no matching sources)\n")
 	}
 
+	packOut := s.filteredPacks(kindFilter, providers, sources)
+	if len(packOut) > 0 {
+		b.WriteString("assetsdb packs:\n")
+		for _, p := range packOut {
+			fmt.Fprintf(&b, "  %s — %s — %s — %d\n", p.ID, p.Title, p.License, p.Count)
+		}
+	}
 	return &mcp.CallToolResult{
 		Content: []mcp.Content{
 			mcp.NewTextContent(b.String()),
 		},
-		StructuredContent: providersManifest{Providers: out},
+		StructuredContent: providersManifest{Providers: out, Packs: packOut},
 	}, nil
+}
+
+func (s *Server) filteredPacks(kind string, providers, sources assetcore.Filter) []packJSON {
+	if s.packStore == nil || !providers.Allows("assetsdb") {
+		return nil
+	}
+	out := []packJSON{}
+	for _, p := range s.packStore.List() {
+		if !sources.Allows(p.ID) {
+			continue
+		}
+		if kind != "" && p.Kinds[assetcore.Kind(kind)] == 0 {
+			continue
+		}
+		out = append(out, packJSON{ID: p.ID, Title: p.Title, Tags: p.Tags, Count: p.Count, License: p.License.SPDX})
+	}
+	return out
 }
 
 // includeProvider reports whether a provider passes the kind and provider filters.
@@ -706,4 +754,65 @@ func (s *Server) handleGetAudio(
 	}
 
 	return newFileResult(fmt.Sprintf("Wrote audio %s to %s", id, path), []manifestFile{manifestFileFor(path, blob)})
+}
+
+func (s *Server) handleSearchSprites(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	args := request.GetArguments()
+	query := stringArg(args, "query")
+	if query == "" {
+		return mcp.NewToolResultError("query is required"), nil
+	}
+	assets, next, warns := s.registry.SearchSprites(ctx, assetcore.SearchOpts{Query: query, Cursor: stringArg(args, "cursor"), Limit: intArg(args, "limit", 0), Sources: filterArg(args, "sources", "exclude_sources"), Providers: filterArg(args, "providers", "exclude_providers")})
+	return searchResult(fmt.Sprintf("%d sprite(s) matching %q:", len(assets), query), sourceTitleLines(assets), next, warns), nil
+}
+
+func (s *Server) handleGetSprite(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	id := stringArg(request.GetArguments(), "id")
+	if id == "" {
+		return mcp.NewToolResultError("id is required"), nil
+	}
+	blob, err := s.registry.FetchSprite(ctx, id, assetcore.SpriteFetchOpts{})
+	if errors.Is(err, assetcore.ErrNotFound) {
+		return mcp.NewToolResultError("sprite not found: " + id), nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("get sprite %s: %w", id, err)
+	}
+	filename := sanitizeSuffixedFilename("sprite-", blob.Filename)
+	out, err := writeAsset(s.outputDir, filename, blob.Content)
+	if err != nil {
+		return nil, fmt.Errorf("write sprite %s: %w", id, err)
+	}
+	return newFileResult(fmt.Sprintf("Wrote sprite %s to %s", id, out), []manifestFile{manifestFileFor(out, blob)})
+}
+
+func (s *Server) handleGetPack(_ context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	id := stringArg(request.GetArguments(), "pack_id")
+	if id == "" {
+		return mcp.NewToolResultError("pack_id is required"), nil
+	}
+	if s.packStore == nil {
+		return mcp.NewToolResultError("pack store is not configured"), nil
+	}
+	r, p, err := s.packStore.Open(id)
+	if errors.Is(err, assetcore.ErrNotFound) {
+		return mcp.NewToolResultError("pack not found: " + id), nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("open pack %s: %w", id, err)
+	}
+	data, readErr := io.ReadAll(r)
+	closeErr := r.Close()
+	if readErr != nil {
+		return nil, fmt.Errorf("read pack %s: %w", id, readErr)
+	}
+	if closeErr != nil {
+		return nil, fmt.Errorf("close pack %s: %w", id, closeErr)
+	}
+	blob := assetcore.Blob{Asset: assetcore.Asset{ID: "assetsdb:" + id, Kind: assetcore.Kind("pack"), Source: id, Title: p.Title, License: p.License}, Content: data, Filename: sanitizeFilename(id) + ".zip", ContentType: "application/zip"}
+	out, err := writeAsset(s.outputDir, blob.Filename, data)
+	if err != nil {
+		return nil, fmt.Errorf("write pack %s: %w", id, err)
+	}
+	return newFileResult(fmt.Sprintf("Wrote assetsdb pack %s to %s", id, out), []manifestFile{manifestFileFor(out, blob)})
 }

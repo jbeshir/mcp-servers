@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
+	"github.com/jbeshir/mcp-servers/assets/internal/packstore"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -12,15 +13,19 @@ type Server struct {
 	mcpServer *server.MCPServer
 	registry  *assetcore.Registry
 	outputDir string
+	packStore packstore.Store
 }
 
 // NewServer creates a new MCP server backed by the given provider registry and output directory. The
 // registry is built during wiring (config.Setup) and treated read-only; outputDir is the resolved
 // directory rendered assets are written to.
-func NewServer(registry *assetcore.Registry, outputDir string) *Server {
+func NewServer(registry *assetcore.Registry, outputDir string, stores ...packstore.Store) *Server {
 	s := &Server{
 		registry:  registry,
 		outputDir: outputDir,
+	}
+	if len(stores) > 0 {
+		s.packStore = stores[0]
 	}
 
 	s.mcpServer = server.NewMCPServer(

@@ -16,3 +16,4 @@ packages:
       TextureProvider:
       ModelProvider:
       AudioProvider:
+      SpriteProvider:
