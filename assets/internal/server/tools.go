@@ -163,7 +163,7 @@ func (s *Server) registerTools() {
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("providers",
-			mcp.Description("Restrict to these font providers (embedded-fonts, googlefonts)"),
+			mcp.Description("Restrict to these font providers (embedded-fonts, googlefonts, assetsdb)"),
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("exclude_providers",
@@ -297,9 +297,9 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_models",
 		mcp.WithDescription(
-			"Search 3D model providers (Poly Pizza, Poly Haven) by name. Returns a text list of hits, "+
+			"Search 3D model providers (assetsdb, Poly Pizza, Poly Haven) by name. Returns a text list of hits, "+
 				"each with its composite id (\"<provider>:<local>\") and a source/title label. Results "+
-				"come from keyed/opt-in providers only, so an empty result may mean no provider is "+
+				"come from local and opt-in providers, so an empty result may mean no provider is "+
 				"configured. No files are written; pass a hit's id to get_model to fetch it. Game-art results "+
 				"include their pack; search all needs first and prefer get_pack when several share one."),
 		mcp.WithString("query",
@@ -315,7 +315,7 @@ func (s *Server) registerTools() {
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("providers",
-			mcp.Description("Restrict to these model providers"),
+			mcp.Description("Restrict to these model providers (assetsdb, polypizza, polyhaven)"),
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("exclude_providers",
@@ -351,9 +351,9 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_audio",
 		mcp.WithDescription(
-			"Search audio providers (Jamendo, Freesound) by name. Returns a text list of hits, each "+
+			"Search audio providers (assetsdb, Jamendo, Freesound) by name. Returns a text list of hits, each "+
 				"with its composite id (\"<provider>:<local>\") and a source/title label. Results come "+
-				"from keyed/opt-in providers only, so an empty result may mean no provider is "+
+				"from local and opt-in providers, so an empty result may mean no provider is "+
 				"configured. No files are written; pass a hit's id to get_audio to fetch it. Game-art results "+
 				"include their pack; search all needs first and prefer get_pack when several share one."),
 		mcp.WithString("query",
@@ -369,7 +369,7 @@ func (s *Server) registerTools() {
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("providers",
-			mcp.Description("Restrict to these audio providers"),
+			mcp.Description("Restrict to these audio providers (assetsdb, jamendo, freesound)"),
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("exclude_providers",

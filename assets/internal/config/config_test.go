@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jbeshir/assetsdb/format"
+	"github.com/jbeshir/assetsdb"
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/stretchr/testify/require"
 )
@@ -13,14 +13,30 @@ import (
 func writeAssetsDBFixture(t *testing.T) string {
 	t.Helper()
 	dir := t.TempDir()
-	src := format.Source{Name: "pack", Title: "Pack", Path: "sources/pack.zip", Licenses: []format.License{{Name: "CC0-1.0"}}}
-	resources := []format.Item{
-		{Name: "model", ID: "assetsdb:pack/model.glb", Source: "pack", Kind: format.KindModel3D, Path: "model.glb"},
-		{Name: "audio", ID: "assetsdb:pack/audio.ogg", Source: "pack", Kind: format.KindAudio, Path: "audio.ogg"},
-		{Name: "font", ID: "assetsdb:pack/font.ttf", Source: "pack", Kind: format.KindFont, Path: "font.ttf"},
-		{Name: "sprite", ID: "assetsdb:pack/sprite.png", Source: "pack", Kind: format.KindSprite2D, Path: "sprite.png"},
+	src := assetsdb.Source{Name: "pack", Title: "Pack", Path: "sources/pack.zip", Licenses: []assetsdb.License{{Name: "CC0-1.0"}}}
+	resources := []assetsdb.Item{
+		{Name: "model", ID: "assetsdb:pack/model.glb", Source: "pack", Kind: assetsdb.KindModel3D, Path: "model.glb"},
+		{Name: "audio", ID: "assetsdb:pack/audio.ogg", Source: "pack", Kind: assetsdb.KindAudio, Path: "audio.ogg"},
+		{Name: "font", ID: "assetsdb:pack/font.ttf", Source: "pack", Kind: assetsdb.KindFont, Path: "font.ttf"},
+		{Name: "sprite", ID: "assetsdb:pack/sprite.png", Source: "pack", Kind: assetsdb.KindSprite2D, Path: "sprite.png"},
 	}
-	require.NoError(t, format.Write(dir, &format.DataPackage{Name: "fixture", Title: "Fixture", Version: "1", Created: "2026-07-18T00:00:00Z", SchemaVersion: 1, Sources: []format.Source{src}, Resources: resources}))
+
+	// #nosec G304 -- the path is a fixed test fixture beneath t.TempDir.
+	file, err := os.Create(filepath.Join(dir, "datapackage.json"))
+	require.NoError(t, err)
+
+	dataPackage := &assetsdb.DataPackage{
+		Name:          "fixture",
+		Title:         "Fixture",
+		Version:       "1",
+		Created:       "2026-07-18T00:00:00Z",
+		SchemaVersion: 1,
+		Sources:       []assetsdb.Source{src},
+		Resources:     resources,
+	}
+	require.NoError(t, assetsdb.Encode(file, dataPackage))
+	require.NoError(t, file.Close())
+
 	return dir
 }
 

@@ -8,17 +8,16 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jbeshir/assetsdb/format"
+	upstream "github.com/jbeshir/assetsdb"
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/jbeshir/mcp-servers/assets/internal/cache"
 	"github.com/jbeshir/mcp-servers/assets/internal/httpx"
-	"github.com/jbeshir/mcp-servers/assets/internal/packstore"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/ambientcg"
+	assetsdbprovider "github.com/jbeshir/mcp-servers/assets/internal/providers/assetsdb"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedfonts"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedicons"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedillustrations"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/freesound"
-	"github.com/jbeshir/mcp-servers/assets/internal/providers/gameart"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/googlefonts"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/iconify"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/jamendo"
@@ -177,7 +176,7 @@ func LoadConfig() Config {
 type Deps struct {
 	Registry  *assetcore.Registry
 	OutputDir string
-	PackStore packstore.Store
+	PackStore assetcore.PackStore
 }
 
 // Setup builds the provider registry from cfg and resolves the asset output directory. It registers
@@ -191,17 +190,18 @@ func Setup(cfg Config) *Deps {
 	r.AddIcon(embeddedicons.New())
 	r.AddIllustration(embeddedillustrations.New())
 	r.AddFont(embeddedfonts.New())
-	var packs packstore.Store
+	var packs assetcore.PackStore
 	if cfg.AssetsDB != "" {
-		db, err := format.Read(cfg.AssetsDB)
+		db, err := upstream.Read(cfg.AssetsDB)
 		if err != nil {
 			log.Printf("assetsdb: unable to load %s: %v", cfg.AssetsDB, err)
 		} else {
-			r.AddModel(gameart.NewModels(db))
-			r.AddAudio(gameart.NewAudio(db))
-			r.AddFont(gameart.NewFonts(db))
-			r.AddSprite(gameart.NewSprites(db))
-			packs = packstore.New(cfg.AssetsDB, db)
+			catalog := assetsdbprovider.New(db)
+			r.AddModel(catalog.Models())
+			r.AddAudio(catalog.Audio())
+			r.AddFont(catalog.Fonts())
+			r.AddSprite(catalog.Sprites())
+			packs = catalog
 		}
 	}
 

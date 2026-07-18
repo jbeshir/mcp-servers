@@ -70,15 +70,15 @@ Assets are identified by a **composite id** of the form `<provider>:<local>` —
 | `get_icon` | `id`, `color?`, `size?` | Render an icon to a standalone SVG file (by composite id) and write it to disk |
 | `search_illustrations` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search vendored illustration collections by name; returns composite ids |
 | `get_illustration` | `id` | Fetch an SVG illustration (by composite id) and write it to disk, unmodified |
-| `search_fonts` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search font families (embedded + Google Fonts) by name, slug, or category; returns composite ids |
+| `search_fonts` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search font families (embedded, Google Fonts, and assetsdb) by name, slug, or category; returns composite ids |
 | `get_font` | `id`, `weight?`, `style?`, `format?` | Fetch a font's woff2 file (and optionally an `@font-face` CSS snippet) by composite id and write it to disk |
 | `search_photos` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search keyless Openverse CC-licensed photos by name; returns composite ids |
 | `get_photo` | `id` | Fetch a photo (by composite id) and write it to disk |
 | `search_textures` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search keyless CC0 ambientCG PBR material sets by name; returns composite ids |
 | `get_texture` | `id`, `resolution?`, `format?` | Fetch a PBR material archive (a zip of texture maps) by composite id and write it to disk |
-| `search_models` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search 3D model providers (Poly Pizza, Poly Haven) by name; returns composite ids |
+| `search_models` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search 3D model providers (assetsdb, Poly Pizza, Poly Haven) by name; returns composite ids |
 | `get_model` | `id`, `format?`, `resolution?` | Fetch a 3D model (by composite id) and write it to disk — a .glb, or a zip of a glTF and its assets |
-| `search_audio` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search audio providers (Jamendo, Freesound) by name; returns composite ids |
+| `search_audio` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search audio providers (assetsdb, Jamendo, Freesound) by name; returns composite ids |
 | `get_audio` | `id`, `format?` | Fetch an audio clip (mp3 or ogg) by composite id and write it to disk |
 | `search_sprites` | `query`, filters, `limit?`, `cursor?` | Search local assetsdb sprites with pack and atlas metadata |
 | `get_sprite` | `id` | Write a sprite (the full sheet for atlas sprites) to disk |

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jbeshir/assetsdb/format"
+	"github.com/jbeshir/assetsdb"
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/jbeshir/mcp-servers/assets/internal/config"
 	"github.com/mark3labs/mcp-go/mcp"
@@ -38,13 +38,30 @@ func TestSanitizeFilename(t *testing.T) {
 	}
 }
 
-func newGameartTestServer(t *testing.T) (*Server, []byte, string) {
+func newAssetsDBTestServer(t *testing.T) (*Server, []byte, string) {
 	t.Helper()
 	dbDir := t.TempDir()
-	src := format.Source{Name: "tiny-pack", Title: "Tiny Pack", Path: "sources/tiny-pack.zip", Licenses: []format.License{{Name: "CC0-1.0", Title: "CC Zero"}}}
-	item := format.Item{Name: "hero", Title: "Hero", ID: "assetsdb:tiny-pack/sprites/sheet.png#hero", Source: src.Name, Kind: format.KindSprite2D, Path: "sprites/sheet.png", MediaType: "image/png", Region: &format.Region{X: 1, Y: 2, Width: 8, Height: 9}}
-	require.NoError(t, format.Write(dbDir, &format.DataPackage{Name: "fixture", Title: "Fixture", Version: "1", Created: "2026-07-18T00:00:00Z", SchemaVersion: 1, Sources: []format.Source{src}, Resources: []format.Item{item}}))
+	src := assetsdb.Source{Name: "tiny-pack", Title: "Tiny Pack", Path: "sources/tiny-pack.zip", Licenses: []assetsdb.License{{Name: "CC0-1.0", Title: "CC Zero"}}}
+	item := assetsdb.Item{Name: "hero", Title: "Hero", ID: "assetsdb:tiny-pack/sprites/sheet.png#hero", Source: src.Name, Kind: assetsdb.KindSprite2D, Path: "sprites/sheet.png", MediaType: "image/png", Region: &assetsdb.Region{X: 1, Y: 2, Width: 8, Height: 9}}
+
+	// #nosec G304 -- the path is a fixed test fixture beneath t.TempDir.
+	dataPackage, err := os.Create(filepath.Join(dbDir, "datapackage.json"))
+	require.NoError(t, err)
+
+	index := &assetsdb.DataPackage{
+		Name:          "fixture",
+		Title:         "Fixture",
+		Version:       "1",
+		Created:       "2026-07-18T00:00:00Z",
+		SchemaVersion: 1,
+		Sources:       []assetsdb.Source{src},
+		Resources:     []assetsdb.Item{item},
+	}
+	require.NoError(t, assetsdb.Encode(dataPackage, index))
+	require.NoError(t, dataPackage.Close())
+
 	require.NoError(t, os.MkdirAll(filepath.Join(dbDir, "sources"), 0o750))
+
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
 	w, err := zw.Create(item.Path)
@@ -52,9 +69,12 @@ func newGameartTestServer(t *testing.T) (*Server, []byte, string) {
 	_, err = w.Write([]byte("sprite-bytes"))
 	require.NoError(t, err)
 	require.NoError(t, zw.Close())
+
 	zipPath := filepath.Join(dbDir, filepath.FromSlash(src.Path))
 	require.NoError(t, os.WriteFile(zipPath, buf.Bytes(), 0o600))
+
 	deps := config.Setup(config.Config{AssetsDB: dbDir, OutputDir: t.TempDir(), DisableRemote: true})
+
 	return NewServer(deps.Registry, deps.OutputDir, deps.PackStore), buf.Bytes(), zipPath
 }
 
@@ -429,7 +449,7 @@ func TestHandleListAssetSourcesSourceFilter(t *testing.T) {
 }
 
 func TestHandleSearchAndGetSpriteFromAssetsDB(t *testing.T) {
-	s, _, _ := newGameartTestServer(t)
+	s, _, _ := newAssetsDBTestServer(t)
 	res, err := s.handleSearchSprites(t.Context(), newRequest(map[string]any{"query": "hero"}))
 	require.NoError(t, err)
 	require.False(t, res.IsError)
@@ -450,7 +470,7 @@ func TestHandleSearchAndGetSpriteFromAssetsDB(t *testing.T) {
 }
 
 func TestHandleGetPackWritesByteIdenticalInspectableZIP(t *testing.T) {
-	s, original, _ := newGameartTestServer(t)
+	s, original, _ := newAssetsDBTestServer(t)
 	res, err := s.handleGetPack(t.Context(), newRequest(map[string]any{"pack_id": "tiny-pack"}))
 	require.NoError(t, err)
 	require.False(t, res.IsError)
@@ -468,7 +488,7 @@ func TestHandleGetPackWritesByteIdenticalInspectableZIP(t *testing.T) {
 }
 
 func TestHandleGetPackErrors(t *testing.T) {
-	s, _, zipPath := newGameartTestServer(t)
+	s, _, zipPath := newAssetsDBTestServer(t)
 	for name, args := range map[string]map[string]any{
 		"missing argument": {},
 		"unknown pack":     {"pack_id": "unknown"},

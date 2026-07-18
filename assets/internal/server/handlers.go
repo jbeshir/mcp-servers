@@ -223,7 +223,7 @@ func (s *Server) filteredPacks(kind string, providers, sources assetcore.Filter)
 		return nil
 	}
 	out := []packJSON{}
-	for _, p := range s.packStore.List() {
+	for _, p := range s.packStore.Packs() {
 		if !sources.Allows(p.ID) {
 			continue
 		}
@@ -799,7 +799,7 @@ func (s *Server) handleGetPack(_ context.Context, request mcp.CallToolRequest) (
 	if s.packStore == nil {
 		return mcp.NewToolResultError("pack store is not configured"), nil
 	}
-	r, p, err := s.packStore.Open(id)
+	r, p, err := s.packStore.OpenPack(id)
 	if errors.Is(err, assetcore.ErrNotFound) {
 		return mcp.NewToolResultError("pack not found: " + id), nil
 	}
