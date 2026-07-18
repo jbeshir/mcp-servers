@@ -1,5 +1,5 @@
-// Package assetsdb adapts an assetsdb database into the server's local asset providers.
-package assetsdb
+// Package catalog adapts an assetsdb catalog into the server's local asset providers.
+package catalog
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	upstream "github.com/jbeshir/assetsdb"
+	"github.com/jbeshir/assetsdb"
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 )
 
@@ -18,13 +18,13 @@ const providerName = "assetsdb"
 
 // Catalog owns the shared assetsdb adapter state used by the kind-specific providers and pack API.
 type Catalog struct {
-	db        *upstream.DB
-	itemsByID map[string]upstream.Item
+	db        *assetsdb.DB
+	itemsByID map[string]assetsdb.Item
 }
 
 type provider struct {
 	catalog  *Catalog
-	dbKind   upstream.Kind
+	dbKind   assetsdb.Kind
 	coreKind assetcore.Kind
 }
 
@@ -33,9 +33,20 @@ type Audio struct{ *provider }
 type Fonts struct{ *provider }
 type Sprites struct{ *provider }
 
+// Load reads an assetsdb catalog rooted at dir and creates its local provider adapters.
+func Load(dir string) (*Catalog, error) {
+	db, err := assetsdb.Read(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	return New(db), nil
+}
+
 // New creates one catalog over db. Its kind-specific provider views share the same immutable index.
-func New(db *upstream.DB) *Catalog {
-	itemsByID := make(map[string]upstream.Item)
+// It is kept separate from Load so provider tests and alternate wiring can inject an already-open DB.
+func New(db *assetsdb.DB) *Catalog {
+	itemsByID := make(map[string]assetsdb.Item)
 	for _, source := range db.Sources() {
 		for _, item := range db.ItemsForSource(source.Name) {
 			localID, ok := localID(item.ID)
@@ -49,22 +60,22 @@ func New(db *upstream.DB) *Catalog {
 }
 
 func (c *Catalog) Models() *Models {
-	return &Models{c.provider(upstream.KindModel3D, assetcore.KindModel)}
+	return &Models{c.provider(assetsdb.KindModel3D, assetcore.KindModel)}
 }
 
 func (c *Catalog) Audio() *Audio {
-	return &Audio{c.provider(upstream.KindAudio, assetcore.KindAudio)}
+	return &Audio{c.provider(assetsdb.KindAudio, assetcore.KindAudio)}
 }
 
 func (c *Catalog) Fonts() *Fonts {
-	return &Fonts{c.provider(upstream.KindFont, assetcore.KindFont)}
+	return &Fonts{c.provider(assetsdb.KindFont, assetcore.KindFont)}
 }
 
 func (c *Catalog) Sprites() *Sprites {
-	return &Sprites{c.provider(upstream.KindSprite2D, assetcore.KindSprite)}
+	return &Sprites{c.provider(assetsdb.KindSprite2D, assetcore.KindSprite)}
 }
 
-func (c *Catalog) provider(dbKind upstream.Kind, coreKind assetcore.Kind) *provider {
+func (c *Catalog) provider(dbKind assetsdb.Kind, coreKind assetcore.Kind) *provider {
 	return &provider{catalog: c, dbKind: dbKind, coreKind: coreKind}
 }
 
@@ -82,7 +93,7 @@ func (p *provider) Search(_ context.Context, opts assetcore.SearchOpts) (assetco
 	}
 
 	limit := assetcore.ClampLimit(opts.Limit)
-	matches := make([]upstream.Item, 0)
+	matches := make([]assetsdb.Item, 0)
 	for _, item := range p.catalog.db.Search(opts.Query) {
 		if item.Kind != p.dbKind || !opts.Sources.Allows(item.Source) {
 			continue
@@ -122,7 +133,7 @@ func searchOffset(cursor string) (int, error) {
 	return offset, nil
 }
 
-func (p *provider) asset(item upstream.Item) assetcore.Asset {
+func (p *provider) asset(item assetsdb.Item) assetcore.Asset {
 	id, _ := localID(item.ID)
 	license := p.catalog.db.LicenseFor(item)
 	title := item.Title
@@ -160,7 +171,7 @@ func (p *provider) fetch(id string) (assetcore.Blob, error) {
 
 	reader, err := p.catalog.db.Open(item)
 	if err != nil {
-		if errors.Is(err, upstream.ErrNotFound) {
+		if errors.Is(err, assetsdb.ErrNotFound) {
 			return assetcore.Blob{}, notFound(id)
 		}
 		return assetcore.Blob{}, fmt.Errorf("open assetsdb item %s: %w", id, err)
@@ -207,11 +218,11 @@ func localID(id string) (string, bool) {
 	return local, local != "" && local != id
 }
 
-func coreLicense(license upstream.License) assetcore.License {
+func coreLicense(license assetsdb.License) assetcore.License {
 	return assetcore.License{SPDX: license.Name, Name: license.Title, URL: license.Path}
 }
 
-func sourceLicense(source upstream.Source) assetcore.License {
+func sourceLicense(source assetsdb.Source) assetcore.License {
 	if len(source.Licenses) == 0 {
 		return assetcore.License{}
 	}
@@ -219,7 +230,7 @@ func sourceLicense(source upstream.Source) assetcore.License {
 	return coreLicense(source.Licenses[0])
 }
 
-func countKind(items []upstream.Item, kind upstream.Kind) int {
+func countKind(items []assetsdb.Item, kind assetsdb.Kind) int {
 	count := 0
 	for _, item := range items {
 		if item.Kind == kind {
@@ -230,7 +241,7 @@ func countKind(items []upstream.Item, kind upstream.Kind) int {
 	return count
 }
 
-func addRegionMetadata(metadata map[string]string, region *upstream.Region) {
+func addRegionMetadata(metadata map[string]string, region *assetsdb.Region) {
 	if region == nil {
 		return
 	}

@@ -8,12 +8,11 @@ import (
 	"os"
 	"path/filepath"
 
-	upstream "github.com/jbeshir/assetsdb"
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/jbeshir/mcp-servers/assets/internal/cache"
 	"github.com/jbeshir/mcp-servers/assets/internal/httpx"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/ambientcg"
-	assetsdbprovider "github.com/jbeshir/mcp-servers/assets/internal/providers/assetsdb"
+	"github.com/jbeshir/mcp-servers/assets/internal/providers/assetsdb/catalog"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedfonts"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedicons"
 	"github.com/jbeshir/mcp-servers/assets/internal/providers/embeddedillustrations"
@@ -192,16 +191,15 @@ func Setup(cfg Config) *Deps {
 	r.AddFont(embeddedfonts.New())
 	var packs assetcore.PackStore
 	if cfg.AssetsDB != "" {
-		db, err := upstream.Read(cfg.AssetsDB)
+		assets, err := catalog.Load(cfg.AssetsDB)
 		if err != nil {
 			log.Printf("assetsdb: unable to load %s: %v", cfg.AssetsDB, err)
 		} else {
-			catalog := assetsdbprovider.New(db)
-			r.AddModel(catalog.Models())
-			r.AddAudio(catalog.Audio())
-			r.AddFont(catalog.Fonts())
-			r.AddSprite(catalog.Sprites())
-			packs = catalog
+			r.AddModel(assets.Models())
+			r.AddAudio(assets.Audio())
+			r.AddFont(assets.Fonts())
+			r.AddSprite(assets.Sprites())
+			packs = assets
 		}
 	}
 

@@ -1,11 +1,11 @@
 package config
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/jbeshir/assetsdb"
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/stretchr/testify/require"
 )
@@ -13,28 +13,21 @@ import (
 func writeAssetsDBFixture(t *testing.T) string {
 	t.Helper()
 	dir := t.TempDir()
-	src := assetsdb.Source{Name: "pack", Title: "Pack", Path: "sources/pack.zip", Licenses: []assetsdb.License{{Name: "CC0-1.0"}}}
-	resources := []assetsdb.Item{
-		{Name: "model", ID: "assetsdb:pack/model.glb", Source: "pack", Kind: assetsdb.KindModel3D, Path: "model.glb"},
-		{Name: "audio", ID: "assetsdb:pack/audio.ogg", Source: "pack", Kind: assetsdb.KindAudio, Path: "audio.ogg"},
-		{Name: "font", ID: "assetsdb:pack/font.ttf", Source: "pack", Kind: assetsdb.KindFont, Path: "font.ttf"},
-		{Name: "sprite", ID: "assetsdb:pack/sprite.png", Source: "pack", Kind: assetsdb.KindSprite2D, Path: "sprite.png"},
-	}
-
 	// #nosec G304 -- the path is a fixed test fixture beneath t.TempDir.
 	file, err := os.Create(filepath.Join(dir, "datapackage.json"))
 	require.NoError(t, err)
-
-	dataPackage := &assetsdb.DataPackage{
-		Name:          "fixture",
-		Title:         "Fixture",
-		Version:       "1",
-		Created:       "2026-07-18T00:00:00Z",
-		SchemaVersion: 1,
-		Sources:       []assetsdb.Source{src},
-		Resources:     resources,
+	dataPackage := map[string]any{
+		"name": "fixture", "title": "Fixture", "version": "1",
+		"created": "2026-07-18T00:00:00Z", "x_assetsdb:schemaVersion": 1,
+		"x_assetsdb:sources": []any{map[string]any{"name": "pack", "title": "Pack", "path": "sources/pack.zip", "licenses": []any{map[string]any{"name": "CC0-1.0"}}}},
+		"resources": []any{
+			map[string]any{"name": "model", "x_assetsdb:id": "assetsdb:pack/model.glb", "x_assetsdb:source": "pack", "x_assetsdb:kind": "model3d", "path": "model.glb"},
+			map[string]any{"name": "audio", "x_assetsdb:id": "assetsdb:pack/audio.ogg", "x_assetsdb:source": "pack", "x_assetsdb:kind": "audio", "path": "audio.ogg"},
+			map[string]any{"name": "font", "x_assetsdb:id": "assetsdb:pack/font.ttf", "x_assetsdb:source": "pack", "x_assetsdb:kind": "font", "path": "font.ttf"},
+			map[string]any{"name": "sprite", "x_assetsdb:id": "assetsdb:pack/sprite.png", "x_assetsdb:source": "pack", "x_assetsdb:kind": "sprite2d", "path": "sprite.png"},
+		},
 	}
-	require.NoError(t, assetsdb.Encode(file, dataPackage))
+	require.NoError(t, json.NewEncoder(file).Encode(dataPackage))
 	require.NoError(t, file.Close())
 
 	return dir

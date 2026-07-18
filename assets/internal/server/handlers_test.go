@@ -3,12 +3,12 @@ package server
 import (
 	"archive/zip"
 	"bytes"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
-	"github.com/jbeshir/assetsdb"
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/jbeshir/mcp-servers/assets/internal/config"
 	"github.com/mark3labs/mcp-go/mcp"
@@ -41,36 +41,32 @@ func TestSanitizeFilename(t *testing.T) {
 func newAssetsDBTestServer(t *testing.T) (*Server, []byte, string) {
 	t.Helper()
 	dbDir := t.TempDir()
-	src := assetsdb.Source{Name: "tiny-pack", Title: "Tiny Pack", Path: "sources/tiny-pack.zip", Licenses: []assetsdb.License{{Name: "CC0-1.0", Title: "CC Zero"}}}
-	item := assetsdb.Item{Name: "hero", Title: "Hero", ID: "assetsdb:tiny-pack/sprites/sheet.png#hero", Source: src.Name, Kind: assetsdb.KindSprite2D, Path: "sprites/sheet.png", MediaType: "image/png", Region: &assetsdb.Region{X: 1, Y: 2, Width: 8, Height: 9}}
+	itemPath := "sprites/sheet.png"
 
 	// #nosec G304 -- the path is a fixed test fixture beneath t.TempDir.
 	dataPackage, err := os.Create(filepath.Join(dbDir, "datapackage.json"))
 	require.NoError(t, err)
 
-	index := &assetsdb.DataPackage{
-		Name:          "fixture",
-		Title:         "Fixture",
-		Version:       "1",
-		Created:       "2026-07-18T00:00:00Z",
-		SchemaVersion: 1,
-		Sources:       []assetsdb.Source{src},
-		Resources:     []assetsdb.Item{item},
+	index := map[string]any{
+		"name": "fixture", "title": "Fixture", "version": "1",
+		"created": "2026-07-18T00:00:00Z", "x_assetsdb:schemaVersion": 1,
+		"x_assetsdb:sources": []any{map[string]any{"name": "tiny-pack", "title": "Tiny Pack", "path": "sources/tiny-pack.zip", "licenses": []any{map[string]any{"name": "CC0-1.0", "title": "CC Zero"}}}},
+		"resources":          []any{map[string]any{"name": "hero", "title": "Hero", "x_assetsdb:id": "assetsdb:tiny-pack/sprites/sheet.png#hero", "x_assetsdb:source": "tiny-pack", "x_assetsdb:kind": "sprite2d", "path": itemPath, "mediatype": "image/png", "x_assetsdb:region": map[string]any{"x": 1, "y": 2, "width": 8, "height": 9}}},
 	}
-	require.NoError(t, assetsdb.Encode(dataPackage, index))
+	require.NoError(t, json.NewEncoder(dataPackage).Encode(index))
 	require.NoError(t, dataPackage.Close())
 
 	require.NoError(t, os.MkdirAll(filepath.Join(dbDir, "sources"), 0o750))
 
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
-	w, err := zw.Create(item.Path)
+	w, err := zw.Create(itemPath)
 	require.NoError(t, err)
 	_, err = w.Write([]byte("sprite-bytes"))
 	require.NoError(t, err)
 	require.NoError(t, zw.Close())
 
-	zipPath := filepath.Join(dbDir, filepath.FromSlash(src.Path))
+	zipPath := filepath.Join(dbDir, filepath.FromSlash("sources/tiny-pack.zip"))
 	require.NoError(t, os.WriteFile(zipPath, buf.Bytes(), 0o600))
 
 	deps := config.Setup(config.Config{AssetsDB: dbDir, OutputDir: t.TempDir(), DisableRemote: true})

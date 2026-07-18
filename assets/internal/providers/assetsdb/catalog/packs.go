@@ -1,11 +1,11 @@
-package assetsdb
+package catalog
 
 import (
 	"errors"
 	"fmt"
 	"io"
 
-	upstream "github.com/jbeshir/assetsdb"
+	"github.com/jbeshir/assetsdb"
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 )
 
@@ -20,7 +20,7 @@ func (c *Catalog) Packs() []assetcore.Pack {
 	return packs
 }
 
-// OpenPack opens the raw archive registered for id through the upstream database API.
+// OpenPack opens the raw archive registered for id through the upstream assetsdb API.
 func (c *Catalog) OpenPack(id string) (io.ReadCloser, assetcore.Pack, error) {
 	source, ok := c.db.SourceByID(id)
 	if !ok {
@@ -28,7 +28,7 @@ func (c *Catalog) OpenPack(id string) (io.ReadCloser, assetcore.Pack, error) {
 	}
 
 	reader, err := c.db.OpenSource(id)
-	if errors.Is(err, upstream.ErrNotFound) {
+	if errors.Is(err, assetsdb.ErrNotFound) {
 		return nil, assetcore.Pack{}, fmt.Errorf("%w: pack %q", assetcore.ErrNotFound, id)
 	}
 	if err != nil {
@@ -38,7 +38,7 @@ func (c *Catalog) OpenPack(id string) (io.ReadCloser, assetcore.Pack, error) {
 	return reader, c.pack(source), nil
 }
 
-func (c *Catalog) pack(source upstream.Source) assetcore.Pack {
+func (c *Catalog) pack(source assetsdb.Source) assetcore.Pack {
 	items := c.db.ItemsForSource(source.Name)
 	pack := assetcore.Pack{
 		ID:      source.Name,
@@ -58,15 +58,15 @@ func (c *Catalog) pack(source upstream.Source) assetcore.Pack {
 	return pack
 }
 
-func coreKind(kind upstream.Kind) (assetcore.Kind, bool) {
+func coreKind(kind assetsdb.Kind) (assetcore.Kind, bool) {
 	switch kind {
-	case upstream.KindModel3D:
+	case assetsdb.KindModel3D:
 		return assetcore.KindModel, true
-	case upstream.KindAudio:
+	case assetsdb.KindAudio:
 		return assetcore.KindAudio, true
-	case upstream.KindFont:
+	case assetsdb.KindFont:
 		return assetcore.KindFont, true
-	case upstream.KindSprite2D:
+	case assetsdb.KindSprite2D:
 		return assetcore.KindSprite, true
 	default:
 		return "", false

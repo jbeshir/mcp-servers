@@ -1,4 +1,4 @@
-package assetsdb
+package catalog
 
 import (
 	"archive/zip"
@@ -9,23 +9,23 @@ import (
 	"path/filepath"
 	"testing"
 
-	upstream "github.com/jbeshir/assetsdb"
+	"github.com/jbeshir/assetsdb"
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/stretchr/testify/require"
 )
 
-func fixtureDB(t *testing.T) *upstream.DB {
+func fixtureDB(t *testing.T) *assetsdb.DB {
 	t.Helper()
 	dir := t.TempDir()
-	pack := upstream.Source{Name: "tiny-pack", Title: "Tiny Pack", Path: "sources/tiny-pack.zip", Origin: "https://example.test/tiny", Tags: []string{"pixel"}, Licenses: []upstream.License{{Name: "CC0-1.0", Title: "CC Zero", Path: "https://creativecommons.org/publicdomain/zero/1.0/"}}}
-	items := []upstream.Item{
-		{Name: "hero", Title: "Hero", ID: "assetsdb:tiny-pack/sprites/sheet.png#hero", Source: pack.Name, Kind: upstream.KindSprite2D, Path: "sprites/sheet.png", MediaType: "image/png", Tokens: []string{"knight"}, Region: &upstream.Region{X: 1, Y: 2, Width: 8, Height: 9}},
-		{Name: "shield", Title: "Shield", ID: "assetsdb:tiny-pack/sprites/shield.png", Source: pack.Name, Kind: upstream.KindSprite2D, Path: "sprites/shield.png", MediaType: "image/png", Tokens: []string{"knight"}},
-		{Name: "tree", Title: "Tree", ID: "assetsdb:tiny-pack/models/tree.glb", Source: pack.Name, Kind: upstream.KindModel3D, Path: "models/tree.glb", MediaType: "model/gltf-binary"},
-		{Name: "bell", Title: "Bell", ID: "assetsdb:tiny-pack/audio/bell.ogg", Source: pack.Name, Kind: upstream.KindAudio, Path: "audio/bell.ogg", MediaType: "audio/ogg"},
-		{Name: "pixel", Title: "Pixel Font", ID: "assetsdb:tiny-pack/fonts/pixel.ttf", Source: pack.Name, Kind: upstream.KindFont, Path: "fonts/pixel.ttf", MediaType: "font/ttf"},
+	pack := assetsdb.Source{Name: "tiny-pack", Title: "Tiny Pack", Path: "sources/tiny-pack.zip", Origin: "https://example.test/tiny", Tags: []string{"pixel"}, Licenses: []assetsdb.License{{Name: "CC0-1.0", Title: "CC Zero", Path: "https://creativecommons.org/publicdomain/zero/1.0/"}}}
+	items := []assetsdb.Item{
+		{Name: "hero", Title: "Hero", ID: "assetsdb:tiny-pack/sprites/sheet.png#hero", Source: pack.Name, Kind: assetsdb.KindSprite2D, Path: "sprites/sheet.png", MediaType: "image/png", Tokens: []string{"knight"}, Region: &assetsdb.Region{X: 1, Y: 2, Width: 8, Height: 9}},
+		{Name: "shield", Title: "Shield", ID: "assetsdb:tiny-pack/sprites/shield.png", Source: pack.Name, Kind: assetsdb.KindSprite2D, Path: "sprites/shield.png", MediaType: "image/png", Tokens: []string{"knight"}},
+		{Name: "tree", Title: "Tree", ID: "assetsdb:tiny-pack/models/tree.glb", Source: pack.Name, Kind: assetsdb.KindModel3D, Path: "models/tree.glb", MediaType: "model/gltf-binary"},
+		{Name: "bell", Title: "Bell", ID: "assetsdb:tiny-pack/audio/bell.ogg", Source: pack.Name, Kind: assetsdb.KindAudio, Path: "audio/bell.ogg", MediaType: "audio/ogg"},
+		{Name: "pixel", Title: "Pixel Font", ID: "assetsdb:tiny-pack/fonts/pixel.ttf", Source: pack.Name, Kind: assetsdb.KindFont, Path: "fonts/pixel.ttf", MediaType: "font/ttf"},
 	}
-	writeDataPackage(t, dir, &upstream.DataPackage{Name: "fixture", Title: "Fixture", Version: "1", Created: "2026-07-18T00:00:00Z", SchemaVersion: 1, Sources: []upstream.Source{pack}, Resources: items})
+	writeDataPackage(t, dir, &assetsdb.DataPackage{Name: "fixture", Title: "Fixture", Version: "1", Created: "2026-07-18T00:00:00Z", SchemaVersion: 1, Sources: []assetsdb.Source{pack}, Resources: items})
 	require.NoError(t, os.MkdirAll(filepath.Join(dir, "sources"), 0o750))
 	// #nosec G304 -- the path is a fixed test fixture beneath t.TempDir.
 	f, err := os.Create(filepath.Join(dir, pack.Path))
@@ -39,7 +39,7 @@ func fixtureDB(t *testing.T) *upstream.DB {
 	}
 	require.NoError(t, zw.Close())
 	require.NoError(t, f.Close())
-	db, err := upstream.Read(dir)
+	db, err := assetsdb.Read(dir)
 	require.NoError(t, err)
 	return db
 }
@@ -62,13 +62,13 @@ func TestSearchPaginatesDeterministically(t *testing.T) {
 	require.Error(t, err)
 }
 
-func writeDataPackage(t *testing.T, dir string, dataPackage *upstream.DataPackage) {
+func writeDataPackage(t *testing.T, dir string, dataPackage *assetsdb.DataPackage) {
 	t.Helper()
 
 	// #nosec G304 -- the path is a fixed test fixture beneath t.TempDir.
 	file, err := os.Create(filepath.Join(dir, "datapackage.json"))
 	require.NoError(t, err)
-	require.NoError(t, upstream.Encode(file, dataPackage))
+	require.NoError(t, assetsdb.Encode(file, dataPackage))
 	require.NoError(t, file.Close())
 }
 
