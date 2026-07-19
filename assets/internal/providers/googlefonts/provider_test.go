@@ -40,20 +40,23 @@ func newCSS2Stub(t *testing.T, gotUA *string, gotQuery *url.Values, woff2Request
 	t.Helper()
 
 	mux := http.NewServeMux()
+	var serverURL string
 	mux.HandleFunc("/css2", func(w http.ResponseWriter, r *http.Request) {
 		*gotUA = r.Header.Get("User-Agent")
 		*gotQuery = r.URL.Query()
 
 		w.Header().Set("Content-Type", "text/css")
 		_, _ = fmt.Fprintf(w, "/* comment */\n@font-face {\n  src: url(%s/font.woff2) format('woff2');\n}\n",
-			"http://"+r.Host)
+			serverURL)
 	})
 	mux.HandleFunc("/font.woff2", func(w http.ResponseWriter, r *http.Request) {
 		atomic.AddInt32(woff2Requests, 1)
 		_, _ = w.Write([]byte(canned))
 	})
 
-	return httptest.NewServer(mux)
+	server := httptest.NewServer(mux)
+	serverURL = server.URL
+	return server
 }
 
 func withCSS2Base(t *testing.T, base string) {

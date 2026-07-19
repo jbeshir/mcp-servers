@@ -15,7 +15,7 @@ func main() {
 
 	deps := config.Setup(cfg)
 
-	srv := server.NewServer(deps.Registry, deps.OutputDir)
+	srv := server.NewServer(deps.Registry, deps.OutputDir, deps.PackStore)
 
 	if err := srv.Run(); err != nil {
 		log.Fatal(err)

@@ -65,6 +65,11 @@ func (r *Registry) SearchAudio(ctx context.Context, opts SearchOpts) ([]Asset, s
 	return aggregateSearch(ctx, r.Audio(), opts)
 }
 
+// SearchSprites fans out across registered sprite providers.
+func (r *Registry) SearchSprites(ctx context.Context, opts SearchOpts) ([]Asset, string, []Warning) {
+	return aggregateSearch(ctx, r.Sprites(), opts)
+}
+
 // searchable is the constraint aggregateSearch and recoveringSearch need: a Provider that can also
 // Search. Every per-kind provider interface already satisfies it.
 type searchable interface {
@@ -102,7 +107,7 @@ func allowedProviders[P Provider](provs []P, f Filter) []P {
 // first-page failure degrades to a Warning only, since a fresh search re-queries every provider.
 //
 // Cross-page dedup is best-effort only: merge dedups within a single aggregateSearch call by (Source,
-// Title), but nothing tracks identities already surfaced on an earlier page. The remote providers
+// ID), but nothing tracks identities already surfaced on an earlier page. The remote providers
 // paginate, so a logical asset that shifts between two providers' pages across calls can reappear; this
 // is a known limitation, accepted as best-effort.
 func aggregateSearch[P searchable](
@@ -201,10 +206,9 @@ func recoveringSearch[P searchable](
 	return p.Search(ctx, opts)
 }
 
-// merge concatenates lists in provider order, deduping by logical identity (Source, Title) so the
-// same logical asset served by two providers appears once, first-provider-wins. Deduping on ID would
-// not compose across providers because the composite ID embeds the provider name, so the same logical
-// asset carries a different ID per provider.
+// merge concatenates lists in provider order, deduping by stable identity (Source, ID). Titles are
+// display labels and are not unique: game-art packs commonly contain distinct resources with the
+// same title. Exact duplicate results still collapse, first-provider-wins.
 func merge(lists [][]Asset) []Asset {
 	total := 0
 	for _, list := range lists {
@@ -216,7 +220,7 @@ func merge(lists [][]Asset) []Asset {
 
 	for _, list := range lists {
 		for _, a := range list {
-			key := a.Source + "\x00" + a.Title
+			key := a.Source + "\x00" + a.ID
 			if seen[key] {
 				continue
 			}

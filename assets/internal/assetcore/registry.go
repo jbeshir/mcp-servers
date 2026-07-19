@@ -17,6 +17,7 @@ type Registry struct {
 	textures      map[string]TextureProvider
 	models        map[string]ModelProvider
 	audio         map[string]AudioProvider
+	sprites       map[string]SpriteProvider
 }
 
 // NewRegistry returns an empty registry ready for Add* calls.
@@ -29,6 +30,7 @@ func NewRegistry() *Registry {
 		textures:      map[string]TextureProvider{},
 		models:        map[string]ModelProvider{},
 		audio:         map[string]AudioProvider{},
+		sprites:       map[string]SpriteProvider{},
 	}
 }
 
@@ -53,6 +55,9 @@ func (r *Registry) AddModel(p ModelProvider) { r.models[p.Name()] = p }
 // AddAudio registers an audio provider under its Name.
 func (r *Registry) AddAudio(p AudioProvider) { r.audio[p.Name()] = p }
 
+// AddSprite registers a sprite provider under its Name.
+func (r *Registry) AddSprite(p SpriteProvider) { r.sprites[p.Name()] = p }
+
 // Icons returns the registered icon providers ordered deterministically by name.
 func (r *Registry) Icons() []IconProvider { return sortedProviders(r.icons) }
 
@@ -73,6 +78,9 @@ func (r *Registry) Models() []ModelProvider { return sortedProviders(r.models) }
 
 // Audio returns the registered audio providers ordered deterministically by name.
 func (r *Registry) Audio() []AudioProvider { return sortedProviders(r.audio) }
+
+// Sprites returns the registered sprite providers ordered deterministically by name.
+func (r *Registry) Sprites() []SpriteProvider { return sortedProviders(r.sprites) }
 
 // route resolves id's composite provider prefix against m and reports the provider-local remainder. A
 // malformed id or an unknown provider name is reported as ErrNotFound.
@@ -173,6 +181,15 @@ func (r *Registry) FetchAudio(ctx context.Context, id string, opts AudioFetchOpt
 	return p.Fetch(ctx, local, opts)
 }
 
+// FetchSprite routes id to its sprite provider.
+func (r *Registry) FetchSprite(ctx context.Context, id string, opts SpriteFetchOpts) (Blob, error) {
+	p, local, err := route(r.sprites, "sprite", id)
+	if err != nil {
+		return Blob{}, err
+	}
+	return p.Fetch(ctx, local, opts)
+}
+
 // ProviderInfo describes a registered provider and, when it implements SourceLister, the upstream
 // sources it serves. Sources is nil for providers that cannot enumerate their catalogue.
 type ProviderInfo struct {
@@ -213,6 +230,9 @@ func (r *Registry) Providers() []ProviderInfo {
 		collect(p)
 	}
 	for _, p := range r.Audio() {
+		collect(p)
+	}
+	for _, p := range r.Sprites() {
 		collect(p)
 	}
 

@@ -15,6 +15,7 @@ None. No API keys or tokens are required for any provider, embedded or remote. C
 | `ASSETS_OUTPUT_DIR` | No | Directory rendered assets are written to (default: `<OS temp dir>/assets-mcp`) |
 | `ASSETS_DISABLE_REMOTE` | No | Set to `1` (or any non-empty value) to run fully offline with only the embedded providers |
 | `ASSETS_CACHE_DIR` | No | On-disk cache directory for remote fetches (default: `<OS cache dir>/assets-mcp`, falling back to the OS temp dir) |
+| `ASSETS_DB` | No | Local assetsdb database root; stays available when remote providers are disabled |
 | `ASSETS_UNSPLASH_ACCESS_KEY` | No | Unsplash Access Key — when set, enables the opt-in Unsplash photo provider |
 | `ASSETS_PIXABAY_KEY` | No | Pixabay API key — when set, enables the opt-in Pixabay photo provider |
 | `ASSETS_PEXELS_KEY` | No | Pexels API key — when set, enables the opt-in Pexels photo provider |
@@ -25,7 +26,7 @@ None. No API keys or tokens are required for any provider, embedded or remote. C
 
 ### Install from source
 
-Requires Go 1.24+.
+Requires Go 1.26.5+.
 
 ```
 go install github.com/jbeshir/mcp-servers/assets/cmd/assets-mcp@latest
@@ -69,18 +70,29 @@ Assets are identified by a **composite id** of the form `<provider>:<local>` —
 | `get_icon` | `id`, `color?`, `size?` | Render an icon to a standalone SVG file (by composite id) and write it to disk |
 | `search_illustrations` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search vendored illustration collections by name; returns composite ids |
 | `get_illustration` | `id` | Fetch an SVG illustration (by composite id) and write it to disk, unmodified |
-| `search_fonts` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search font families (embedded + Google Fonts) by name, slug, or category; returns composite ids |
+| `search_fonts` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search font families (embedded, Google Fonts, and assetsdb) by name, slug, or category; returns composite ids |
 | `get_font` | `id`, `weight?`, `style?`, `format?` | Fetch a font's woff2 file (and optionally an `@font-face` CSS snippet) by composite id and write it to disk |
 | `search_photos` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search keyless Openverse CC-licensed photos by name; returns composite ids |
 | `get_photo` | `id` | Fetch a photo (by composite id) and write it to disk |
 | `search_textures` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search keyless CC0 ambientCG PBR material sets by name; returns composite ids |
 | `get_texture` | `id`, `resolution?`, `format?` | Fetch a PBR material archive (a zip of texture maps) by composite id and write it to disk |
-| `search_models` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search 3D model providers (Poly Pizza, Poly Haven) by name; returns composite ids |
+| `search_models` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search 3D model providers (assetsdb, Poly Pizza, Poly Haven) by name; returns composite ids |
 | `get_model` | `id`, `format?`, `resolution?` | Fetch a 3D model (by composite id) and write it to disk — a .glb, or a zip of a glTF and its assets |
-| `search_audio` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search audio providers (Jamendo, Freesound) by name; returns composite ids |
+| `search_audio` | `query`, `sources?`, `exclude_sources?`, `providers?`, `exclude_providers?`, `limit?`, `cursor?` | Search audio providers (assetsdb, Jamendo, Freesound) by name; returns composite ids |
 | `get_audio` | `id`, `format?` | Fetch an audio clip (mp3 or ogg) by composite id and write it to disk |
+| `search_sprites` | `query`, filters, `limit?`, `cursor?` | Search local assetsdb sprites with pack and atlas metadata |
+| `get_sprite` | `id` | Write a sprite (the full sheet for atlas sprites) to disk |
+| `get_pack` | `pack_id` | Copy a known assetsdb pack's original ZIP to disk |
 
 The `sources`/`providers`/`exclude_*` arguments are string arrays. Every `search_*` tool accepts an optional `cursor` (an opaque pagination token from a previous call's `next_cursor`) and, when more results remain, returns a `next_cursor` to pass back for the following page.
+
+## Local game art
+
+Set `ASSETS_DB` to a database built by the public `github.com/jbeshir/assetsdb` tool. Its model,
+audio, font, and sprite items appear under the `assetsdb` provider, even with
+`ASSETS_DISABLE_REMOTE=1`. Results expose pack metadata and sprite atlas regions. Search for all
+needed assets first; when several share a pack, prefer one `get_pack` call. Pack ZIPs are copied
+unchanged and licenses retain their SPDX metadata.
 
 ## Remote providers
 
@@ -111,7 +123,7 @@ The embedded offline base — every vendored icon, illustration, and font — is
 
 ## Return Contract
 
-Tools that produce files (`get_icon`, `get_illustration`, `get_font`, `get_photo`, `get_texture`, `get_model`, `get_audio`) write the asset(s) to disk under `ASSETS_OUTPUT_DIR` (or the default temp directory) and return:
+Tools that produce files (`get_icon`, `get_illustration`, `get_font`, `get_photo`, `get_texture`, `get_model`, `get_audio`, `get_sprite`, `get_pack`) write the asset(s) to disk under `ASSETS_OUTPUT_DIR` (or the default temp directory) and return:
 
 1. A human-readable summary **text content block** of what was written.
 2. A native **`structuredContent`** object shaped `{"files":[<file>,...]}`, where each `<file>` is:
@@ -134,13 +146,13 @@ Tools that produce files (`get_icon`, `get_illustration`, `get_font`, `get_photo
 
 `list_asset_sources` likewise returns its listing as both a summary text block and a native `structuredContent` object shaped `{"providers":[...]}` — see [Tools](#tools).
 
-`get_icon`, `get_illustration`, `get_font`, `get_photo`, `get_texture`, `get_model`, `get_audio`, and `list_asset_sources` all declare an MCP `outputSchema` for their structured content, so clients can validate or consume it directly without parsing the text block. The `search_*` tools remain text-only.
+`get_icon`, `get_illustration`, `get_font`, `get_photo`, `get_texture`, `get_model`, `get_audio`, `get_sprite`, `get_pack`, and `list_asset_sources` all declare an MCP `outputSchema` for their structured content, so clients can validate or consume it directly without parsing the text block. The `search_*` tools remain text-only.
 
 This mirrors the structured-output shape used elsewhere in this monorepo, e.g. `image-gen-mcp`'s structured `image_url` result.
 
 ## Licenses
 
-Every asset carries a license and (where applicable) attribution, retrievable via `list_asset_sources` or the embedded `license` object (`spdx`, `name`, `url`, `attribution`, `requiresAttribution`) on each file returned by `get_icon`/`get_illustration`/`get_font`/`get_photo`/`get_texture`/`get_model`/`get_audio`.
+Every asset carries a license and (where applicable) attribution, retrievable via `list_asset_sources` or the embedded `license` object (`spdx`, `name`, `url`, `attribution`, `requiresAttribution`) on each file returned by `get_icon`/`get_illustration`/`get_font`/`get_photo`/`get_texture`/`get_model`/`get_audio`/`get_sprite`/`get_pack`.
 
 **Icons:**
 
@@ -159,5 +171,4 @@ Every asset carries a license and (where applicable) attribution, retrievable vi
 
 ## Follow-ups
 
-- **2D game art (Kenney).** Kenney's CC0 game-art packs (sprites, tilesets, UI packs) are a natural fourth asset domain but are not included in this initial version; adding them is a follow-up.
 - **demesne filegen wiring.** Sandboxed demesne environments route file-generating MCP tools through `/workspace/generated/`. This server currently writes directly to `ASSETS_OUTPUT_DIR`; wiring it into that convention is a follow-up.

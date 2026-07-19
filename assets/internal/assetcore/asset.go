@@ -38,8 +38,10 @@ type Asset struct {
 // that is not part of the asset's identity or fetch parameters. It is strictly informational: Fetch
 // takes typed opts (IconFetchOpts, FontFetchOpts), never Meta.
 const (
-	MetaCategory = "category" // font family category, for search display
-	MetaWeights  = "weights"  // comma-separated font weights, for search display
+	MetaCategory  = "category" // font family category, for search display
+	MetaWeights   = "weights"  // comma-separated font weights, for search display
+	MetaPack      = "pack"
+	MetaPackTitle = "pack_title"
 )
 
 // AssetID composes a provider name and a provider-local id into the canonical composite asset id. The

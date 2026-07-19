@@ -5,7 +5,7 @@
 package assetcore
 
 // Kind enumerates the asset kinds this server serves: icon, illustration, font, photo, texture,
-// model, and audio.
+// model, audio, and sprite.
 type Kind string
 
 const (
@@ -24,4 +24,6 @@ const (
 	KindModel Kind = "model"
 	// KindAudio is an audio clip (an mp3 or ogg file).
 	KindAudio Kind = "audio"
+	// KindSprite is raster game art, including atlas-backed sub-sprites.
+	KindSprite Kind = "sprite"
 )

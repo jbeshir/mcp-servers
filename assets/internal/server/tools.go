@@ -12,11 +12,14 @@ func (s *Server) registerTools() {
 		mcp.WithDescription(
 			"List the registered asset providers and, for each, the upstream sources it serves "+
 				"(icon sets, illustration collections, font families, photo sources, texture/material "+
-				"sets, 3D model sources) with license and item count. Returns a human-readable listing "+
+				"sets, 3D model sources, audio sources, sprite packs) with license and item count. "+
+				"Returns a human-readable listing "+
 				"plus a structured JSON block. Optionally filter by kind (icon, illustration, font, "+
-				"photo, texture, model), by provider, or by source."),
+				"photo, texture, model, audio, sprite), by provider, or by source."),
 		mcp.WithString("kind",
-			mcp.Description("Restrict to a single asset kind: icon, illustration, font, photo, texture, or model"),
+			mcp.Description(
+				"Restrict to a single asset kind: icon, illustration, font, photo, texture, model, audio, or sprite",
+			),
 		),
 		mcp.WithArray("providers",
 			mcp.Description("Only list these providers (e.g. embedded-icons)"),
@@ -145,7 +148,8 @@ func (s *Server) registerTools() {
 			"Search vendored OFL-1.1 font families plus the Google Fonts catalogue by name, slug, or "+
 				"category. Returns a text list of hits, each with its composite id "+
 				"(\"<provider>:<local>\", e.g. embedded-fonts:inter), the family category, and available "+
-				"weights. No files are written; pass a hit's id to get_font."),
+				"weights. No files are written; pass a hit's id to get_font. Game-art results include their "+
+				"pack; search all needs first and prefer get_pack when several share one."),
 		mcp.WithString("query",
 			mcp.Required(),
 			mcp.Description("Case-insensitive substring to match against family name, slug, or category"),
@@ -159,7 +163,7 @@ func (s *Server) registerTools() {
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("providers",
-			mcp.Description("Restrict to these font providers (embedded-fonts, googlefonts)"),
+			mcp.Description("Restrict to these font providers (embedded-fonts, googlefonts, assetsdb)"),
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("exclude_providers",
@@ -293,10 +297,11 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_models",
 		mcp.WithDescription(
-			"Search 3D model providers (Poly Pizza, Poly Haven) by name. Returns a text list of hits, "+
+			"Search 3D model providers (assetsdb, Poly Pizza, Poly Haven) by name. Returns a text list of hits, "+
 				"each with its composite id (\"<provider>:<local>\") and a source/title label. Results "+
-				"come from keyed/opt-in providers only, so an empty result may mean no provider is "+
-				"configured. No files are written; pass a hit's id to get_model to fetch it."),
+				"come from local and opt-in providers, so an empty result may mean no provider is "+
+				"configured. No files are written; pass a hit's id to get_model to fetch it. Game-art results "+
+				"include their pack; search all needs first and prefer get_pack when several share one."),
 		mcp.WithString("query",
 			mcp.Required(),
 			mcp.Description("Case-insensitive substring to match against model names"),
@@ -310,7 +315,7 @@ func (s *Server) registerTools() {
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("providers",
-			mcp.Description("Restrict to these model providers"),
+			mcp.Description("Restrict to these model providers (assetsdb, polypizza, polyhaven)"),
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("exclude_providers",
@@ -346,10 +351,11 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_audio",
 		mcp.WithDescription(
-			"Search audio providers (Jamendo, Freesound) by name. Returns a text list of hits, each "+
+			"Search audio providers (assetsdb, Jamendo, Freesound) by name. Returns a text list of hits, each "+
 				"with its composite id (\"<provider>:<local>\") and a source/title label. Results come "+
-				"from keyed/opt-in providers only, so an empty result may mean no provider is "+
-				"configured. No files are written; pass a hit's id to get_audio to fetch it."),
+				"from local and opt-in providers, so an empty result may mean no provider is "+
+				"configured. No files are written; pass a hit's id to get_audio to fetch it. Game-art results "+
+				"include their pack; search all needs first and prefer get_pack when several share one."),
 		mcp.WithString("query",
 			mcp.Required(),
 			mcp.Description("Case-insensitive substring to match against audio clip names"),
@@ -363,7 +369,7 @@ func (s *Server) registerTools() {
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("providers",
-			mcp.Description("Restrict to these audio providers"),
+			mcp.Description("Restrict to these audio providers (assetsdb, jamendo, freesound)"),
 			mcp.Items(stringArrayItems),
 		),
 		mcp.WithArray("exclude_providers",
@@ -392,4 +398,31 @@ func (s *Server) registerTools() {
 		),
 		mcp.WithOutputSchema[fileManifest](),
 	), s.handleGetAudio)
+
+	s.mcpServer.AddTool(mcp.NewTool("search_sprites",
+		mcp.WithDescription(
+			"Search local assetsdb game-art sprites. Results include pack metadata. Search for everything "+
+				"you need first; when several results share a pack, prefer one get_pack over many individual fetches."),
+		mcp.WithString("query", mcp.Required()),
+		mcp.WithArray("sources", mcp.Items(stringArrayItems)),
+		mcp.WithArray("exclude_sources", mcp.Items(stringArrayItems)),
+		mcp.WithArray("providers", mcp.Items(stringArrayItems)),
+		mcp.WithArray("exclude_providers", mcp.Items(stringArrayItems)),
+		mcp.WithNumber("limit"),
+		mcp.WithString("cursor"),
+	), s.handleSearchSprites)
+	s.mcpServer.AddTool(mcp.NewTool("get_sprite",
+		mcp.WithDescription(
+			"Write a sprite returned by search_sprites; atlas results write the complete sheet and expose region metadata."),
+		mcp.WithString("id", mcp.Required()),
+		mcp.WithOutputSchema[fileManifest](),
+	), s.handleGetSprite)
+	s.mcpServer.AddTool(mcp.NewTool("get_pack",
+		mcp.WithDescription(
+			"Copy a known assetsdb pack's original ZIP. Search all needs first; when several results share a "+
+				"pack, prefer this tool over individual fetches."),
+		mcp.WithString("pack_id", mcp.Required(),
+			mcp.Description("Known pack ID from list_asset_sources")),
+		mcp.WithOutputSchema[fileManifest](),
+	), s.handleGetPack)
 }

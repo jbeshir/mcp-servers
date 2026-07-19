@@ -11,9 +11,7 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 )
 
-func TestSearchIconsMergesAndDedupesByLogicalIdentity(t *testing.T) {
-	// The same logical asset (Source=s, Title=camera) is served by both providers with a different
-	// composite ID each; merge must dedup on (Source, Title), first-provider-wins.
+func TestSearchIconsPreservesDistinctIDsWithSameTitle(t *testing.T) {
 	r := assetcore.NewRegistry()
 
 	a := newIconProvider(t, "a")
@@ -41,7 +39,7 @@ func TestSearchIconsMergesAndDedupesByLogicalIdentity(t *testing.T) {
 		ids = append(ids, a.ID)
 	}
 
-	wantTitles := []string{"camera", "home", "gear"}
+	wantTitles := []string{"camera", "home", "camera", "gear"}
 	if len(titles) != len(wantTitles) {
 		t.Fatalf("merged titles = %v, want %v", titles, wantTitles)
 	}
@@ -50,9 +48,22 @@ func TestSearchIconsMergesAndDedupesByLogicalIdentity(t *testing.T) {
 			t.Errorf("merged titles[%d] = %q, want %q", i, titles[i], want)
 		}
 	}
-	// The winning "camera" must be provider a's (first-provider-wins), keeping its composite ID.
-	if ids[0] != "a:s/camera" {
-		t.Errorf("deduped camera ID = %q, want a:s/camera (first provider wins)", ids[0])
+	if ids[0] != "a:s/camera" || ids[2] != "b:s/camera" {
+		t.Errorf("same-title IDs = %v, want both distinct assets", ids)
+	}
+}
+
+func TestSearchSpritesPreservesSamePackSameTitleVariants(t *testing.T) {
+	r := assetcore.NewRegistry()
+	p := newSpriteProvider(t, "assetsdb")
+	p.EXPECT().Search(mock.Anything, mock.Anything).Return(assetcore.SearchResult{Assets: []assetcore.Asset{
+		{Source: "kenney", Title: "Tree", ID: "assetsdb:kenney/tree-a.png"},
+		{Source: "kenney", Title: "Tree", ID: "assetsdb:kenney/tree-b.png"},
+	}}, nil)
+	r.AddSprite(p)
+	assets, _, warns := r.SearchSprites(t.Context(), assetcore.SearchOpts{})
+	if len(warns) != 0 || len(assets) != 2 {
+		t.Fatalf("assets=%+v warnings=%v, want both same-title variants", assets, warns)
 	}
 }
 

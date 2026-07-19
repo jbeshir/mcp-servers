@@ -1,8 +1,9 @@
 module github.com/jbeshir/mcp-servers/assets
 
-go 1.25.5
+go 1.26.5
 
 require (
+	github.com/jbeshir/assetsdb v0.1.0
 	github.com/mark3labs/mcp-go v0.55.1
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/time v0.15.0

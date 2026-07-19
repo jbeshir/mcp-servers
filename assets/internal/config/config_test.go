@@ -1,12 +1,37 @@
 package config
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 	"github.com/stretchr/testify/require"
 )
+
+func writeAssetsDBFixture(t *testing.T) string {
+	t.Helper()
+	dir := t.TempDir()
+	// #nosec G304 -- the path is a fixed test fixture beneath t.TempDir.
+	file, err := os.Create(filepath.Join(dir, "datapackage.json"))
+	require.NoError(t, err)
+	dataPackage := map[string]any{
+		"name": "fixture", "title": "Fixture", "version": "1",
+		"created": "2026-07-18T00:00:00Z", "x_assetsdb:schemaVersion": 1,
+		"x_assetsdb:sources": []any{map[string]any{"name": "pack", "title": "Pack", "path": "sources/pack.zip", "licenses": []any{map[string]any{"name": "CC0-1.0"}}}},
+		"resources": []any{
+			map[string]any{"name": "model", "x_assetsdb:id": "assetsdb:pack/model.glb", "x_assetsdb:source": "pack", "x_assetsdb:kind": "model3d", "path": "model.glb"},
+			map[string]any{"name": "audio", "x_assetsdb:id": "assetsdb:pack/audio.ogg", "x_assetsdb:source": "pack", "x_assetsdb:kind": "audio", "path": "audio.ogg"},
+			map[string]any{"name": "font", "x_assetsdb:id": "assetsdb:pack/font.ttf", "x_assetsdb:source": "pack", "x_assetsdb:kind": "font", "path": "font.ttf"},
+			map[string]any{"name": "sprite", "x_assetsdb:id": "assetsdb:pack/sprite.png", "x_assetsdb:source": "pack", "x_assetsdb:kind": "sprite2d", "path": "sprite.png"},
+		},
+	}
+	require.NoError(t, json.NewEncoder(file).Encode(dataPackage))
+	require.NoError(t, file.Close())
+
+	return dir
+}
 
 // providerNames returns the Name() of every provider registered on r, across all kinds.
 func providerNames(t *testing.T, deps *Deps) map[string]bool {
@@ -23,10 +48,39 @@ func providerNames(t *testing.T, deps *Deps) map[string]bool {
 func TestLoadConfigHonorsEnv(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv(envOutputDir, dir)
+	t.Setenv(envAssetsDB, "/tmp/assetsdb-fixture")
 
 	cfg := LoadConfig()
 	if cfg.OutputDir != dir {
 		t.Errorf("LoadConfig().OutputDir = %q, want %q", cfg.OutputDir, dir)
+	}
+	if cfg.AssetsDB != "/tmp/assetsdb-fixture" {
+		t.Errorf("LoadConfig().AssetsDB = %q", cfg.AssetsDB)
+	}
+}
+
+func TestSetupInvalidAssetsDBIsNonFatal(t *testing.T) {
+	deps := Setup(Config{AssetsDB: filepath.Join(t.TempDir(), "missing"), DisableRemote: true})
+	require.NotNil(t, deps.Registry)
+	require.Nil(t, deps.PackStore)
+	require.Empty(t, deps.Registry.Sprites())
+}
+
+func TestSetupValidAssetsDBRegistersAllKindsWithRemoteDisabled(t *testing.T) {
+	deps := Setup(Config{AssetsDB: writeAssetsDBFixture(t), DisableRemote: true})
+	require.NotNil(t, deps.PackStore)
+	require.Len(t, deps.Registry.Models(), 1)
+	require.Len(t, deps.Registry.Audio(), 1)
+	require.Len(t, deps.Registry.Sprites(), 1)
+	require.Len(t, deps.Registry.Fonts(), 2) // embedded and assetsdb
+	kinds := map[assetcore.Kind]bool{}
+	for _, info := range deps.Registry.Providers() {
+		if info.Name == "assetsdb" {
+			kinds[info.Kind] = true
+		}
+	}
+	for _, kind := range []assetcore.Kind{assetcore.KindModel, assetcore.KindAudio, assetcore.KindFont, assetcore.KindSprite} {
+		require.True(t, kinds[kind], "assetsdb provider missing kind %q", kind)
 	}
 }
 

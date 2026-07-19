@@ -32,16 +32,16 @@ func formatSearchResults(results []datasource.SearchResult) (*mcp.CallToolResult
 
 func formatPriceComparison(query string, results []datasource.SearchResult) (*mcp.CallToolResult, error) {
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("Price comparison for \"%s\":\n\n", query))
+	fmt.Fprintf(&sb, "Price comparison for \"%s\":\n\n", query)
 
 	cheapestPrice := math.MaxFloat64
 	cheapestStore := ""
 	cheapestProduct := ""
 
 	for _, r := range results {
-		sb.WriteString(fmt.Sprintf("## %s\n", r.Supermarket))
+		fmt.Fprintf(&sb, "## %s\n", r.Supermarket)
 		if r.Error != "" {
-			sb.WriteString(fmt.Sprintf("  Error: %s\n\n", r.Error))
+			fmt.Fprintf(&sb, "  Error: %s\n\n", r.Error)
 			continue
 		}
 		if len(r.Products) == 0 {
@@ -49,12 +49,12 @@ func formatPriceComparison(query string, results []datasource.SearchResult) (*mc
 			continue
 		}
 		for _, p := range r.Products {
-			sb.WriteString(fmt.Sprintf("  - %s: £%.2f", p.Name, p.Price))
+			fmt.Fprintf(&sb, "  - %s: £%.2f", p.Name, p.Price)
 			if p.PricePerUnit != "" {
-				sb.WriteString(fmt.Sprintf(" (%s)", p.PricePerUnit))
+				fmt.Fprintf(&sb, " (%s)", p.PricePerUnit)
 			}
 			if p.Promotion != "" {
-				sb.WriteString(fmt.Sprintf(" [%s]", p.Promotion))
+				fmt.Fprintf(&sb, " [%s]", p.Promotion)
 			}
 			sb.WriteString("\n")
 
@@ -68,7 +68,7 @@ func formatPriceComparison(query string, results []datasource.SearchResult) (*mc
 	}
 
 	if cheapestStore != "" {
-		sb.WriteString(fmt.Sprintf("**Cheapest:** %s at %s (£%.2f)\n", cheapestProduct, cheapestStore, cheapestPrice))
+		fmt.Fprintf(&sb, "**Cheapest:** %s at %s (£%.2f)\n", cheapestProduct, cheapestStore, cheapestPrice)
 	}
 
 	return mcp.NewToolResultText(sb.String()), nil

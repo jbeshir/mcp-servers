@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -251,25 +250,9 @@ func (p *Provider) download(ctx context.Context, family string, weight int, styl
 
 	cssURL := css2URL(family, weight, style)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, cssURL, nil)
-	if err != nil {
-		return nil, fmt.Errorf("googlefonts: build css2 request: %w", err)
-	}
-	req.Header.Set("User-Agent", browserUserAgent)
-
-	resp, err := p.client.Do(req)
+	body, err := p.client.GetBytesHeaders(ctx, cssURL, http.Header{"User-Agent": []string{browserUserAgent}})
 	if err != nil {
 		return nil, fmt.Errorf("googlefonts: fetch css2 %s: %w", cssURL, err)
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	if err := httpx.CheckStatus(resp, cssURL); err != nil {
-		return nil, err
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("googlefonts: read css2 %s: %w", cssURL, err)
 	}
 
 	woff2URL, err := extractWoff2URL(body)
