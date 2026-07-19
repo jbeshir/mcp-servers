@@ -133,7 +133,7 @@ func newTestServer(t *testing.T) *Server {
 
 	deps := config.Setup(config.Config{OutputDir: t.TempDir()})
 
-	return NewServer(deps.Registry, deps.OutputDir)
+	return NewServer(deps.Registry, deps.OutputDir, deps.PackStore)
 }
 
 func newRequest(args map[string]any) mcp.CallToolRequest {
@@ -500,7 +500,7 @@ func TestHandleGetPackErrors(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, res.IsError)
 
-	unconfigured := NewServer(assetcore.NewRegistry(), t.TempDir())
+	unconfigured := NewServer(assetcore.NewRegistry(), t.TempDir(), assetcore.EmptyPackStore{})
 	res, err = unconfigured.handleGetPack(t.Context(), newRequest(map[string]any{"pack_id": "tiny-pack"}))
 	require.NoError(t, err)
 	require.True(t, res.IsError)

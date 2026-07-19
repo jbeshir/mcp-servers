@@ -15,16 +15,13 @@ type Server struct {
 	packStore assetcore.PackStore
 }
 
-// NewServer creates a new MCP server backed by the given provider registry and output directory. The
-// registry is built during wiring (config.Setup) and treated read-only; outputDir is the resolved
-// directory rendered assets are written to.
-func NewServer(registry *assetcore.Registry, outputDir string, stores ...assetcore.PackStore) *Server {
+// NewServer creates a new MCP server backed by the given provider registry, output directory, and
+// pack store. The dependencies are built during wiring (config.Setup) and treated read-only.
+func NewServer(registry *assetcore.Registry, outputDir string, packStore assetcore.PackStore) *Server {
 	s := &Server{
 		registry:  registry,
 		outputDir: outputDir,
-	}
-	if len(stores) > 0 {
-		s.packStore = stores[0]
+		packStore: packStore,
 	}
 
 	s.mcpServer = server.NewMCPServer(

@@ -62,7 +62,7 @@ func TestLoadConfigHonorsEnv(t *testing.T) {
 func TestSetupInvalidAssetsDBIsNonFatal(t *testing.T) {
 	deps := Setup(Config{AssetsDB: filepath.Join(t.TempDir(), "missing"), DisableRemote: true})
 	require.NotNil(t, deps.Registry)
-	require.Nil(t, deps.PackStore)
+	require.IsType(t, assetcore.EmptyPackStore{}, deps.PackStore)
 	require.Empty(t, deps.Registry.Sprites())
 }
 
