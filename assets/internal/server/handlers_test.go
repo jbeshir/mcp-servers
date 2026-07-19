@@ -500,7 +500,7 @@ func TestHandleGetPackErrors(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, res.IsError)
 
-	unconfigured := NewServer(assetcore.NewRegistry(), t.TempDir(), assetcore.EmptyPackStore{})
+	unconfigured := NewServer(assetcore.NewRegistry(), t.TempDir(), nil)
 	res, err = unconfigured.handleGetPack(t.Context(), newRequest(map[string]any{"pack_id": "tiny-pack"}))
 	require.NoError(t, err)
 	require.True(t, res.IsError)

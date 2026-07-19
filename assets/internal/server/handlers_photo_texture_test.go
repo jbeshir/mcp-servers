@@ -36,7 +36,7 @@ func newPhotoTextureServer(t *testing.T) (*Server, *mocks.PhotoProvider, *mocks.
 	registry.AddPhoto(photoProv)
 	registry.AddTexture(textureProv)
 
-	return NewServer(registry, t.TempDir(), assetcore.EmptyPackStore{}), photoProv, textureProv
+	return NewServer(registry, t.TempDir(), nil), photoProv, textureProv
 }
 
 func TestHandleSearchPhotosHappyPath(t *testing.T) {

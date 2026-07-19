@@ -189,7 +189,7 @@ func Setup(cfg Config) *Deps {
 	r.AddIcon(embeddedicons.New())
 	r.AddIllustration(embeddedillustrations.New())
 	r.AddFont(embeddedfonts.New())
-	packs := assetcore.PackStore(assetcore.EmptyPackStore{})
+	var packs assetcore.PackStore
 	if cfg.AssetsDB != "" {
 		assets, err := catalog.Load(cfg.AssetsDB)
 		if err != nil {

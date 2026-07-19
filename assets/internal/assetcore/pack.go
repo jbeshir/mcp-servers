@@ -16,14 +16,3 @@ type PackStore interface {
 	Packs() []Pack
 	OpenPack(string) (io.ReadCloser, Pack, error)
 }
-
-// EmptyPackStore is a PackStore with no available packs.
-type EmptyPackStore struct{}
-
-func (EmptyPackStore) Packs() []Pack {
-	return nil
-}
-
-func (EmptyPackStore) OpenPack(string) (io.ReadCloser, Pack, error) {
-	return nil, Pack{}, ErrNotFound
-}

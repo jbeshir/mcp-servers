@@ -29,7 +29,7 @@ func newModelServer(t *testing.T) (*Server, *mocks.ModelProvider) {
 	registry := assetcore.NewRegistry()
 	registry.AddModel(modelProv)
 
-	return NewServer(registry, t.TempDir(), assetcore.EmptyPackStore{}), modelProv
+	return NewServer(registry, t.TempDir(), nil), modelProv
 }
 
 func TestHandleSearchModelsHappyPath(t *testing.T) {
