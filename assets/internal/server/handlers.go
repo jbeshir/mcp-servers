@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
@@ -789,6 +790,64 @@ func (s *Server) handleGetSprite(ctx context.Context, request mcp.CallToolReques
 		return nil, fmt.Errorf("write sprite %s: %w", id, err)
 	}
 	return newFileResult(fmt.Sprintf("Wrote sprite %s to %s", id, out), []manifestFile{manifestFileFor(out, blob)})
+}
+
+func (s *Server) handleListPackAssets(
+	_ context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	args := request.GetArguments()
+	packID := stringArg(args, "pack_id")
+	if packID == "" {
+		return mcp.NewToolResultError("pack_id is required"), nil
+	}
+	if s.packStore == nil {
+		return mcp.NewToolResultError("pack store is not configured"), nil
+	}
+
+	kind, ok := packAssetKind(stringArg(args, "kind"))
+	if !ok {
+		return mcp.NewToolResultError("kind must be one of: model, audio, font, sprite"), nil
+	}
+	cursor := stringArg(args, "cursor")
+	if !validListCursor(cursor) {
+		return mcp.NewToolResultError("cursor must be a non-negative integer returned by list_pack_assets"), nil
+	}
+
+	result, err := s.packStore.ListPackAssets(
+		packID, kind, intArg(args, "limit", 0), cursor,
+	)
+	if errors.Is(err, assetcore.ErrNotFound) {
+		return mcp.NewToolResultError("pack not found: " + packID), nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("list pack %s assets: %w", packID, err)
+	}
+
+	header := fmt.Sprintf("%d asset(s) in pack %q", len(result.Assets), packID)
+	if kind != "" {
+		header += fmt.Sprintf(" with kind %q", kind)
+	}
+	return searchResult(header+":", sourceTitleLines(result.Assets), result.NextCursor, nil), nil
+}
+
+func packAssetKind(value string) (assetcore.Kind, bool) {
+	kind := assetcore.Kind(value)
+	switch kind {
+	case "", assetcore.KindModel, assetcore.KindAudio, assetcore.KindFont, assetcore.KindSprite:
+		return kind, true
+	case assetcore.KindIcon, assetcore.KindIllustration, assetcore.KindPhoto, assetcore.KindTexture:
+		return "", false
+	}
+	return "", false
+}
+
+func validListCursor(cursor string) bool {
+	if cursor == "" {
+		return true
+	}
+	offset, err := strconv.Atoi(cursor)
+	return err == nil && offset >= 0
 }
 
 func (s *Server) handleGetPack(_ context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {

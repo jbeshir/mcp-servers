@@ -14,5 +14,6 @@ type Pack struct {
 // PackStore supplies pack discovery and raw archive retrieval to the MCP server.
 type PackStore interface {
 	Packs() []Pack
+	ListPackAssets(packID string, kind Kind, limit int, cursor string) (SearchResult, error)
 	OpenPack(string) (io.ReadCloser, Pack, error)
 }

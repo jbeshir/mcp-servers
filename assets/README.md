@@ -63,6 +63,8 @@ claude mcp add assets -- /path/to/assets-mcp
 
 Assets are identified by a **composite id** of the form `<provider>:<local>` — e.g. `embedded-icons:lucide/camera`, `embedded-illustrations:open-doodles/coffee-doodle`, `embedded-fonts:inter`, or, for the remote providers, `iconify:lucide/home`, `googlefonts:roboto`, `openverse:<uuid>`, `ambientcg:Bricks097`, and, for the keyed providers, `unsplash:<id>`, `pixabay:<id>`, `pexels:<id>`, `polypizza:<id>`, `polyhaven:<slug>`, `jamendo:<trackid>`, `freesound:<soundid>`. The `search_*` tools return each hit's composite id; pass it to the matching `get_*` tool, or construct one directly. The `local` part is opaque to everyone but the emitting provider.
 
+The `search_*` tools perform lexical name/tag/category lookup, not vector or semantic search. Use short literal terms such as `door`, `goblin`, or `stone`, rather than a natural-language description. AssetsDB specifically uses case-insensitive substring matching over item names and tokens; remote providers apply their own lexical matching.
+
 | Tool | Arguments | Description |
 |---|---|---|
 | `list_asset_sources` | `kind?`, `providers?`, `exclude_providers?`, `sources?`, `exclude_sources?` | List registered providers and the upstream sources each serves, with license and item count, as a readable listing plus a structured JSON block |
@@ -82,6 +84,7 @@ Assets are identified by a **composite id** of the form `<provider>:<local>` —
 | `get_audio` | `id`, `format?` | Fetch an audio clip (mp3 or ogg) by composite id and write it to disk |
 | `search_sprites` | `query`, filters, `limit?`, `cursor?` | Search local assetsdb sprites with pack and atlas metadata |
 | `get_sprite` | `id` | Write a sprite (the full sheet for atlas sprites) to disk |
+| `list_pack_assets` | `pack_id`, `kind?`, `limit?`, `cursor?` | List a known assetsdb pack's catalogued assets without a query, including atlas-region metadata |
 | `get_pack` | `pack_id` | Copy a known assetsdb pack's original ZIP to disk |
 
 The `sources`/`providers`/`exclude_*` arguments are string arrays. Every `search_*` tool accepts an optional `cursor` (an opaque pagination token from a previous call's `next_cursor`) and, when more results remain, returns a `next_cursor` to pass back for the following page.
@@ -90,8 +93,9 @@ The `sources`/`providers`/`exclude_*` arguments are string arrays. Every `search
 
 Set `ASSETS_DB` to a database built by the public `github.com/jbeshir/assetsdb` tool. Its model,
 audio, font, and sprite items appear under the `assetsdb` provider, even with
-`ASSETS_DISABLE_REMOTE=1`. Results expose pack metadata and sprite atlas regions. Search for all
-needed assets first; when several share a pack, prefer one `get_pack` call. Pack ZIPs are copied
+`ASSETS_DISABLE_REMOTE=1`. Results expose pack metadata and sprite atlas regions. Use
+`list_pack_assets` to enumerate a pack without guessing a search term. Search for all needed assets
+first; when several share a pack, prefer one `get_pack` call. Pack ZIPs are copied
 unchanged and licenses retain their SPDX metadata.
 
 ## Remote providers
