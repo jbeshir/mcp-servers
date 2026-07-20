@@ -51,7 +51,10 @@ func newAssetsDBTestServer(t *testing.T) (*Server, []byte, string) {
 		"name": "fixture", "title": "Fixture", "version": "1",
 		"created": "2026-07-18T00:00:00Z", "x_assetsdb:schemaVersion": 1,
 		"x_assetsdb:sources": []any{map[string]any{"name": "tiny-pack", "title": "Tiny Pack", "path": "sources/tiny-pack.zip", "licenses": []any{map[string]any{"name": "CC0-1.0", "title": "CC Zero"}}}},
-		"resources":          []any{map[string]any{"name": "hero", "title": "Hero", "x_assetsdb:id": "assetsdb:tiny-pack/sprites/sheet.png#hero", "x_assetsdb:source": "tiny-pack", "x_assetsdb:kind": "sprite2d", "path": itemPath, "mediatype": "image/png", "x_assetsdb:region": map[string]any{"x": 1, "y": 2, "width": 8, "height": 9}}},
+		"resources": []any{
+			map[string]any{"name": "hero", "title": "Hero", "x_assetsdb:id": "assetsdb:tiny-pack/sprites/sheet.png#hero", "x_assetsdb:source": "tiny-pack", "x_assetsdb:kind": "sprite2d", "path": itemPath, "mediatype": "image/png", "x_assetsdb:region": map[string]any{"x": 1, "y": 2, "width": 8, "height": 9}},
+			map[string]any{"name": "door", "title": "Door", "x_assetsdb:id": "assetsdb:tiny-pack/sprites/sheet.png#door", "x_assetsdb:source": "tiny-pack", "x_assetsdb:kind": "sprite2d", "path": itemPath, "mediatype": "image/png", "x_assetsdb:region": map[string]any{"x": 9, "y": 2, "width": 8, "height": 9}},
+		},
 	}
 	require.NoError(t, json.NewEncoder(dataPackage).Encode(index))
 	require.NoError(t, dataPackage.Close())
@@ -141,6 +144,34 @@ func newRequest(args map[string]any) mcp.CallToolRequest {
 	req.Params.Arguments = args
 
 	return req
+}
+
+func TestToolDiscoveryExplainsLexicalSearchAndPackListing(t *testing.T) {
+	s := newTestServer(t)
+	response := s.mcpServer.HandleMessage(t.Context(), []byte(`{
+		"jsonrpc":"2.0","id":1,"method":"tools/list"
+	}`))
+	jsonResponse, ok := response.(mcp.JSONRPCResponse)
+	require.True(t, ok)
+	result, ok := jsonResponse.Result.(mcp.ListToolsResult)
+	require.True(t, ok)
+
+	var packTool *mcp.Tool
+	for i := range result.Tools {
+		tool := &result.Tools[i]
+		if strings.HasPrefix(tool.Name, "search_") {
+			require.Contains(t, strings.ToLower(tool.Description), "not vector", tool.Name)
+			require.Contains(t, strings.ToLower(tool.Description), "literal", tool.Name)
+		}
+		if tool.Name == "list_pack_assets" {
+			packTool = tool
+		}
+	}
+	require.NotNil(t, packTool)
+	require.ElementsMatch(t, []string{"pack_id"}, packTool.InputSchema.Required)
+	for _, name := range []string{"pack_id", "kind", "limit", "cursor"} {
+		require.Contains(t, packTool.InputSchema.Properties, name)
+	}
 }
 
 func TestHandleGetIconHappyPath(t *testing.T) {
@@ -463,6 +494,43 @@ func TestHandleSearchAndGetSpriteFromAssetsDB(t *testing.T) {
 	got, err := os.ReadFile(m.Files[0].Path)
 	require.NoError(t, err)
 	require.Equal(t, []byte("sprite-bytes"), got)
+}
+
+func TestHandleListPackAssetsPaginatesAndPreservesRegionMetadata(t *testing.T) {
+	s, _, _ := newAssetsDBTestServer(t)
+	res, err := s.handleListPackAssets(t.Context(), newRequest(map[string]any{
+		"pack_id": "tiny-pack", "kind": "sprite", "limit": float64(1),
+	}))
+	require.NoError(t, err)
+	require.False(t, res.IsError)
+	listing := res.Content[0].(mcp.TextContent).Text
+	require.Contains(t, listing, "assetsdb:tiny-pack/sprites/sheet.png#")
+	require.Contains(t, listing, "region=")
+	require.Contains(t, listing, "next_cursor: 1")
+
+	res, err = s.handleListPackAssets(t.Context(), newRequest(map[string]any{
+		"pack_id": "tiny-pack", "kind": "sprite", "limit": float64(1), "cursor": "1",
+	}))
+	require.NoError(t, err)
+	require.False(t, res.IsError)
+	listing = res.Content[0].(mcp.TextContent).Text
+	require.NotContains(t, listing, "next_cursor:")
+}
+
+func TestHandleListPackAssetsErrors(t *testing.T) {
+	s, _, _ := newAssetsDBTestServer(t)
+	for name, args := range map[string]map[string]any{
+		"missing pack":   {},
+		"unknown pack":   {"pack_id": "unknown"},
+		"invalid kind":   {"pack_id": "tiny-pack", "kind": "photo"},
+		"invalid cursor": {"pack_id": "tiny-pack", "cursor": "later"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			res, err := s.handleListPackAssets(t.Context(), newRequest(args))
+			require.NoError(t, err)
+			require.True(t, res.IsError)
+		})
+	}
 }
 
 func TestHandleGetPackWritesByteIdenticalInspectableZIP(t *testing.T) {

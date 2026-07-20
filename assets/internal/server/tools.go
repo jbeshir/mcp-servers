@@ -42,14 +42,17 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_icons",
 		mcp.WithDescription(
-			"Search vendored icon sets (bootstrap-icons, feather, heroicons, lucide, material-symbols, "+
+			"Lexical name search, not vector or semantic search: use short literal terms, not natural-language prose. "+
+				"Search vendored icon sets (bootstrap-icons, feather, heroicons, lucide, material-symbols, "+
 				"phosphor, simple-icons, tabler) plus Iconify's remote catalogue by name. Returns a text "+
 				"list of hits, each with its composite id (\"<provider>:<local>\", e.g. "+
 				"embedded-icons:lucide/camera) and a set/name label. No files are written; pass a hit's "+
 				"id to get_icon to render it."),
 		mcp.WithString("query",
 			mcp.Required(),
-			mcp.Description("Case-insensitive substring to match against icon names"),
+			mcp.Description(
+				"Short literal icon name term; local sets use case-insensitive substring matching, "+
+					"while remote providers apply their own lexical matching"),
 		),
 		mcp.WithArray("sources",
 			mcp.Description("Restrict to these icon sets (see list_asset_sources for names)"),
@@ -98,13 +101,15 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_illustrations",
 		mcp.WithDescription(
-			"Search vendored SVG illustration collections (open-doodles, humaaans, open-peeps) by name. "+
+			"Case-insensitive lexical name search, not vector or semantic search: use a short literal term, "+
+				"not natural-language prose. "+
+				"Search vendored SVG illustration collections (open-doodles, humaaans, open-peeps) by name. "+
 				"Returns a text list of hits, each with its composite id "+
 				"(\"<provider>:<local>\", e.g. embedded-illustrations:open-doodles/coffee-doodle) and a "+
 				"collection/name label. No files are written; pass a hit's id to get_illustration."),
 		mcp.WithString("query",
 			mcp.Required(),
-			mcp.Description("Case-insensitive substring to match against illustration names"),
+			mcp.Description("Short literal term matched case-insensitively as a substring of illustration names"),
 		),
 		mcp.WithArray("sources",
 			mcp.Description("Restrict to these collections (see list_asset_sources for names)"),
@@ -145,14 +150,18 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_fonts",
 		mcp.WithDescription(
-			"Search vendored OFL-1.1 font families plus the Google Fonts catalogue by name, slug, or "+
+			"Lexical name/tag/category search, not vector or semantic search: use short literal terms, "+
+				"not natural-language prose. "+
+				"Search vendored OFL-1.1 font families plus the Google Fonts catalogue by name, slug, or "+
 				"category. Returns a text list of hits, each with its composite id "+
 				"(\"<provider>:<local>\", e.g. embedded-fonts:inter), the family category, and available "+
 				"weights. No files are written; pass a hit's id to get_font. Game-art results include their "+
 				"pack; search all needs first and prefer get_pack when several share one."),
 		mcp.WithString("query",
 			mcp.Required(),
-			mcp.Description("Case-insensitive substring to match against family name, slug, or category"),
+			mcp.Description(
+				"Short literal family name, slug, tag, or category term; local catalogs use case-insensitive "+
+					"substring matching, while remote providers apply their own lexical matching"),
 		),
 		mcp.WithArray("sources",
 			mcp.Description("Restrict to these font families by display name (see list_asset_sources)"),
@@ -203,12 +212,14 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_photos",
 		mcp.WithDescription(
-			"Search keyless Openverse CC-licensed photos by name. Returns a text list of hits, each "+
+			"Lexical provider search, not vector or semantic search: use short literal name or tag terms, "+
+				"not natural-language prose. "+
+				"Search keyless Openverse CC-licensed photos by name. Returns a text list of hits, each "+
 				"with its composite id (\"<provider>:<local>\") and a source/title label. No files are "+
 				"written; pass a hit's id to get_photo to fetch it."),
 		mcp.WithString("query",
 			mcp.Required(),
-			mcp.Description("Case-insensitive substring to match against photo titles"),
+			mcp.Description("Short literal photo name or tag term interpreted lexically by Openverse"),
 		),
 		mcp.WithArray("sources",
 			mcp.Description("Restrict to these upstream sources (see list_asset_sources for names)"),
@@ -247,12 +258,14 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_textures",
 		mcp.WithDescription(
-			"Search keyless CC0 ambientCG PBR material sets by name. Returns a text list of hits, "+
+			"Lexical provider search, not vector or semantic search: use short literal material/category terms, "+
+				"not natural-language prose. "+
+				"Search keyless CC0 ambientCG PBR material sets by name. Returns a text list of hits, "+
 				"each with its composite id (\"<provider>:<local>\") and a source/title label. No files "+
 				"are written; pass a hit's id to get_texture to fetch it."),
 		mcp.WithString("query",
 			mcp.Required(),
-			mcp.Description("Case-insensitive substring to match against material names"),
+			mcp.Description("Short literal material name or category term interpreted lexically by ambientCG"),
 		),
 		mcp.WithArray("sources",
 			mcp.Description("Restrict to these upstream sources (see list_asset_sources for names)"),
@@ -297,14 +310,17 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_models",
 		mcp.WithDescription(
-			"Search 3D model providers (assetsdb, Poly Pizza, Poly Haven) by name. Returns a text list of hits, "+
+			"Lexical name/tag search, not vector or semantic search: use short literal terms, not natural-language prose. "+
+				"Search 3D model providers (assetsdb, Poly Pizza, Poly Haven) by name. Returns a text list of hits, "+
 				"each with its composite id (\"<provider>:<local>\") and a source/title label. Results "+
 				"come from local and opt-in providers, so an empty result may mean no provider is "+
 				"configured. No files are written; pass a hit's id to get_model to fetch it. Game-art results "+
 				"include their pack; search all needs first and prefer get_pack when several share one."),
 		mcp.WithString("query",
 			mcp.Required(),
-			mcp.Description("Case-insensitive substring to match against model names"),
+			mcp.Description(
+				"Short literal model name or tag term; AssetsDB uses case-insensitive name/token substring "+
+					"matching, while remote providers apply their own lexical matching"),
 		),
 		mcp.WithArray("sources",
 			mcp.Description("Restrict to these upstream sources (see list_asset_sources for names)"),
@@ -351,14 +367,17 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_audio",
 		mcp.WithDescription(
-			"Search audio providers (assetsdb, Jamendo, Freesound) by name. Returns a text list of hits, each "+
+			"Lexical name/tag search, not vector or semantic search: use short literal terms, not natural-language prose. "+
+				"Search audio providers (assetsdb, Jamendo, Freesound) by name. Returns a text list of hits, each "+
 				"with its composite id (\"<provider>:<local>\") and a source/title label. Results come "+
 				"from local and opt-in providers, so an empty result may mean no provider is "+
 				"configured. No files are written; pass a hit's id to get_audio to fetch it. Game-art results "+
 				"include their pack; search all needs first and prefer get_pack when several share one."),
 		mcp.WithString("query",
 			mcp.Required(),
-			mcp.Description("Case-insensitive substring to match against audio clip names"),
+			mcp.Description(
+				"Short literal audio name or tag term; AssetsDB uses case-insensitive name/token substring "+
+					"matching, while remote providers apply their own lexical matching"),
 		),
 		mcp.WithArray("sources",
 			mcp.Description("Restrict to these upstream sources (see list_asset_sources for names)"),
@@ -401,9 +420,14 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("search_sprites",
 		mcp.WithDescription(
-			"Search local assetsdb game-art sprites. Results include pack metadata. Search for everything "+
+			"Case-insensitive lexical name/token substring search, not vector or semantic search: use short literal "+
+				"sprite names, tags, or categories, not natural-language prose. Search local assetsdb game-art "+
+				"sprites. Results include pack metadata. Search for everything "+
 				"you need first; when several results share a pack, prefer one get_pack over many individual fetches."),
-		mcp.WithString("query", mcp.Required()),
+		mcp.WithString("query", mcp.Required(),
+			mcp.Description(
+				"Short literal sprite name, tag, or category term matched case-insensitively against "+
+					"AssetsDB names and tokens")),
 		mcp.WithArray("sources", mcp.Items(stringArrayItems)),
 		mcp.WithArray("exclude_sources", mcp.Items(stringArrayItems)),
 		mcp.WithArray("providers", mcp.Items(stringArrayItems)),
@@ -417,6 +441,20 @@ func (s *Server) registerTools() {
 		mcp.WithString("id", mcp.Required()),
 		mcp.WithOutputSchema[fileManifest](),
 	), s.handleGetSprite)
+	s.mcpServer.AddTool(mcp.NewTool("list_pack_assets",
+		mcp.WithDescription(
+			"List the catalogued contents of one AssetsDB pack without a search query. Use this to inspect a known "+
+				"pack from list_asset_sources. Results use the same asset lines as search, including pack and "+
+				"atlas-region metadata."),
+		mcp.WithString("pack_id", mcp.Required(),
+			mcp.Description("AssetsDB pack ID from list_asset_sources")),
+		mcp.WithString("kind",
+			mcp.Description("Optional asset kind filter: model, audio, font, or sprite")),
+		mcp.WithNumber("limit",
+			mcp.Description("Maximum number of results to return (default: 50, max: 200)")),
+		mcp.WithString("cursor",
+			mcp.Description("Opaque pagination token from a previous list's next_cursor; omit for the first page")),
+	), s.handleListPackAssets)
 	s.mcpServer.AddTool(mcp.NewTool("get_pack",
 		mcp.WithDescription(
 			"Copy a known assetsdb pack's original ZIP. Search all needs first; when several results share a "+
