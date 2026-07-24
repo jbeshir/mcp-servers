@@ -1,0 +1,78 @@
+{
+  "manifest_version": "0.3",
+  "name": "discord-emojigen-mcp",
+  "display_name": "Discord Emojigen",
+  "version": "0.1.0",
+  "description": "Generate Discord emoji from prompts and existing server emoji, upload them for immediate use, and safely remove only emoji created by this server.",
+  "long_description": "Generate and upload static custom emoji to one configured Discord server. Existing server emoji can be selected by ID as visual references, and successful creation returns a Discord mention ready for immediate use. Removal is stateless and allowed only when Discord reports that the authenticated bot created the emoji.\n\nThe Discord bot should receive only CREATE_GUILD_EXPRESSIONS. Do not grant MANAGE_GUILD_EXPRESSIONS or Administrator.",
+  "author": {
+    "name": "John Beshir",
+    "url": "https://github.com/jbeshir"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbeshir/mcp-servers.git"
+  },
+  "license": "MIT",
+  "server": {
+    "type": "binary",
+    "entry_point": "server/discord-emojigen-mcp-linux-amd64",
+    "mcp_config": {
+      "command": "${__dirname}/server/discord-emojigen-mcp-linux-amd64",
+      "args": [],
+      "env": {
+        "DISCORD_EMOJIGEN_BOT_TOKEN": "${user_config.discord_bot_token}",
+        "DISCORD_EMOJIGEN_GUILD_ID": "${user_config.discord_guild_id}",
+        "OPENAI_API_KEY": "${user_config.openai_api_key}",
+        "DISCORD_EMOJIGEN_IMAGE_MODEL": "${user_config.image_model}"
+      },
+      "platform_overrides": {
+        "darwin": {
+          "command": "${__dirname}/server/discord-emojigen-mcp-darwin-arm64"
+        },
+        "win32": {
+          "command": "${__dirname}/server/discord-emojigen-mcp-windows-amd64.exe"
+        }
+      }
+    }
+  },
+  "user_config": {
+    "discord_bot_token": {
+      "type": "string",
+      "title": "Discord Bot Token",
+      "description": "Bot token with CREATE_GUILD_EXPRESSIONS in the target guild",
+      "sensitive": true,
+      "required": true
+    },
+    "discord_guild_id": {
+      "type": "string",
+      "title": "Discord Guild ID",
+      "description": "The only Discord guild the server may access",
+      "sensitive": false,
+      "required": true
+    },
+    "openai_api_key": {
+      "type": "string",
+      "title": "OpenAI API Key",
+      "description": "OpenAI API key for image generation",
+      "sensitive": true,
+      "required": true
+    },
+    "image_model": {
+      "type": "string",
+      "title": "Image Model",
+      "description": "OpenAI image generation model (default: gpt-image-2)",
+      "sensitive": false,
+      "required": false
+    }
+  },
+  "tools": [
+    { "name": "list_server_emojis", "description": "List guild emoji for discovery and visual reference IDs" },
+    { "name": "create_emoji", "description": "Generate and upload an emoji, optionally using existing guild emoji as references" },
+    { "name": "list_created_emojis", "description": "List emoji Discord reports were created by the authenticated bot" },
+    { "name": "remove_emoji", "description": "Remove an emoji only after Discord confirms the authenticated bot created it" }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"]
+  }
+}

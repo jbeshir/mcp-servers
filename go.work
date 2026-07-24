@@ -7,3 +7,4 @@ use ./amazon-products
 use ./wanikani
 use ./bunpro
 use ./assets
+use ./discord-emojigen

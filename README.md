@@ -60,6 +60,14 @@ Design assets — search and fetch icons, illustrations, fonts, photos, textures
 
 **Requires:** none for the offline/keyless base; optional API keys unlock further keyed providers (see assets/README.md)
 
+### [Discord Emojigen](discord-emojigen/)
+
+Generate and upload static custom emoji to one Discord server, using existing server emoji as optional visual references. Returns a Discord mention for immediate use and only removes emoji that Discord reports were created by the authenticated bot.
+
+**4 tools:** `list_server_emojis`, `create_emoji`, `list_created_emojis`, `remove_emoji`
+
+**Requires:** Discord bot token with `CREATE_GUILD_EXPRESSIONS`, Discord guild ID, OpenAI API key
+
 ## Installation
 
 ### Pre-built binaries
@@ -78,6 +86,7 @@ go install github.com/jbeshir/mcp-servers/amazon-products/cmd/amazon-products-mc
 go install github.com/jbeshir/mcp-servers/wanikani/cmd/wanikani-mcp@latest
 go install github.com/jbeshir/mcp-servers/bunpro/cmd/bunpro-mcp@latest
 go install github.com/jbeshir/mcp-servers/assets/cmd/assets-mcp@latest
+go install github.com/jbeshir/mcp-servers/discord-emojigen/cmd/discord-emojigen-mcp@latest
 ```
 
 ### Build from source
@@ -88,4 +97,4 @@ Clone the repo and run `make build` — binaries are written to `bin/`.
 
 These servers are published to the [MCP Registry](https://registry.modelcontextprotocol.io) under the `io.github.jbeshir` namespace:
 
-`workflowy-mcp`, `manifold-mcp`, `supermarkets-uk-mcp`, `amazon-products-mcp`, `wanikani-mcp`, `bunpro-mcp`, `assets-mcp`
+`workflowy-mcp`, `manifold-mcp`, `supermarkets-uk-mcp`, `amazon-products-mcp`, `wanikani-mcp`, `bunpro-mcp`, `assets-mcp`, `discord-emojigen-mcp`
