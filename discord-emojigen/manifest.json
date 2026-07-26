@@ -3,8 +3,8 @@
   "name": "discord-emojigen-mcp",
   "display_name": "Discord Emojigen",
   "version": "0.1.0",
-  "description": "Fetch Discord emoji references, upload host-generated images, and safely remove only emoji created by the authenticated bot.",
-  "long_description": "List emoji in one configured Discord server, optionally fetch a selected static emoji as base64 reference data for an external image generator, then prepare and upload the host-generated image. Successful upload returns a Discord mention ready for immediate use. This server does not generate images. Removal is stateless and allowed only when Discord reports that the authenticated bot created the emoji.\n\nThe Discord bot should receive only CREATE_GUILD_EXPRESSIONS. Do not grant MANAGE_GUILD_EXPRESSIONS or Administrator.",
+  "description": "Fetch Discord emoji references, upload bounded base64 or local-path images, and safely remove only emoji created by the authenticated bot.",
+  "long_description": "List emoji in one configured Discord server, optionally fetch a selected static emoji as base64 reference data for an external image generator, then prepare and upload exactly one base64/data-URL or bounded absolute-path/local-file-URI image. Successful upload returns a Discord mention ready for immediate use. This server does not generate images. Removal is stateless and allowed only when Discord reports that the authenticated bot created the emoji.\n\nThe Discord bot should receive only CREATE_GUILD_EXPRESSIONS. Do not grant MANAGE_GUILD_EXPRESSIONS or Administrator.",
   "author": {
     "name": "John Beshir",
     "url": "https://github.com/jbeshir"
@@ -53,7 +53,7 @@
   "tools": [
     { "name": "list_server_emojis", "description": "List guild emoji with stable IDs, mentions, preview URLs, and animation state" },
     { "name": "fetch_emoji_reference", "description": "Fetch a selected static guild emoji as base64 reference image data" },
-    { "name": "upload_emoji", "description": "Prepare and upload host-generated image data and return a usable mention" },
+    { "name": "upload_emoji", "description": "Prepare and upload exactly one bounded base64/data-URL or local-path image and return a usable mention" },
     { "name": "list_created_emojis", "description": "List emoji Discord reports were created by the authenticated bot" },
     { "name": "remove_emoji", "description": "Remove an emoji only after Discord confirms the authenticated bot created it" }
   ],

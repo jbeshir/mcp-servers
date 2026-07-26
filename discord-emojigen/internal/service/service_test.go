@@ -4,10 +4,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"fmt"
 	"image"
 	"image/color"
 	"image/jpeg"
 	"image/png"
+	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -21,6 +25,7 @@ type fakeDiscord struct {
 	created     discord.Emoji
 	uploadPNG   []byte
 	uploadRoles []string
+	createCalls int
 	fetched     []string
 	fetchData   []byte
 	fetchType   string
@@ -44,6 +49,7 @@ func (f *fakeDiscord) GetGuildEmoji(_ context.Context, _, id string) (discord.Em
 func (f *fakeDiscord) CreateGuildEmoji(
 	_ context.Context, _ string, name string, data []byte, roles []string, _ string,
 ) (discord.Emoji, error) {
+	f.createCalls++
 	f.uploadPNG = append([]byte(nil), data...)
 	f.uploadRoles = append([]string(nil), roles...)
 	f.created.Name = name
@@ -141,6 +147,132 @@ func TestUploadEmojiAcceptsRawBase64AndDataURL(t *testing.T) {
 	}
 }
 
+func TestUploadEmojiAcceptsAbsolutePathAndFileURI(t *testing.T) {
+	dir := t.TempDir()
+	imagePath := filepath.Join(dir, "generated")
+	if err := os.WriteFile(imagePath, testPNG(), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	fileURI := (&url.URL{Scheme: "file", Path: imagePath}).String()
+	for _, path := range []string{imagePath, fileURI} {
+		t.Run(path[:4], func(t *testing.T) {
+			client := newFakeDiscord()
+			_, err := newTestService(t, client).UploadEmoji(context.Background(), UploadRequest{
+				Name: "path_image", ImagePath: path,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if client.createCalls != 1 {
+				t.Fatalf("Discord create calls = %d, want 1", client.createCalls)
+			}
+		})
+	}
+}
+
+func TestUploadEmojiPathUsesDecodedContentNotExtension(t *testing.T) {
+	dir := t.TempDir()
+	for _, name := range []string{"extensionless", "actually-not-jpeg.jpg"} {
+		path := filepath.Join(dir, name)
+		if err := os.WriteFile(path, testPNG(), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		client := newFakeDiscord()
+		if _, err := newTestService(t, client).UploadEmoji(context.Background(), UploadRequest{
+			Name: "decoded_image", ImagePath: path,
+		}); err != nil {
+			t.Fatalf("%s: %v", name, err)
+		}
+		if client.createCalls != 1 {
+			t.Fatalf("%s: Discord create calls = %d", name, client.createCalls)
+		}
+	}
+}
+
+func TestUploadEmojiRejectsInvalidInputSelectionWithoutDiscordUpload(t *testing.T) {
+	valid := base64.StdEncoding.EncodeToString(testPNG())
+	for _, request := range []UploadRequest{
+		{Name: "valid_name"},
+		{Name: "valid_name", ImageData: valid, ImagePath: "/unused"},
+	} {
+		client := newFakeDiscord()
+		if _, err := newTestService(t, client).UploadEmoji(context.Background(), request); err == nil {
+			t.Fatalf("expected rejection for %#v", request)
+		}
+		if client.createCalls != 0 {
+			t.Fatal("invalid input selection reached Discord upload")
+		}
+	}
+}
+
+func TestUploadEmojiRejectsUnsafePathsWithoutDiscordUpload(t *testing.T) {
+	dir := t.TempDir()
+	empty := filepath.Join(dir, "empty")
+	if err := os.WriteFile(empty, nil, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	target := filepath.Join(dir, "target")
+	if err := os.WriteFile(target, testPNG(), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(dir, "link")
+	if err := os.Symlink(target, link); err != nil {
+		t.Fatal(err)
+	}
+	oversized := filepath.Join(dir, "oversized")
+	if err := os.WriteFile(oversized, make([]byte, maxInputBytes+1), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	tests := []struct {
+		name string
+		path string
+	}{
+		{"relative", "image.png"},
+		{"non-local URI", "file://example.com/image.png"},
+		{"malformed URI", "file:///bad%zz"},
+		{"directory", dir},
+		{"symlink", link},
+		{"empty", empty},
+		{"oversized", oversized},
+		{"missing", filepath.Join(dir, "secret-missing-name")},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			client := newFakeDiscord()
+			_, err := newTestService(t, client).UploadEmoji(context.Background(), UploadRequest{
+				Name: "valid_name", ImagePath: tt.path,
+			})
+			if err == nil {
+				t.Fatal("expected error")
+			}
+			if strings.Contains(err.Error(), tt.path) || strings.Contains(err.Error(), "secret-missing-name") {
+				t.Fatalf("error exposes path: %q", err)
+			}
+			if client.createCalls != 0 {
+				t.Fatal("unsafe path reached Discord upload")
+			}
+		})
+	}
+}
+
+func TestReadImagePathBoundaries(t *testing.T) {
+	dir := t.TempDir()
+	for _, size := range []int{maxInputBytes, maxInputBytes + 1} {
+		path := filepath.Join(dir, fmt.Sprintf("input-%d", size))
+		if err := os.WriteFile(path, make([]byte, size), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		data, err := readImagePath(path)
+		if size == maxInputBytes {
+			if err != nil || len(data) != size {
+				t.Fatalf("exact limit: len=%d err=%v", len(data), err)
+			}
+		} else if err == nil {
+			t.Fatal("over-limit file accepted")
+		}
+	}
+}
+
 func TestDecodeImageDataRejectsInvalidInputs(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -221,6 +353,9 @@ func TestUploadEmojiRejectsBadImageNameRolesAndDuplicate(t *testing.T) {
 		svc := newTestService(t, client)
 		if _, err := svc.UploadEmoji(context.Background(), request); err == nil {
 			t.Fatalf("expected rejection for %#v", request)
+		}
+		if client.createCalls != 0 {
+			t.Fatalf("rejected request reached Discord upload: %#v", request)
 		}
 	}
 	client := newFakeDiscord()

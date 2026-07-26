@@ -5,6 +5,10 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"io"
+	"net/url"
+	"os"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -51,6 +55,7 @@ type EmojiReference struct {
 type UploadRequest struct {
 	Name      string
 	ImageData string
+	ImagePath string
 	Roles     []string
 }
 
@@ -141,7 +146,7 @@ func (s *Service) UploadEmoji(ctx context.Context, request UploadRequest) (Emoji
 			return EmojiView{}, fmt.Errorf("%q is not a valid Discord role snowflake", id)
 		}
 	}
-	input, declaredMediaType, err := decodeImageData(request.ImageData)
+	input, declaredMediaType, err := resolveImageInput(request.ImageData, request.ImagePath)
 	if err != nil {
 		return EmojiView{}, err
 	}
@@ -169,6 +174,97 @@ func (s *Service) UploadEmoji(ctx context.Context, request UploadRequest) (Emoji
 		return EmojiView{}, err
 	}
 	return view(emoji, createdBy(emoji, s.bot.ID)), nil
+}
+
+func resolveImageInput(imageData, imagePath string) ([]byte, string, error) {
+	hasData := strings.TrimSpace(imageData) != ""
+	hasPath := strings.TrimSpace(imagePath) != ""
+	if hasData == hasPath {
+		return nil, "", errors.New("exactly one of image_data or image_path is required")
+	}
+	if hasData {
+		return decodeImageData(imageData)
+	}
+	data, err := readImagePath(imagePath)
+	return data, "", err
+}
+
+// readImagePath performs a best-effort regular-file check without
+// platform-specific dependencies. The Lstat-before-Open sequence refuses a
+// final-component symlink, but another process can still replace the path
+// between those operations.
+func readImagePath(value string) ([]byte, error) {
+	path, err := localImagePath(strings.TrimSpace(value))
+	if err != nil {
+		return nil, err
+	}
+	info, err := os.Lstat(path)
+	if err != nil {
+		return nil, errors.New("image_path cannot be accessed")
+	}
+	if info.Mode()&os.ModeSymlink != 0 {
+		return nil, errors.New("image_path must not be a symlink")
+	}
+	if !info.Mode().IsRegular() {
+		return nil, errors.New("image_path must be a regular file")
+	}
+	// #nosec G304 -- reading an explicit caller-supplied local path is this
+	// tool's purpose; the path and file type are validated immediately above.
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, errors.New("image_path cannot be opened")
+	}
+
+	data, err := io.ReadAll(io.LimitReader(file, maxInputBytes+1))
+	closeErr := file.Close()
+	if err != nil {
+		return nil, errors.New("image_path cannot be read")
+	}
+	if closeErr != nil {
+		return nil, errors.New("image_path cannot be closed")
+	}
+	if len(data) == 0 {
+		return nil, errors.New("image_path file is empty")
+	}
+	if len(data) > maxInputBytes {
+		return nil, fmt.Errorf("image_path exceeds %d MiB limit", maxInputBytes>>20)
+	}
+	return data, nil
+}
+
+func localImagePath(value string) (string, error) {
+	if value == "" {
+		return "", errors.New("image_path is required")
+	}
+	if filepath.IsAbs(value) {
+		return value, nil
+	}
+	return localFileURIPath(value)
+}
+
+func localFileURIPath(value string) (string, error) {
+	parsed, err := url.Parse(value)
+	if err != nil {
+		return "", errors.New("image_path must be an absolute path or local file URI")
+	}
+	if parsed.Scheme != "file" || parsed.Opaque != "" || parsed.User != nil {
+		return "", errors.New("image_path must be an absolute path or local file URI")
+	}
+	if parsed.RawQuery != "" || parsed.Fragment != "" {
+		return "", errors.New("image_path must be an absolute path or local file URI")
+	}
+	if parsed.Host != "" && !strings.EqualFold(parsed.Host, "localhost") {
+		return "", errors.New("image_path must be an absolute path or local file URI")
+	}
+	if parsed.RawPath != "" {
+		if _, err := url.PathUnescape(parsed.RawPath); err != nil {
+			return "", errors.New("image_path file URI is malformed")
+		}
+	}
+	if !filepath.IsAbs(parsed.Path) {
+		return "", errors.New("image_path file URI must contain an absolute path")
+	}
+	return filepath.FromSlash(parsed.Path), nil
 }
 
 func decodeImageData(value string) ([]byte, string, error) {

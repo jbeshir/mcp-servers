@@ -32,16 +32,18 @@ func (s *Server) registerTools() {
 
 	s.mcpServer.AddTool(mcp.NewTool("upload_emoji",
 		mcp.WithDescription(
-			"Prepare and upload host-generated image data as a static Discord emoji. "+
-				"Accepts raw base64 or a PNG/JPEG/GIF data URL and returns an immediately usable mention.",
+			"Prepare and upload a host-generated image as a static Discord emoji. "+
+				"Provide exactly one of image_data or image_path; returns an immediately usable mention.",
 		),
 		mcp.WithString("name",
 			mcp.Required(),
 			mcp.Description("Emoji name: 2-32 letters, numbers, or underscores"),
 		),
 		mcp.WithString("image_data",
-			mcp.Required(),
-			mcp.Description("Host-generated image as raw base64 or a base64 image data URL"),
+			mcp.Description("Exactly one image input: raw base64 or a PNG/JPEG/GIF base64 data URL"),
+		),
+		mcp.WithString("image_path",
+			mcp.Description("Exactly one image input: absolute path or local file:// URI (regular file, at most 16 MiB)"),
 		),
 		mcp.WithArray("roles",
 			mcp.Description("Optional Discord role IDs allowed to use the emoji"),
@@ -96,8 +98,9 @@ func (s *Server) handleUploadEmoji(
 	args := request.GetArguments()
 	name, _ := args["name"].(string)
 	imageData, _ := args["image_data"].(string)
+	imagePath, _ := args["image_path"].(string)
 	emoji, err := s.service.UploadEmoji(ctx, service.UploadRequest{
-		Name: name, ImageData: imageData, Roles: stringSlice(args["roles"]),
+		Name: name, ImageData: imageData, ImagePath: imagePath, Roles: stringSlice(args["roles"]),
 	})
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil

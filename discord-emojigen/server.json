@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.jbeshir/discord-emojigen-mcp",
   "title": "Discord Emojigen",
-  "description": "Fetch Discord emoji references and upload host-generated emoji safely.",
+  "description": "Fetch Discord emoji references and upload bounded base64 or local-path emoji images safely.",
   "version": "0.0.0",
   "repository": {
     "url": "https://github.com/jbeshir/mcp-servers",
