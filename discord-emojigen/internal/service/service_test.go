@@ -157,7 +157,7 @@ func TestUploadEmojiAcceptsAbsolutePathAndFileURI(t *testing.T) {
 	for _, path := range []string{imagePath, fileURI} {
 		t.Run(path[:4], func(t *testing.T) {
 			client := newFakeDiscord()
-			_, err := newTestService(t, client).UploadEmoji(context.Background(), UploadRequest{
+			_, err := newTestServiceWithRoots(t, client, []string{dir}).UploadEmoji(context.Background(), UploadRequest{
 				Name: "path_image", ImagePath: path,
 			})
 			if err != nil {
@@ -178,7 +178,7 @@ func TestUploadEmojiPathUsesDecodedContentNotExtension(t *testing.T) {
 			t.Fatal(err)
 		}
 		client := newFakeDiscord()
-		if _, err := newTestService(t, client).UploadEmoji(context.Background(), UploadRequest{
+		if _, err := newTestServiceWithRoots(t, client, []string{dir}).UploadEmoji(context.Background(), UploadRequest{
 			Name: "decoded_image", ImagePath: path,
 		}); err != nil {
 			t.Fatalf("%s: %v", name, err)
@@ -202,6 +202,29 @@ func TestUploadEmojiRejectsInvalidInputSelectionWithoutDiscordUpload(t *testing.
 		if client.createCalls != 0 {
 			t.Fatal("invalid input selection reached Discord upload")
 		}
+	}
+}
+
+func TestUploadEmojiPathDisabledByDefaultButImageDataStillWorks(t *testing.T) {
+	client := newFakeDiscord()
+	svc := newTestService(t, client)
+	_, err := svc.UploadEmoji(context.Background(), UploadRequest{
+		Name: "path_image", ImagePath: filepath.Join(t.TempDir(), "not-read"),
+	})
+	if err == nil || err.Error() != ImagePathDisabledError {
+		t.Fatalf("error = %v, want %q", err, ImagePathDisabledError)
+	}
+	if client.createCalls != 0 {
+		t.Fatal("disabled path reached Discord upload")
+	}
+
+	if _, err := svc.UploadEmoji(context.Background(), UploadRequest{
+		Name: "data_image", ImageData: base64.StdEncoding.EncodeToString(testPNG()),
+	}); err != nil {
+		t.Fatalf("base64 upload with no roots: %v", err)
+	}
+	if client.createCalls != 1 {
+		t.Fatalf("Discord create calls = %d, want 1", client.createCalls)
 	}
 }
 
@@ -239,7 +262,7 @@ func TestUploadEmojiRejectsUnsafePathsWithoutDiscordUpload(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := newFakeDiscord()
-			_, err := newTestService(t, client).UploadEmoji(context.Background(), UploadRequest{
+			_, err := newTestServiceWithRoots(t, client, []string{dir}).UploadEmoji(context.Background(), UploadRequest{
 				Name: "valid_name", ImagePath: tt.path,
 			})
 			if err == nil {
@@ -262,7 +285,7 @@ func TestReadImagePathBoundaries(t *testing.T) {
 		if err := os.WriteFile(path, make([]byte, size), 0o600); err != nil {
 			t.Fatal(err)
 		}
-		data, err := readImagePath(path)
+		data, err := readImagePath(path, []string{dir})
 		if size == maxInputBytes {
 			if err != nil || len(data) != size {
 				t.Fatalf("exact limit: len=%d err=%v", len(data), err)
@@ -270,6 +293,111 @@ func TestReadImagePathBoundaries(t *testing.T) {
 		} else if err == nil {
 			t.Fatal("over-limit file accepted")
 		}
+	}
+}
+
+type containmentFixture struct {
+	root         string
+	outside      string
+	allowedPaths []string
+	blockedPaths map[string]string
+}
+
+func newContainmentFixture(t *testing.T) containmentFixture {
+	t.Helper()
+	parent := t.TempDir()
+	root := filepath.Join(parent, "images")
+	nested := filepath.Join(root, "2026", "07")
+	sibling := filepath.Join(parent, "images-evil")
+	outside := t.TempDir()
+	for _, dir := range []string{nested, sibling, outside} {
+		if err := os.MkdirAll(dir, 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	writeImage := func(path string) {
+		t.Helper()
+		if err := os.WriteFile(path, testPNG(), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	rootFile := filepath.Join(root, "root.png")
+	nestedFile := filepath.Join(nested, "nested.png")
+	siblingFile := filepath.Join(sibling, "sibling.png")
+	outsideFile := filepath.Join(outside, "outside.png")
+	for _, path := range []string{rootFile, nestedFile, siblingFile, outsideFile} {
+		writeImage(path)
+	}
+	escapeDir := filepath.Join(root, "escape")
+	if err := os.Symlink(outside, escapeDir); err != nil {
+		t.Fatal(err)
+	}
+	finalLink := filepath.Join(root, "final-link")
+	if err := os.Symlink(rootFile, finalLink); err != nil {
+		t.Fatal(err)
+	}
+	return containmentFixture{
+		root: root, outside: outside,
+		allowedPaths: []string{rootFile, nestedFile},
+		blockedPaths: map[string]string{
+			"outside":               outsideFile,
+			"sibling prefix":        siblingFile,
+			"parent symlink escape": filepath.Join(escapeDir, "outside.png"),
+			"final symlink":         finalLink,
+		},
+	}
+}
+
+func TestUploadEmojiAllowsPathsWithinConfiguredRoot(t *testing.T) {
+	fixture := newContainmentFixture(t)
+	for _, path := range fixture.allowedPaths {
+		client := newFakeDiscord()
+		if _, err := newTestServiceWithRoots(t, client, []string{fixture.root}).UploadEmoji(
+			context.Background(),
+			UploadRequest{Name: "allowed_image", ImagePath: path},
+		); err != nil {
+			t.Fatalf("allowed path %q: %v", path, err)
+		}
+		if client.createCalls != 1 {
+			t.Fatalf("allowed path create calls = %d", client.createCalls)
+		}
+	}
+}
+
+func TestUploadEmojiRejectsPathsOutsideConfiguredRoot(t *testing.T) {
+	fixture := newContainmentFixture(t)
+	for name, path := range fixture.blockedPaths {
+		t.Run(name, func(t *testing.T) {
+			client := newFakeDiscord()
+			_, err := newTestServiceWithRoots(t, client, []string{fixture.root}).UploadEmoji(
+				context.Background(),
+				UploadRequest{Name: "blocked_image", ImagePath: path},
+			)
+			if err == nil {
+				t.Fatal("expected rejection")
+			}
+			if strings.Contains(err.Error(), path) || strings.Contains(err.Error(), fixture.outside) {
+				t.Fatalf("error exposes path: %q", err)
+			}
+			if client.createCalls != 0 {
+				t.Fatal("rejected path reached Discord upload")
+			}
+		})
+	}
+}
+
+func TestServiceExposesDefensiveCopyOfAllowedRoots(t *testing.T) {
+	root := t.TempDir()
+	input := []string{root}
+	svc := newTestServiceWithRoots(t, newFakeDiscord(), input)
+	input[0] = "changed"
+	got := svc.AllowedImageRoots()
+	if len(got) != 1 || got[0] != root {
+		t.Fatalf("allowed roots = %#v", got)
+	}
+	got[0] = "changed again"
+	if svc.AllowedImageRoots()[0] != root {
+		t.Fatal("AllowedImageRoots exposed mutable service state")
 	}
 }
 
@@ -406,8 +534,12 @@ func newFakeDiscord() *fakeDiscord {
 }
 
 func newTestService(t *testing.T, client *fakeDiscord) *Service {
+	return newTestServiceWithRoots(t, client, nil)
+}
+
+func newTestServiceWithRoots(t *testing.T, client *fakeDiscord, roots []string) *Service {
 	t.Helper()
-	svc, err := New(context.Background(), client, "100")
+	svc, err := New(context.Background(), client, "100", roots)
 	if err != nil {
 		t.Fatal(err)
 	}

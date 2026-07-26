@@ -43,7 +43,10 @@ func (s *Server) registerTools() {
 			mcp.Description("Exactly one image input: raw base64 or a PNG/JPEG/GIF base64 data URL"),
 		),
 		mcp.WithString("image_path",
-			mcp.Description("Exactly one image input: absolute path or local file:// URI (regular file, at most 16 MiB)"),
+			mcp.Description(
+				"Exactly one image input: absolute path or local file:// URI under a configured "+
+					"allowed root (regular file, at most 16 MiB)",
+			),
 		),
 		mcp.WithArray("roles",
 			mcp.Description("Optional Discord role IDs allowed to use the emoji"),

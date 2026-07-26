@@ -21,6 +21,7 @@ func main() {
 		context.Background(),
 		discord.NewClient(cfg.DiscordToken, httpClient),
 		cfg.GuildID,
+		cfg.AllowedImageRoots,
 	)
 	if err != nil {
 		log.Fatal(err)

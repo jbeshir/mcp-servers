@@ -12,7 +12,8 @@ The intended workflow is:
 3. Generate or edit the image outside this server.
 4. Call `upload_emoji` with exactly one of `image_data` (raw base64 or a
    PNG/JPEG/GIF data URL) or `image_path` (an absolute path or local `file://`
-   URI, including image-gen-mcp's stdio `image_url` or `metadata.local_path`).
+   URI under a configured allowed image root, including image-gen-mcp's stdio
+   `image_url` or `metadata.local_path`).
    The server
    crops and downsamples it to a 128×128 PNG and returns an immediately usable
    Discord mention.
@@ -40,11 +41,14 @@ Animated emoji are listed but deliberately rejected by
 `fetch_emoji_reference`. Upload input is bounded at 16 MiB decoded/read and
 prepared output must fit Discord's 256 KiB limit. Path input must name a
 non-empty regular file; relative paths, directories, non-local or malformed
-file URIs, and final-component symlinks are refused. The symlink check uses
-`Lstat` before `Open` and is best-effort against path replacement races without
-platform-specific dependencies. File extensions are not used to identify image
-types: the image decoder inspects the bytes, so extensionless images work and
-misleading extensions are ignored.
+file URIs, and final-component symlinks are refused. Path uploads are disabled
+by default. When enabled, both configured roots and requested paths are
+canonicalized through symlinks, and component-aware containment prevents an
+adjacent path such as `images-evil` from matching an `images` root. The
+`Lstat`/canonicalize/`Open` sequence is best-effort against path replacement
+races (TOCTOU) without platform-specific dependencies. File extensions are not
+used to identify image types: the image decoder inspects the bytes, so
+extensionless images work and misleading extensions are ignored.
 
 ## Configuration
 
@@ -53,6 +57,20 @@ misleading extensions are ignored.
 | `DISCORD_EMOJIGEN_BOT_TOKEN` | yes | Discord bot token |
 | `DISCORD_EMOJIGEN_GUILD_ID` | yes | The only guild the process may access |
 | `DISCORD_EMOJIGEN_HTTP_TIMEOUT` | no | Discord HTTP timeout as a Go duration; defaults to `2m` |
+| `DISCORD_EMOJIGEN_ALLOWED_IMAGE_ROOTS` | no | OS path-list of absolute existing directories permitted for `image_path`; unset disables path uploads |
+
+For the production image-gen-mcp workflow, configure only its image output
+directory:
+
+```sh
+DISCORD_EMOJIGEN_ALLOWED_IMAGE_ROOTS=/home/jbeshir/code/image-gen-mcp/storage/images
+```
+
+Nested output paths such as `images/2026/07/emoji.png` are accepted. Adjacent
+prefixes such as `images-evil/emoji.png` are not. Separate multiple roots with
+the operating system path-list separator (`:` on Unix and `;` on Windows).
+Entries are trimmed, must be absolute existing directories, and are
+canonicalized and deduplicated at startup. Root values are never logged.
 
 ## Installation
 

@@ -22,7 +22,8 @@
       "args": [],
       "env": {
         "DISCORD_EMOJIGEN_BOT_TOKEN": "${user_config.discord_bot_token}",
-        "DISCORD_EMOJIGEN_GUILD_ID": "${user_config.discord_guild_id}"
+        "DISCORD_EMOJIGEN_GUILD_ID": "${user_config.discord_guild_id}",
+        "DISCORD_EMOJIGEN_ALLOWED_IMAGE_ROOTS": "${user_config.allowed_image_roots}"
       },
       "platform_overrides": {
         "darwin": {
@@ -48,12 +49,19 @@
       "description": "The only Discord guild the server may access",
       "sensitive": false,
       "required": true
+    },
+    "allowed_image_roots": {
+      "type": "string",
+      "title": "Allowed Image Roots",
+      "description": "OS path-list of absolute directories allowed for image_path; blank disables path uploads",
+      "sensitive": false,
+      "required": false
     }
   },
   "tools": [
     { "name": "list_server_emojis", "description": "List guild emoji with stable IDs, mentions, preview URLs, and animation state" },
     { "name": "fetch_emoji_reference", "description": "Fetch a selected static guild emoji as base64 reference image data" },
-    { "name": "upload_emoji", "description": "Prepare and upload exactly one bounded base64/data-URL or local-path image and return a usable mention" },
+    { "name": "upload_emoji", "description": "Prepare and upload bounded base64/data-URL or whitelisted local-path image and return a usable mention" },
     { "name": "list_created_emojis", "description": "List emoji Discord reports were created by the authenticated bot" },
     { "name": "remove_emoji", "description": "Remove an emoji only after Discord confirms the authenticated bot created it" }
   ],

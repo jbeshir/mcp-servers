@@ -20,6 +20,8 @@ import (
 
 const maxInputBytes = 16 << 20
 
+const ImagePathDisabledError = "image_path uploads are disabled; configure DISCORD_EMOJIGEN_ALLOWED_IMAGE_ROOTS"
+
 var (
 	emojiNamePattern = regexp.MustCompile(`^[a-zA-Z0-9_]{2,32}$`)
 	snowflakePattern = regexp.MustCompile(`^[0-9]{1,20}$`)
@@ -60,13 +62,19 @@ type UploadRequest struct {
 }
 
 type Service struct {
-	discord   Discord
-	guildID   string
-	bot       discord.User
-	mutations sync.Mutex
+	discord           Discord
+	guildID           string
+	bot               discord.User
+	allowedImageRoots []string
+	mutations         sync.Mutex
 }
 
-func New(ctx context.Context, discordClient Discord, guildID string) (*Service, error) {
+func New(
+	ctx context.Context,
+	discordClient Discord,
+	guildID string,
+	allowedImageRoots []string,
+) (*Service, error) {
 	if !snowflakePattern.MatchString(guildID) {
 		return nil, errors.New("configured Discord guild ID is not a snowflake")
 	}
@@ -77,7 +85,14 @@ func New(ctx context.Context, discordClient Discord, guildID string) (*Service, 
 	if _, err := discordClient.ListGuildEmojis(ctx, guildID); err != nil {
 		return nil, fmt.Errorf("access configured Discord guild: %w", err)
 	}
-	return &Service{discord: discordClient, guildID: guildID, bot: bot}, nil
+	return &Service{
+		discord: discordClient, guildID: guildID, bot: bot,
+		allowedImageRoots: append([]string(nil), allowedImageRoots...),
+	}, nil
+}
+
+func (s *Service) AllowedImageRoots() []string {
+	return append([]string(nil), s.allowedImageRoots...)
 }
 
 func (s *Service) ListServerEmojis(
@@ -146,7 +161,7 @@ func (s *Service) UploadEmoji(ctx context.Context, request UploadRequest) (Emoji
 			return EmojiView{}, fmt.Errorf("%q is not a valid Discord role snowflake", id)
 		}
 	}
-	input, declaredMediaType, err := resolveImageInput(request.ImageData, request.ImagePath)
+	input, declaredMediaType, err := s.resolveImageInput(request.ImageData, request.ImagePath)
 	if err != nil {
 		return EmojiView{}, err
 	}
@@ -176,7 +191,7 @@ func (s *Service) UploadEmoji(ctx context.Context, request UploadRequest) (Emoji
 	return view(emoji, createdBy(emoji, s.bot.ID)), nil
 }
 
-func resolveImageInput(imageData, imagePath string) ([]byte, string, error) {
+func (s *Service) resolveImageInput(imageData, imagePath string) ([]byte, string, error) {
 	hasData := strings.TrimSpace(imageData) != ""
 	hasPath := strings.TrimSpace(imagePath) != ""
 	if hasData == hasPath {
@@ -185,7 +200,10 @@ func resolveImageInput(imageData, imagePath string) ([]byte, string, error) {
 	if hasData {
 		return decodeImageData(imageData)
 	}
-	data, err := readImagePath(imagePath)
+	if len(s.allowedImageRoots) == 0 {
+		return nil, "", errors.New(ImagePathDisabledError)
+	}
+	data, err := readImagePath(imagePath, s.allowedImageRoots)
 	return data, "", err
 }
 
@@ -193,7 +211,7 @@ func resolveImageInput(imageData, imagePath string) ([]byte, string, error) {
 // platform-specific dependencies. The Lstat-before-Open sequence refuses a
 // final-component symlink, but another process can still replace the path
 // between those operations.
-func readImagePath(value string) ([]byte, error) {
+func readImagePath(value string, allowedRoots []string) ([]byte, error) {
 	path, err := localImagePath(strings.TrimSpace(value))
 	if err != nil {
 		return nil, err
@@ -204,6 +222,13 @@ func readImagePath(value string) ([]byte, error) {
 	}
 	if info.Mode()&os.ModeSymlink != 0 {
 		return nil, errors.New("image_path must not be a symlink")
+	}
+	canonical, err := filepath.EvalSymlinks(filepath.Clean(path))
+	if err != nil {
+		return nil, errors.New("image_path cannot be resolved")
+	}
+	if !withinAllowedRoot(canonical, allowedRoots) {
+		return nil, errors.New("image_path is outside the configured allowed image roots")
 	}
 	if !info.Mode().IsRegular() {
 		return nil, errors.New("image_path must be a regular file")
@@ -230,6 +255,19 @@ func readImagePath(value string) ([]byte, error) {
 		return nil, fmt.Errorf("image_path exceeds %d MiB limit", maxInputBytes>>20)
 	}
 	return data, nil
+}
+
+func withinAllowedRoot(path string, allowedRoots []string) bool {
+	for _, root := range allowedRoots {
+		relative, err := filepath.Rel(root, path)
+		if err != nil {
+			continue
+		}
+		if relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+			return true
+		}
+	}
+	return false
 }
 
 func localImagePath(value string) (string, error) {

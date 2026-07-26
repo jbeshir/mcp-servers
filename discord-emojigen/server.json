@@ -29,6 +29,12 @@
           "description": "The only Discord guild the server may access",
           "isRequired": true,
           "isSecret": false
+        },
+        {
+          "name": "DISCORD_EMOJIGEN_ALLOWED_IMAGE_ROOTS",
+          "description": "OS path-list allowed for image_path; unset disables path uploads",
+          "isRequired": false,
+          "isSecret": false
         }
       ]
     }
