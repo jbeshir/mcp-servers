@@ -110,25 +110,34 @@ func (c *Client) DeleteGuildEmoji(
 	)
 }
 
-func (c *Client) FetchEmojiImage(ctx context.Context, emoji Emoji) ([]byte, error) {
+func (c *Client) FetchEmojiImage(ctx context.Context, emoji Emoji) ([]byte, string, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, emoji.CDNURL(), nil)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	if resp.StatusCode != http.StatusOK {
 		_ = resp.Body.Close()
-		return nil, fmt.Errorf("discord CDN returned HTTP %d", resp.StatusCode)
+		return nil, "", fmt.Errorf("discord CDN returned HTTP %d", resp.StatusCode)
 	}
 	data, readErr := readLimited(resp.Body, maxBodyBytes)
 	closeErr := resp.Body.Close()
 	if readErr != nil {
-		return nil, readErr
+		return nil, "", readErr
 	}
-	return data, closeErr
+	if closeErr != nil {
+		return nil, "", closeErr
+	}
+	contentType := strings.TrimSpace(strings.Split(resp.Header.Get("Content-Type"), ";")[0])
+	switch contentType {
+	case "image/png", "image/jpeg", "image/webp":
+	default:
+		return nil, "", fmt.Errorf("discord CDN returned unsupported content type %q", contentType)
+	}
+	return data, contentType, nil
 }
 
 func (c *Client) doJSON(

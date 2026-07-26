@@ -20,31 +20,37 @@ func (s *Server) registerTools() {
 		),
 	), s.handleListServerEmojis)
 
-	s.mcpServer.AddTool(mcp.NewTool("create_emoji",
+	s.mcpServer.AddTool(mcp.NewTool("fetch_emoji_reference",
 		mcp.WithDescription(
-			"Generate and upload a static Discord emoji, optionally matching existing server emoji. "+
-				"Returns a mention that can be used immediately.",
+			"Fetch one static guild emoji by ID as base64 image data for an external image generator.",
+		),
+		mcp.WithString("emoji_id",
+			mcp.Required(),
+			mcp.Description("Stable emoji ID returned by list_server_emojis"),
+		),
+	), s.handleFetchEmojiReference)
+
+	s.mcpServer.AddTool(mcp.NewTool("upload_emoji",
+		mcp.WithDescription(
+			"Prepare and upload host-generated image data as a static Discord emoji. "+
+				"Accepts raw base64 or a PNG/JPEG/GIF data URL and returns an immediately usable mention.",
 		),
 		mcp.WithString("name",
 			mcp.Required(),
 			mcp.Description("Emoji name: 2-32 letters, numbers, or underscores"),
 		),
-		mcp.WithString("prompt",
+		mcp.WithString("image_data",
 			mcp.Required(),
-			mcp.Description("Description of the emoji to generate"),
-		),
-		mcp.WithArray("reference_emoji_ids",
-			mcp.Description("Existing emoji IDs from list_server_emojis to use as visual references"),
-			mcp.WithStringItems(),
+			mcp.Description("Host-generated image as raw base64 or a base64 image data URL"),
 		),
 		mcp.WithArray("roles",
 			mcp.Description("Optional Discord role IDs allowed to use the emoji"),
 			mcp.WithStringItems(),
 		),
-	), s.handleCreateEmoji)
+	), s.handleUploadEmoji)
 
 	s.mcpServer.AddTool(mcp.NewTool("list_created_emojis",
-		mcp.WithDescription("List active emoji recorded as created by this MCP server."),
+		mcp.WithDescription("List emoji Discord currently reports were created by this authenticated bot."),
 	), s.handleListCreatedEmojis)
 
 	s.mcpServer.AddTool(mcp.NewTool("remove_emoji",
@@ -53,7 +59,7 @@ func (s *Server) registerTools() {
 		),
 		mcp.WithString("emoji_id",
 			mcp.Required(),
-			mcp.Description("Immutable emoji ID returned by create_emoji or list_created_emojis"),
+			mcp.Description("Immutable emoji ID returned by upload_emoji or list_created_emojis"),
 		),
 	), s.handleRemoveEmoji)
 }
@@ -71,17 +77,27 @@ func (s *Server) handleListServerEmojis(
 	return jsonResult(emojis)
 }
 
-func (s *Server) handleCreateEmoji(
+func (s *Server) handleFetchEmojiReference(
+	ctx context.Context,
+	request mcp.CallToolRequest,
+) (*mcp.CallToolResult, error) {
+	emojiID, _ := request.GetArguments()["emoji_id"].(string)
+	reference, err := s.service.FetchEmojiReference(ctx, emojiID)
+	if err != nil {
+		return mcp.NewToolResultError(err.Error()), nil
+	}
+	return jsonResult(reference)
+}
+
+func (s *Server) handleUploadEmoji(
 	ctx context.Context,
 	request mcp.CallToolRequest,
 ) (*mcp.CallToolResult, error) {
 	args := request.GetArguments()
 	name, _ := args["name"].(string)
-	prompt, _ := args["prompt"].(string)
-	emoji, err := s.service.CreateEmoji(ctx, service.CreateRequest{
-		Name: name, Prompt: prompt,
-		ReferenceIDs: stringSlice(args["reference_emoji_ids"]),
-		Roles:        stringSlice(args["roles"]),
+	imageData, _ := args["image_data"].(string)
+	emoji, err := s.service.UploadEmoji(ctx, service.UploadRequest{
+		Name: name, ImageData: imageData, Roles: stringSlice(args["roles"]),
 	})
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
@@ -91,7 +107,7 @@ func (s *Server) handleCreateEmoji(
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 	return mcp.NewToolResultText(
-		fmt.Sprintf("Created %s — ready to use immediately.\n\n%s", emoji.Mention, data),
+		fmt.Sprintf("Uploaded %s — ready to use immediately.\n\n%s", emoji.Mention, data),
 	), nil
 }
 

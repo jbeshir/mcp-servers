@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"regexp"
@@ -10,9 +11,10 @@ import (
 	"sync"
 
 	"github.com/jbeshir/mcp-servers/discord-emojigen/internal/discord"
-	"github.com/jbeshir/mcp-servers/discord-emojigen/internal/generation"
 	"github.com/jbeshir/mcp-servers/discord-emojigen/internal/imageprep"
 )
+
+const maxInputBytes = 16 << 20
 
 var (
 	emojiNamePattern = regexp.MustCompile(`^[a-zA-Z0-9_]{2,32}$`)
@@ -25,7 +27,7 @@ type Discord interface {
 	GetGuildEmoji(context.Context, string, string) (discord.Emoji, error)
 	CreateGuildEmoji(context.Context, string, string, []byte, []string, string) (discord.Emoji, error)
 	DeleteGuildEmoji(context.Context, string, string, string) error
-	FetchEmojiImage(context.Context, discord.Emoji) ([]byte, error)
+	FetchEmojiImage(context.Context, discord.Emoji) ([]byte, string, error)
 }
 
 type EmojiView struct {
@@ -38,29 +40,28 @@ type EmojiView struct {
 	CreatedByBot bool   `json:"created_by_bot"`
 }
 
-type CreateRequest struct {
-	Name         string
-	Prompt       string
-	ReferenceIDs []string
-	Roles        []string
+type EmojiReference struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	ContentType string `json:"content_type"`
+	Base64      string `json:"base64"`
+	DataURL     string `json:"data_url"`
+}
+
+type UploadRequest struct {
+	Name      string
+	ImageData string
+	Roles     []string
 }
 
 type Service struct {
-	discord       Discord
-	generator     generation.Generator
-	guildID       string
-	maxReferences int
-	bot           discord.User
-	mutations     sync.Mutex
+	discord   Discord
+	guildID   string
+	bot       discord.User
+	mutations sync.Mutex
 }
 
-func New(
-	ctx context.Context,
-	discordClient Discord,
-	generator generation.Generator,
-	guildID string,
-	maxReferences int,
-) (*Service, error) {
+func New(ctx context.Context, discordClient Discord, guildID string) (*Service, error) {
 	if !snowflakePattern.MatchString(guildID) {
 		return nil, errors.New("configured Discord guild ID is not a snowflake")
 	}
@@ -71,10 +72,7 @@ func New(
 	if _, err := discordClient.ListGuildEmojis(ctx, guildID); err != nil {
 		return nil, fmt.Errorf("access configured Discord guild: %w", err)
 	}
-	return &Service{
-		discord: discordClient, generator: generator,
-		guildID: guildID, maxReferences: maxReferences, bot: bot,
-	}, nil
+	return &Service{discord: discordClient, guildID: guildID, bot: bot}, nil
 }
 
 func (s *Service) ListServerEmojis(
@@ -106,6 +104,108 @@ func (s *Service) ListServerEmojis(
 	return views, nil
 }
 
+func (s *Service) FetchEmojiReference(ctx context.Context, emojiID string) (EmojiReference, error) {
+	if !snowflakePattern.MatchString(emojiID) {
+		return EmojiReference{}, errors.New("emoji_id is not a valid Discord snowflake")
+	}
+	emoji, err := s.discord.GetGuildEmoji(ctx, s.guildID, emojiID)
+	if errors.Is(err, discord.ErrNotFound) {
+		return EmojiReference{}, errors.New("emoji does not exist in the configured guild")
+	}
+	if err != nil {
+		return EmojiReference{}, err
+	}
+	if emoji.Animated {
+		return EmojiReference{}, errors.New("animated emoji references are not supported")
+	}
+	data, contentType, err := s.discord.FetchEmojiImage(ctx, emoji)
+	if err != nil {
+		return EmojiReference{}, fmt.Errorf("fetch emoji image: %w", err)
+	}
+	encoded := base64.StdEncoding.EncodeToString(data)
+	return EmojiReference{
+		ID: emoji.ID, Name: emoji.Name, ContentType: contentType, Base64: encoded,
+		DataURL: "data:" + contentType + ";base64," + encoded,
+	}, nil
+}
+
+func (s *Service) UploadEmoji(ctx context.Context, request UploadRequest) (EmojiView, error) {
+	if !emojiNamePattern.MatchString(request.Name) {
+		return EmojiView{}, errors.New("name must be 2-32 characters using letters, numbers, or underscores")
+	}
+	if len(request.Roles) > 100 {
+		return EmojiView{}, errors.New("at most 100 role IDs are allowed")
+	}
+	for _, id := range request.Roles {
+		if !snowflakePattern.MatchString(id) {
+			return EmojiView{}, fmt.Errorf("%q is not a valid Discord role snowflake", id)
+		}
+	}
+	input, declaredMediaType, err := decodeImageData(request.ImageData)
+	if err != nil {
+		return EmojiView{}, err
+	}
+	png, err := imageprep.Prepare(input, declaredMediaType)
+	if err != nil {
+		return EmojiView{}, fmt.Errorf("prepare image: %w", err)
+	}
+
+	s.mutations.Lock()
+	defer s.mutations.Unlock()
+	emojis, err := s.discord.ListGuildEmojis(ctx, s.guildID)
+	if err != nil {
+		return EmojiView{}, err
+	}
+	for _, emoji := range emojis {
+		if strings.EqualFold(emoji.Name, request.Name) {
+			return EmojiView{}, fmt.Errorf("an emoji named %q already exists", request.Name)
+		}
+	}
+	emoji, err := s.discord.CreateGuildEmoji(
+		ctx, s.guildID, request.Name, png, request.Roles,
+		"discord-emojigen-mcp upload "+request.Name,
+	)
+	if err != nil {
+		return EmojiView{}, err
+	}
+	return view(emoji, createdBy(emoji, s.bot.ID)), nil
+}
+
+func decodeImageData(value string) ([]byte, string, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return nil, "", errors.New("image_data is required")
+	}
+	declaredMediaType := ""
+	if strings.HasPrefix(value, "data:") {
+		header, payload, ok := strings.Cut(value, ",")
+		if !ok || !strings.HasSuffix(header, ";base64") {
+			return nil, "", errors.New("image_data must be raw base64 or a base64 image data URL")
+		}
+		declaredMediaType = strings.TrimSuffix(strings.TrimPrefix(header, "data:"), ";base64")
+		switch declaredMediaType {
+		case "image/png", "image/jpeg", "image/gif":
+		default:
+			return nil, "", fmt.Errorf("unsupported image data URL content type %q", declaredMediaType)
+		}
+		value = payload
+	}
+	if len(value) > base64.StdEncoding.EncodedLen(maxInputBytes+1) {
+		return nil, "", fmt.Errorf("image_data exceeds %d MiB decoded limit", maxInputBytes>>20)
+	}
+	data, err := base64.StdEncoding.Strict().DecodeString(value)
+	if err != nil {
+		return nil, "", errors.New("image_data is not valid base64")
+	}
+	if len(data) > maxInputBytes {
+		return nil, "", fmt.Errorf("image_data exceeds %d MiB decoded limit", maxInputBytes>>20)
+	}
+	if len(data) == 0 {
+		return nil, "", errors.New("image_data decodes to an empty payload")
+	}
+	return data, declaredMediaType, nil
+}
+
 func (s *Service) ListCreatedEmojis(ctx context.Context) ([]EmojiView, error) {
 	emojis, err := s.discord.ListGuildEmojis(ctx, s.guildID)
 	if err != nil {
@@ -120,108 +220,12 @@ func (s *Service) ListCreatedEmojis(ctx context.Context) ([]EmojiView, error) {
 	return views, nil
 }
 
-func (s *Service) CreateEmoji(ctx context.Context, request CreateRequest) (EmojiView, error) {
-	request.Prompt = strings.TrimSpace(request.Prompt)
-	if err := s.validateCreateRequest(request); err != nil {
-		return EmojiView{}, err
-	}
-
-	s.mutations.Lock()
-	defer s.mutations.Unlock()
-
-	emojis, err := s.discord.ListGuildEmojis(ctx, s.guildID)
-	if err != nil {
-		return EmojiView{}, err
-	}
-	byID := make(map[string]discord.Emoji, len(emojis))
-	for _, emoji := range emojis {
-		byID[emoji.ID] = emoji
-		if strings.EqualFold(emoji.Name, request.Name) {
-			return EmojiView{}, fmt.Errorf("an emoji named %q already exists", request.Name)
-		}
-	}
-
-	references, err := s.fetchReferences(ctx, request.ReferenceIDs, byID)
-	if err != nil {
-		return EmojiView{}, err
-	}
-
-	generated, err := s.generator.Generate(ctx, generation.Request{
-		Prompt: request.Prompt, References: references,
-	})
-	if err != nil {
-		return EmojiView{}, err
-	}
-	png, err := imageprep.Prepare(generated)
-	if err != nil {
-		return EmojiView{}, fmt.Errorf("prepare generated image: %w", err)
-	}
-
-	reason := "discord-emojigen-mcp create " + request.Name
-	emoji, err := s.discord.CreateGuildEmoji(
-		ctx, s.guildID, request.Name, png, request.Roles, reason,
-	)
-	if err != nil {
-		return EmojiView{}, err
-	}
-	return view(emoji, true), nil
-}
-
-func (s *Service) validateCreateRequest(request CreateRequest) error {
-	switch {
-	case !emojiNamePattern.MatchString(request.Name):
-		return errors.New("name must be 2-32 characters using letters, numbers, or underscores")
-	case request.Prompt == "" || len(request.Prompt) > 4000:
-		return errors.New("prompt must be between 1 and 4000 characters")
-	case len(request.ReferenceIDs) > s.maxReferences:
-		return fmt.Errorf("at most %d reference emoji are allowed", s.maxReferences)
-	case len(request.Roles) > 100:
-		return errors.New("at most 100 role IDs are allowed")
-	}
-	ids := append(append([]string{}, request.ReferenceIDs...), request.Roles...)
-	for _, id := range ids {
-		if !snowflakePattern.MatchString(id) {
-			return fmt.Errorf("%q is not a valid Discord snowflake", id)
-		}
-	}
-	return nil
-}
-
-func (s *Service) fetchReferences(
-	ctx context.Context,
-	ids []string,
-	byID map[string]discord.Emoji,
-) ([]generation.Reference, error) {
-	references := make([]generation.Reference, 0, len(ids))
-	for _, id := range ids {
-		emoji, ok := byID[id]
-		if !ok {
-			return nil, fmt.Errorf("reference emoji %s does not exist in the configured guild", id)
-		}
-		if emoji.Animated {
-			return nil, fmt.Errorf("reference emoji %s is animated; animated references are not supported", id)
-		}
-		data, err := s.discord.FetchEmojiImage(ctx, emoji)
-		if err != nil {
-			return nil, fmt.Errorf("fetch reference emoji %s: %w", id, err)
-		}
-		png, err := imageprep.Prepare(data)
-		if err != nil {
-			return nil, fmt.Errorf("prepare reference emoji %s: %w", id, err)
-		}
-		references = append(references, generation.Reference{Name: emoji.Name, PNG: png})
-	}
-	return references, nil
-}
-
 func (s *Service) RemoveEmoji(ctx context.Context, emojiID string) error {
 	if !snowflakePattern.MatchString(emojiID) {
 		return errors.New("emoji_id is not a valid Discord snowflake")
 	}
-
 	s.mutations.Lock()
 	defer s.mutations.Unlock()
-
 	emoji, err := s.discord.GetGuildEmoji(ctx, s.guildID, emojiID)
 	if errors.Is(err, discord.ErrNotFound) {
 		return nil
@@ -232,19 +236,15 @@ func (s *Service) RemoveEmoji(ctx context.Context, emojiID string) error {
 	if emoji.User == nil || emoji.User.ID != s.bot.ID {
 		return errors.New("refusing to remove emoji: Discord creator does not match this bot")
 	}
-	if err := s.discord.DeleteGuildEmoji(
+	return s.discord.DeleteGuildEmoji(
 		ctx, s.guildID, emojiID, "discord-emojigen-mcp remove "+emoji.Name,
-	); err != nil {
-		return err
-	}
-	return nil
+	)
 }
 
 func view(emoji discord.Emoji, created bool) EmojiView {
 	return EmojiView{
 		ID: emoji.ID, Name: emoji.Name, Animated: emoji.Animated, Available: emoji.Available,
-		Mention: emoji.Mention(), PreviewURL: emoji.CDNURL(),
-		CreatedByBot: created,
+		Mention: emoji.Mention(), PreviewURL: emoji.CDNURL(), CreatedByBot: created,
 	}
 }
 

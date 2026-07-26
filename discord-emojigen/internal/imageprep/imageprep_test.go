@@ -20,7 +20,7 @@ func TestPrepareProducesDiscordSizedPNG(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	output, err := Prepare(input.Bytes())
+	output, err := Prepare(input.Bytes(), "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +37,7 @@ func TestPrepareProducesDiscordSizedPNG(t *testing.T) {
 }
 
 func TestPrepareRejectsNonImage(t *testing.T) {
-	if _, err := Prepare([]byte("not an image")); err == nil {
+	if _, err := Prepare([]byte("not an image"), ""); err == nil {
 		t.Fatal("expected error")
 	}
 }

@@ -7,7 +7,6 @@ import (
 
 	"github.com/jbeshir/mcp-servers/discord-emojigen/internal/config"
 	"github.com/jbeshir/mcp-servers/discord-emojigen/internal/discord"
-	"github.com/jbeshir/mcp-servers/discord-emojigen/internal/generation"
 	"github.com/jbeshir/mcp-servers/discord-emojigen/internal/server"
 	"github.com/jbeshir/mcp-servers/discord-emojigen/internal/service"
 )
@@ -21,9 +20,7 @@ func main() {
 	emojiService, err := service.New(
 		context.Background(),
 		discord.NewClient(cfg.DiscordToken, httpClient),
-		generation.NewOpenAI(cfg.OpenAIKey, cfg.ImageModel, httpClient),
 		cfg.GuildID,
-		cfg.MaxReferences,
 	)
 	if err != nil {
 		log.Fatal(err)

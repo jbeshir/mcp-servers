@@ -5,6 +5,8 @@ import (
 	"errors"
 	"image"
 	"image/color"
+	_ "image/gif"
+	_ "image/jpeg"
 	"image/png"
 )
 
@@ -14,17 +16,13 @@ const (
 	maxUploadBytes  = 256 * 1024
 )
 
-func Prepare(data []byte) ([]byte, error) {
-	cfg, _, err := image.DecodeConfig(bytes.NewReader(data))
-	if err != nil {
-		return nil, errors.New("generated data is not a supported image")
-	}
-	if cfg.Width <= 0 || cfg.Height <= 0 || cfg.Width*cfg.Height > maxSourcePixels {
-		return nil, errors.New("generated image dimensions exceed limits")
+func Prepare(data []byte, declaredMediaType string) ([]byte, error) {
+	if err := validateSource(data, declaredMediaType); err != nil {
+		return nil, err
 	}
 	src, _, err := image.Decode(bytes.NewReader(data))
 	if err != nil {
-		return nil, errors.New("decode generated image")
+		return nil, errors.New("decode image")
 	}
 
 	dst := image.NewNRGBA(image.Rect(0, 0, emojiSize, emojiSize))
@@ -54,4 +52,33 @@ func Prepare(data []byte) ([]byte, error) {
 		return nil, errors.New("prepared emoji exceeds Discord's 256 KiB limit")
 	}
 	return output.Bytes(), nil
+}
+
+func validateSource(data []byte, declaredMediaType string) error {
+	cfg, format, err := image.DecodeConfig(bytes.NewReader(data))
+	if err != nil {
+		return errors.New("data is not a supported image")
+	}
+	if declaredMediaType != "" && declaredMediaType != mediaType(format) {
+		return errors.New("declared image media type does not match image data")
+	}
+	if cfg.Width <= 0 || cfg.Height <= 0 ||
+		cfg.Width > maxSourcePixels || cfg.Height > maxSourcePixels ||
+		cfg.Width > maxSourcePixels/cfg.Height {
+		return errors.New("image dimensions exceed limits")
+	}
+	return nil
+}
+
+func mediaType(format string) string {
+	switch format {
+	case "png":
+		return "image/png"
+	case "jpeg":
+		return "image/jpeg"
+	case "gif":
+		return "image/gif"
+	default:
+		return ""
+	}
 }
