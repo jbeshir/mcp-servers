@@ -26,7 +26,7 @@ None. No API keys or tokens are required for any provider, embedded or remote. C
 
 ### Install from source
 
-Requires Go 1.26.5+.
+Requires Go 1.27.3+.
 
 ```
 go install github.com/jbeshir/mcp-servers/assets/cmd/assets-mcp@latest

@@ -55,7 +55,7 @@ Collection endpoints are automatically paginated. Results are capped at a config
 
 ### Requirements
 
-- **Go 1.24+** (to build from source)
+- **Go 1.27.3+** (to build from source)
 - **WaniKani API token** from [wanikani.com/settings/personal_access_tokens](https://www.wanikani.com/settings/personal_access_tokens)
 
 ### Installation

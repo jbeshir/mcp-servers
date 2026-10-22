@@ -1,6 +1,6 @@
 module github.com/jbeshir/mcp-servers/assets
 
-go 1.26.5
+go 1.27.3
 
 require (
 	github.com/jbeshir/assetsdb v0.1.0

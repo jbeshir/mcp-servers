@@ -68,7 +68,7 @@ Download from [Releases](https://github.com/jbeshir/mcp-servers/releases) — av
 
 ### Install from source
 
-Requires Go 1.24+.
+Requires Go 1.27.3+.
 
 ```
 go install github.com/jbeshir/mcp-servers/workflowy/cmd/workflowy-mcp@latest

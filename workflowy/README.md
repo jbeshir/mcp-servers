@@ -17,7 +17,7 @@ An [MCP](https://modelcontextprotocol.io/) server that provides full read/write 
 
 ### Install from source
 
-Requires Go 1.24+.
+Requires Go 1.27.3+.
 
 ```
 go install github.com/jbeshir/mcp-servers/workflowy/cmd/workflowy-mcp@latest

@@ -57,6 +57,201 @@ linters:
       - linters:
           - nilerr
         path: "internal/server/"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^amazon-products/internal/scraper/scraper\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/assetcore/aggregate_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/config/config_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/httpx/httpx_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/ambientcg/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/embeddedfonts/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/embeddedicons/provider\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/embeddedicons/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/freesound/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/googlefonts/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/iconify/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/jamendo/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/openverse/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/pexels/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/pixabay/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/polyhaven/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/polypizza/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/unsplash/provider\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/providers/unsplash/provider_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/server/handlers_model_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/server/handlers_photo_texture_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/server/handlers_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^assets/internal/server/result_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^bunpro/internal/server/format_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^manifold/internal/server/tools_portfolio_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^supermarkets-uk/internal/auth/cache_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^supermarkets-uk/internal/auth/cookiestore_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^supermarkets-uk/internal/datasource/asda/asda\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^supermarkets-uk/internal/datasource/osp/morrisons\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^supermarkets-uk/internal/datasource/osp/ocado\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^supermarkets-uk/internal/datasource/tesco/basket\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^supermarkets-uk/internal/datasource/tesco/orders\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - goconst
+        text: "string `.+` has [0-9]+ occurrences"
+        path: "^supermarkets-uk/internal/datasource/waitrose/waitrose\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - gosec
+        text: "G124:"
+        path: "^bunpro/internal/auth/auth_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - gosec
+        text: "G124:"
+        path: "^supermarkets-uk/internal/auth/cache_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - gosec
+        text: "G124:"
+        path: "^supermarkets-uk/internal/auth/cookiestore\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - gosec
+        text: "G124:"
+        path: "^supermarkets-uk/internal/auth/cookiestore_test\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - gosec
+        text: "G124:"
+        path: "^supermarkets-uk/internal/auth/login\\.go$"
+      # Pre-dates the Go 1.27.3 bump; surfaced by golangci-lint v2.14.0.
+      - linters:
+          - gosec
+        text: "G124:"
+        path: "^supermarkets-uk/internal/datasource/sainsburys/sainsburys_test\\.go$"
   settings:
     dupword:
       ignore:

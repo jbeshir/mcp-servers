@@ -34,7 +34,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.24"
+          go-version: "1.27.3"
 
       - name: Build platform binaries
         run: make build-${{ steps.meta.outputs.module }}-all-platforms

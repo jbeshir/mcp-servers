@@ -17,7 +17,7 @@ An MCP server for interacting with [Manifold Markets](https://manifold.markets),
 
 ### Install from source
 
-Requires Go 1.24+.
+Requires Go 1.27.3+.
 
 ```
 go install github.com/jbeshir/mcp-servers/manifold/cmd/manifold-mcp@latest

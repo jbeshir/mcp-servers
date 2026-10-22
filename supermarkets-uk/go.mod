@@ -1,6 +1,6 @@
 module github.com/jbeshir/mcp-servers/supermarkets-uk
 
-go 1.25.5
+go 1.27.3
 
 require (
 	github.com/chromedp/cdproto v0.0.0-20250724212937-08a3db8b4327

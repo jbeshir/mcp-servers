@@ -6,7 +6,7 @@ An MCP server for searching and comparing grocery prices across 9 UK supermarket
 
 ### Requirements
 
-- **Go 1.24+** (to build from source)
+- **Go 1.27.3+** (to build from source)
 - **Chrome, Chromium, or Microsoft Edge** — required for Tesco, Asda, and Waitrose (headless browser rendering), and for login to any supermarket. Sainsbury's, Ocado, Morrisons, and the Shopify stores work without a browser.
 
   On Linux, avoid snap-packaged Chromium (Ubuntu's default `chromium` package). It is known to hang

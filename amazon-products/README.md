@@ -24,7 +24,7 @@ An MCP server for searching and getting product details from Amazon. Supports 22
 
 ### Install from source
 
-Requires Go 1.24+.
+Requires Go 1.27.3+.
 
 ```
 go install github.com/jbeshir/mcp-servers/amazon-products/cmd/amazon-products-mcp@latest

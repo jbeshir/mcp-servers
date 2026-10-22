@@ -1,4 +1,4 @@
-GOLANGCI_LINT_VERSION := v2.11.4
+GOLANGCI_LINT_VERSION := v2.14.0
 
 .PHONY: lint test-short build check-mocks validate
 lint:

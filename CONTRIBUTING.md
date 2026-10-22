@@ -5,7 +5,7 @@ Contributions are welcome! The preferred process is to open a pull request.
 ## Getting started
 
 1. Fork the repo and clone your fork
-2. Install Go 1.24+ and run `make setup-tools` to install linting/formatting tools
+2. Install Go 1.27.3+ and run `make setup-tools` to install linting/formatting tools
 3. Make your changes
 4. Run `make validate` to check lint, tests, and build
 5. Run `make fmt` to auto-format

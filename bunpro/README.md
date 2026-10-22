@@ -71,7 +71,7 @@ sequenceDiagram
 
 ### Requirements
 
-- **Go 1.24+** (to build from source)
+- **Go 1.27.3+** (to build from source)
 - A **Bunpro account** (free or paid)
 
 ### Installation
