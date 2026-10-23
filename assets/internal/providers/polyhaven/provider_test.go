@@ -19,6 +19,8 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
 
+const tagWood = "wood"
+
 const knownSlug = "ArmChair_01"
 
 // testServer stands up a canned Poly Haven API double: GET /assets?type=models serving a fixed
@@ -36,13 +38,13 @@ func testServer(t *testing.T) (fileRequests, totalRequests *int32) {
 		knownSlug: {
 			Name:         "Arm Chair 01",
 			Categories:   []string{"furniture", "seating"},
-			Tags:         []string{"chair", "wood"},
+			Tags:         []string{"chair", tagWood},
 			ThumbnailURL: "https://cdn.example.com/armchair.png",
 		},
 		"WoodenBarrel_01": {
 			Name:       "Wooden Barrel 01",
 			Categories: []string{"props"},
-			Tags:       []string{"barrel", "wood"},
+			Tags:       []string{"barrel", tagWood},
 		},
 		"MetalBucket_02": {
 			Name:       "Metal Bucket 02",
@@ -129,7 +131,7 @@ func TestSearchMapsAssets(t *testing.T) {
 	require.Equal(t, assetcore.KindModel, a.Kind)
 	require.Equal(t, "Arm Chair 01", a.Title)
 	require.Equal(t, providerName, a.Source)
-	require.Equal(t, []string{"chair", "wood"}, a.Tags)
+	require.Equal(t, []string{"chair", tagWood}, a.Tags)
 	require.Equal(t, "https://cdn.example.com/armchair.png", a.PreviewURL)
 	require.Equal(t, "https://polyhaven.com/a/"+knownSlug, a.LandingURL)
 	require.Equal(t, cc0License, a.License)

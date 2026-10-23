@@ -15,10 +15,10 @@ validate: lint test-short build
 
 .PHONY: lint
 lint:
-	@for mod in $(MODULES); do \
+	@status=0; for mod in $(MODULES); do \
 		echo "==> Linting $$mod"; \
-		golangci-lint run --config .golangci.yml ./$$mod/...; \
-	done
+		golangci-lint run --config .golangci.yml ./$$mod/... || status=1; \
+	done; exit $$status
 
 .PHONY: test-short
 test-short:

@@ -1,12 +1,17 @@
 package auth
 
 import (
+	"encoding/json"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource"
 )
+
+// tescoDomain is the cookie domain used for Tesco test cookies.
+const tescoDomain = ".tesco.com"
 
 func TestCookieStoreRoundTrip(t *testing.T) {
 	dir := t.TempDir()
@@ -19,17 +24,21 @@ func TestCookieStoreRoundTrip(t *testing.T) {
 		{
 			Name:     "session",
 			Value:    "abc123",
-			Domain:   ".tesco.com",
+			Domain:   tescoDomain,
 			Path:     "/",
 			Expires:  time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC),
 			Secure:   true,
 			HttpOnly: true,
+			SameSite: http.SameSiteLaxMode,
 		},
 		{
-			Name:   "prefs",
-			Value:  "dark",
-			Domain: ".tesco.com",
-			Path:   "/",
+			Name:     "prefs",
+			Value:    "dark",
+			Domain:   tescoDomain,
+			Path:     "/",
+			Secure:   true,
+			HttpOnly: true,
+			SameSite: http.SameSiteLaxMode,
 		},
 	}
 
@@ -49,10 +58,8 @@ func TestCookieStoreRoundTrip(t *testing.T) {
 	if loaded[0].Name != "session" || loaded[0].Value != "abc123" {
 		t.Errorf("cookie 0 = %+v", loaded[0])
 	}
-	if !loaded[0].Secure || !loaded[0].HttpOnly {
-		t.Errorf("cookie 0 flags: Secure=%v HttpOnly=%v", loaded[0].Secure, loaded[0].HttpOnly)
-	}
-	if loaded[0].Domain != ".tesco.com" {
+	assertLaxSecureFlags(t, loaded[0])
+	if loaded[0].Domain != tescoDomain {
 		t.Errorf("cookie 0 domain = %q", loaded[0].Domain)
 	}
 
@@ -84,7 +91,7 @@ func TestCookieStoreClear(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cookies := []*http.Cookie{{Name: "test", Value: "val", Domain: ".tesco.com", Path: "/"}}
+	cookies := []*http.Cookie{{Name: "test", Value: "val", Domain: tescoDomain, Path: "/", Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}}
 	if err := store.Save(datasource.Tesco, cookies); err != nil {
 		t.Fatal(err)
 	}
@@ -111,5 +118,46 @@ func TestCookieStoreClearNonexistent(t *testing.T) {
 
 	if err := store.Clear(datasource.Tesco); err != nil {
 		t.Fatalf("clear nonexistent should not error, got %v", err)
+	}
+}
+
+// assertLaxSecureFlags checks that Secure, HttpOnly and SameSite=Lax survived a store round trip.
+func assertLaxSecureFlags(t *testing.T, c *http.Cookie) {
+	t.Helper()
+	if !c.Secure || !c.HttpOnly {
+		t.Errorf("cookie flags: Secure=%v HttpOnly=%v", c.Secure, c.HttpOnly)
+	}
+	if c.SameSite != http.SameSiteLaxMode {
+		t.Errorf("cookie SameSite = %v, want Lax", c.SameSite)
+	}
+}
+
+func TestCookieStoreLoadPreservesUnsetFlags(t *testing.T) {
+	dir := t.TempDir()
+	store, err := NewCookieStore(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data, err := json.Marshal([]SerializedCookie{
+		{Name: "theme", Value: "light", Domain: tescoDomain, Path: "/"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(store.path(datasource.Tesco), data, 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	loaded, err := store.Load(datasource.Tesco)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(loaded) != 1 {
+		t.Fatalf("expected 1 cookie, got %d", len(loaded))
+	}
+	c := loaded[0]
+	if c.Secure || c.HttpOnly || c.SameSite != 0 {
+		t.Errorf("cookie flags: Secure=%v HttpOnly=%v SameSite=%v, want all unset", c.Secure, c.HttpOnly, c.SameSite)
 	}
 }

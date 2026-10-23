@@ -16,6 +16,14 @@ import (
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/scraper"
 )
 
+const (
+	attrDataTest   = "data-test"
+	attrDataTestID = "data-testid"
+
+	tagDiv  = "div"
+	tagSpan = "span"
+)
+
 const baseURL = "https://www.waitrose.com"
 
 // categoryHrefPrefix is the path prefix for top-level grocery category links.
@@ -27,31 +35,31 @@ const waitSelector = `article[data-testid="product-pod"]`
 var (
 	categoryURL           = baseURL + "/ecom/shop/browse"
 	sessionCheckURL       = baseURL + "/"
-	sessionCheckQuery     = scraper.ElemSel{Tag: "a", Att: "data-test", Val: "signOut"}
-	nutritionContainerSel = scraper.ElemSel{Tag: "div", Cls: "ProductNutrientsTable_nutrition"}
+	sessionCheckQuery     = scraper.ElemSel{Tag: "a", Att: attrDataTest, Val: "signOut"}
+	nutritionContainerSel = scraper.ElemSel{Tag: tagDiv, Cls: "ProductNutrientsTable_nutrition"}
 	nutritionTableSel     = scraper.ElemSel{Tag: "table"}
-	productOOSSel         = scraper.ElemSel{Tag: "div", Cls: "OutOfStock_outOfStock__"}
+	productOOSSel         = scraper.ElemSel{Tag: tagDiv, Cls: "OutOfStock_outOfStock__"}
 )
 
 var selectors = scraper.Config{
 	ID:          datasource.Waitrose,
 	BaseURL:     baseURL,
-	Container:   scraper.ElemSel{Tag: "article", Att: "data-testid", Val: "product-pod"},
-	CategorySel: scraper.ElemSel{Tag: "a", Att: "data-testid", Val: "browse-category-link"},
+	Container:   scraper.ElemSel{Tag: "article", Att: attrDataTestID, Val: "product-pod"},
+	CategorySel: scraper.ElemSel{Tag: "a", Att: attrDataTestID, Val: "browse-category-link"},
 	SearchSel: scraper.ProductSelectors{
-		Title:       scraper.ElemSel{Tag: "span", Cls: "name___"},
+		Title:       scraper.ElemSel{Tag: tagSpan, Cls: "name___"},
 		Link:        scraper.ElemSel{Tag: "a", Cls: "nameLink"},
-		Price:       scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-pod-price"},
-		Unit:        scraper.ElemSel{Tag: "span", Cls: "pricePerUnit"},
-		Promo:       scraper.ElemSel{Tag: "span", Att: "data-testid", Val: "description"},
+		Price:       scraper.ElemSel{Tag: tagSpan, Att: attrDataTest, Val: "product-pod-price"},
+		Unit:        scraper.ElemSel{Tag: tagSpan, Cls: "pricePerUnit"},
+		Promo:       scraper.ElemSel{Tag: tagSpan, Att: attrDataTestID, Val: "description"},
 		Image:       scraper.ElemSel{Tag: "img"},
-		Weight:      scraper.ElemSel{Tag: "span", Att: "data-testid", Val: "product-size"},
-		Unavailable: scraper.ElemSel{Tag: "div", Cls: "outOfStock___"},
+		Weight:      scraper.ElemSel{Tag: tagSpan, Att: attrDataTestID, Val: "product-size"},
+		Unavailable: scraper.ElemSel{Tag: tagDiv, Cls: "outOfStock___"},
 	},
 	ProductSel: scraper.ProductSelectors{
-		Title: scraper.ElemSel{Tag: "span", Att: "data-testid", Val: "product-name"},
-		Price: scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-pod-price"},
-		Unit:  scraper.ElemSel{Tag: "span", Cls: "ProductPricing_pricePerUnit"},
+		Title: scraper.ElemSel{Tag: tagSpan, Att: attrDataTestID, Val: "product-name"},
+		Price: scraper.ElemSel{Tag: tagSpan, Att: attrDataTest, Val: "product-pod-price"},
+		Unit:  scraper.ElemSel{Tag: tagSpan, Cls: "ProductPricing_pricePerUnit"},
 	},
 }
 
@@ -167,7 +175,7 @@ func parseProductPage(r io.Reader) (*datasource.Product, error) {
 var descriptionSel = scraper.ElemSel{Tag: "section", Att: "id", Val: "summary"}
 
 // ingredientsTextSel matches the <div> containing ingredient text.
-var ingredientsTextSel = scraper.ElemSel{Tag: "div", Cls: "Ingredient_ingredientsText"}
+var ingredientsTextSel = scraper.ElemSel{Tag: tagDiv, Cls: "Ingredient_ingredientsText"}
 
 // extractWaitroseProductDetails extracts description, ingredients, and nutrition
 // from a parsed Waitrose product page.

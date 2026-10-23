@@ -264,7 +264,7 @@ func resolveOrder(
 		Currency:       co.Localisation.Currency.ISO,
 	}
 	if order.Currency == "" {
-		order.Currency = "GBP"
+		order.Currency = currencyGBP
 	}
 
 	// Resolve delivery slot.

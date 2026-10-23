@@ -7,6 +7,9 @@ import (
 	"testing"
 )
 
+// authClientID is the Authorization header value the auth tests send and expect back.
+const authClientID = "Client-ID x"
+
 func TestClientStampsDefaultUserAgent(t *testing.T) {
 	var gotUA string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -99,7 +102,7 @@ func TestGetJSONHeadersSetsRequestHeaders(t *testing.T) {
 	defer srv.Close()
 
 	c := New(Config{})
-	header := http.Header{"Authorization": {"Client-ID x"}}
+	header := http.Header{"Authorization": {authClientID}}
 	var got struct {
 		Name  string `json:"name"`
 		Count int    `json:"count"`
@@ -107,8 +110,8 @@ func TestGetJSONHeadersSetsRequestHeaders(t *testing.T) {
 	if err := c.GetJSONHeaders(t.Context(), srv.URL, header, &got); err != nil {
 		t.Fatalf("GetJSONHeaders: %v", err)
 	}
-	if gotAuth != "Client-ID x" {
-		t.Fatalf("Authorization = %q, want %q", gotAuth, "Client-ID x")
+	if gotAuth != authClientID {
+		t.Fatalf("Authorization = %q, want %q", gotAuth, authClientID)
 	}
 	if got.Name != "lucide" || got.Count != 42 {
 		t.Fatalf("got %+v, want Name=lucide Count=42", got)
@@ -126,13 +129,13 @@ func TestGetBytesHeadersSetsRequestHeaders(t *testing.T) {
 	defer srv.Close()
 
 	c := New(Config{})
-	header := http.Header{"Authorization": {"Client-ID x"}}
+	header := http.Header{"Authorization": {authClientID}}
 	got, err := c.GetBytesHeaders(t.Context(), srv.URL, header)
 	if err != nil {
 		t.Fatalf("GetBytesHeaders: %v", err)
 	}
-	if gotAuth != "Client-ID x" {
-		t.Fatalf("Authorization = %q, want %q", gotAuth, "Client-ID x")
+	if gotAuth != authClientID {
+		t.Fatalf("Authorization = %q, want %q", gotAuth, authClientID)
 	}
 	if string(got) != want {
 		t.Fatalf("GetBytesHeaders = %q, want %q", got, want)

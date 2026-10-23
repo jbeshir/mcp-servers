@@ -20,6 +20,14 @@ import (
 )
 
 const (
+	attrDataLocator = "data-locator"
+	attrDataTestID  = "data-testid"
+
+	tagDiv = "div"
+	tagImg = "img"
+)
+
+const (
 	baseURL = "https://www.asda.com"
 
 	algoliaAppID  = "8I6WSKCCNV"
@@ -32,31 +40,31 @@ const (
 
 var (
 	sessionCheckURL   = baseURL + "/"
-	sessionCheckQuery = scraper.ElemSel{Tag: "button", Att: "data-locator", Val: "btn-sign-off"}
-	nutritionTableSel = scraper.ElemSel{Tag: "table", Att: "data-testid", Val: "nutrition-table"}
+	sessionCheckQuery = scraper.ElemSel{Tag: "button", Att: attrDataLocator, Val: "btn-sign-off"}
+	nutritionTableSel = scraper.ElemSel{Tag: "table", Att: attrDataTestID, Val: "nutrition-table"}
 )
 
 var selectors = scraper.Config{
 	ID:          datasource.Asda,
 	BaseURL:     baseURL,
-	Container:   scraper.ElemSel{Tag: "div", Att: "data-locator", Val: "single_product_wrapper"},
+	Container:   scraper.ElemSel{Tag: tagDiv, Att: attrDataLocator, Val: "single_product_wrapper"},
 	CategorySel: scraper.ElemSel{Tag: "a", Att: "data-group", Val: "true"},
 	SearchSel: scraper.ProductSelectors{
-		Title:  scraper.ElemSel{Tag: "a", Att: "data-locator", Val: "txt-product-name"},
-		Price:  scraper.ElemSel{Tag: "p", Att: "data-locator", Val: "txt-product-price"},
-		Unit:   scraper.ElemSel{Tag: "p", Att: "data-locator", Val: "txt-product-price-per-uom"},
-		Promo:  scraper.ElemSel{Tag: "a", Att: "data-locator", Val: "lnk-product-offer"},
-		Image:  scraper.ElemSel{Tag: "img", Att: "data-locator", Val: "img-product-image"},
-		Weight: scraper.ElemSel{Tag: "p", Att: "data-locator", Val: "txt-product-weight"},
+		Title:  scraper.ElemSel{Tag: "a", Att: attrDataLocator, Val: "txt-product-name"},
+		Price:  scraper.ElemSel{Tag: "p", Att: attrDataLocator, Val: "txt-product-price"},
+		Unit:   scraper.ElemSel{Tag: "p", Att: attrDataLocator, Val: "txt-product-price-per-uom"},
+		Promo:  scraper.ElemSel{Tag: "a", Att: attrDataLocator, Val: "lnk-product-offer"},
+		Image:  scraper.ElemSel{Tag: tagImg, Att: attrDataLocator, Val: "img-product-image"},
+		Weight: scraper.ElemSel{Tag: "p", Att: attrDataLocator, Val: "txt-product-weight"},
 	},
 	ProductSel: scraper.ProductSelectors{
-		Title:       scraper.ElemSel{Tag: "h1", Att: "data-testid", Val: "txt-pdp-product-name"},
-		Price:       scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "txt-pdp-product-price"},
-		Unit:        scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "txt-pdp-product-price-per-kg"},
-		Image:       scraper.ElemSel{Tag: "img", Att: "data-testid", Val: "img"},
-		Weight:      scraper.ElemSel{Tag: "p", Att: "data-testid", Val: "txt-pdp-weight-size"},
-		Description: scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "product-description"},
-		Ingredients: scraper.ElemSel{Tag: "div", Att: "data-testid", Val: "product-ingredients"},
+		Title:       scraper.ElemSel{Tag: "h1", Att: attrDataTestID, Val: "txt-pdp-product-name"},
+		Price:       scraper.ElemSel{Tag: tagDiv, Att: attrDataTestID, Val: "txt-pdp-product-price"},
+		Unit:        scraper.ElemSel{Tag: tagDiv, Att: attrDataTestID, Val: "txt-pdp-product-price-per-kg"},
+		Image:       scraper.ElemSel{Tag: tagImg, Att: attrDataTestID, Val: "img"},
+		Weight:      scraper.ElemSel{Tag: "p", Att: attrDataTestID, Val: "txt-pdp-weight-size"},
+		Description: scraper.ElemSel{Tag: tagDiv, Att: attrDataTestID, Val: "product-description"},
+		Ingredients: scraper.ElemSel{Tag: tagDiv, Att: attrDataTestID, Val: "product-ingredients"},
 	},
 }
 

@@ -13,6 +13,9 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
+// titleBrickWall is the title of the texture asset used by the texture tests.
+const titleBrickWall = "Brick Wall"
+
 // Provider names used by the mock-backed photo/texture handler tests. These tests register generated
 // mocks directly against a fresh registry, exercising the registry/handler plumbing rather than the
 // embedded providers newTestServer wires up.
@@ -49,7 +52,7 @@ func TestHandleSearchPhotosHappyPath(t *testing.T) {
 	}, nil)
 
 	res, err := s.handleSearchPhotos(t.Context(), newRequest(map[string]any{
-		"query": "sunset",
+		paramQuery: "sunset",
 	}))
 	if err != nil {
 		t.Fatalf("handleSearchPhotos: unexpected error: %v", err)
@@ -86,7 +89,7 @@ func TestHandleGetPhotoHappyPath(t *testing.T) {
 	photoProv.EXPECT().Fetch(mock.Anything, "sunset", assetcore.PhotoFetchOpts{}).Return(assetcore.Blob{
 		Asset: assetcore.Asset{
 			ID: id, Kind: assetcore.KindPhoto, Source: testPhotoProviderName, Title: "Sunset",
-			License: assetcore.License{SPDX: "CC0-1.0"},
+			License: assetcore.License{SPDX: licenseCC0},
 		},
 		Content:     []byte("fake-jpeg-bytes"),
 		Filename:    "sunset.jpg",
@@ -160,11 +163,11 @@ func TestHandleSearchTexturesHappyPath(t *testing.T) {
 
 	id := testTextureProviderName + ":brick-wall"
 	textureProv.EXPECT().Search(mock.Anything, mock.Anything).Return(assetcore.SearchResult{
-		Assets: []assetcore.Asset{{ID: id, Source: testTextureProviderName, Title: "Brick Wall"}},
+		Assets: []assetcore.Asset{{ID: id, Source: testTextureProviderName, Title: titleBrickWall}},
 	}, nil)
 
 	res, err := s.handleSearchTextures(t.Context(), newRequest(map[string]any{
-		"query": "brick",
+		paramQuery: "brick",
 	}))
 	if err != nil {
 		t.Fatalf("handleSearchTextures: unexpected error: %v", err)
@@ -199,8 +202,8 @@ func TestHandleGetTextureHappyPath(t *testing.T) {
 		Fetch(mock.Anything, "brick-wall", assetcore.TextureFetchOpts{Resolution: defaultTextureResolution, Format: defaultTextureFormat}).
 		Return(assetcore.Blob{
 			Asset: assetcore.Asset{
-				ID: id, Kind: assetcore.KindTexture, Source: testTextureProviderName, Title: "Brick Wall",
-				License: assetcore.License{SPDX: "CC0-1.0"},
+				ID: id, Kind: assetcore.KindTexture, Source: testTextureProviderName, Title: titleBrickWall,
+				License: assetcore.License{SPDX: licenseCC0},
 			},
 			Content:     []byte("fake-zip-bytes"),
 			Filename:    "brick-wall_1K-JPG.zip",
@@ -244,7 +247,7 @@ func TestHandleGetTextureCustomResolutionFormat(t *testing.T) {
 	textureProv.EXPECT().
 		Fetch(mock.Anything, "brick-wall", assetcore.TextureFetchOpts{Resolution: "4K", Format: "PNG"}).
 		Return(assetcore.Blob{
-			Asset:       assetcore.Asset{ID: id, Kind: assetcore.KindTexture, Source: testTextureProviderName, Title: "Brick Wall"},
+			Asset:       assetcore.Asset{ID: id, Kind: assetcore.KindTexture, Source: testTextureProviderName, Title: titleBrickWall},
 			Content:     []byte("fake-zip-bytes"),
 			Filename:    "brick-wall_4K-PNG.zip",
 			ContentType: "application/zip",

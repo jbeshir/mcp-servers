@@ -18,6 +18,9 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
 
+// testQuery is the search query used by the Search tests.
+const testQuery = "test"
+
 const testAPIKey = "test-api-key"
 
 // counters tracks the HTTP calls and headers seen by a testServer double, guarded for use across the
@@ -191,7 +194,7 @@ func TestSearchMapsAssetsAndLicenses(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "test", Limit: 2})
+	res, err := p.Search(ctx, assetcore.SearchOpts{Query: testQuery, Limit: 2})
 	require.NoError(t, err)
 	require.Len(t, res.Assets, 2)
 
@@ -213,7 +216,7 @@ func TestSearchCC0SoundRequiresNoAttribution(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "test", Limit: 2, Cursor: "2"})
+	res, err := p.Search(ctx, assetcore.SearchOpts{Query: testQuery, Limit: 2, Cursor: "2"})
 	require.NoError(t, err)
 	require.Len(t, res.Assets, 1)
 
@@ -228,7 +231,7 @@ func TestSearchLicenseURLNormalization(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "test", Limit: 2})
+	res, err := p.Search(ctx, assetcore.SearchOpts{Query: testQuery, Limit: 2})
 	require.NoError(t, err)
 	require.Len(t, res.Assets, 2)
 
@@ -242,7 +245,7 @@ func TestSearchSendsTokenAuthHeader(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	_, err := p.Search(ctx, assetcore.SearchOpts{Query: "test", Limit: 2})
+	_, err := p.Search(ctx, assetcore.SearchOpts{Query: testQuery, Limit: 2})
 	require.NoError(t, err)
 	require.Equal(t, "Token "+testAPIKey, c.SearchAuth())
 }
@@ -252,11 +255,11 @@ func TestSearchPaginationAdvancesThenStops(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	page1, err := p.Search(ctx, assetcore.SearchOpts{Query: "test", Limit: 2})
+	page1, err := p.Search(ctx, assetcore.SearchOpts{Query: testQuery, Limit: 2})
 	require.NoError(t, err)
 	require.Equal(t, "2", page1.NextCursor)
 
-	page2, err := p.Search(ctx, assetcore.SearchOpts{Query: "test", Limit: 2, Cursor: page1.NextCursor})
+	page2, err := p.Search(ctx, assetcore.SearchOpts{Query: testQuery, Limit: 2, Cursor: page1.NextCursor})
 	require.NoError(t, err)
 	require.Empty(t, page2.NextCursor)
 	require.Len(t, page2.Assets, 1)

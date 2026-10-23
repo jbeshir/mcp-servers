@@ -11,19 +11,24 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/assetcore"
 )
 
+const (
+	titleCamera    = "camera"
+	idGoodProvider = "good:s/t"
+)
+
 func TestSearchIconsPreservesDistinctIDsWithSameTitle(t *testing.T) {
 	r := assetcore.NewRegistry()
 
 	a := newIconProvider(t, "a")
 	a.EXPECT().Search(mock.Anything, mock.Anything).Return(assetcore.SearchResult{Assets: []assetcore.Asset{
-		{Source: "s", Title: "camera", ID: "a:s/camera"},
+		{Source: "s", Title: titleCamera, ID: "a:s/camera"},
 		{Source: "s", Title: "home", ID: "a:s/home"},
 	}}, nil)
 	r.AddIcon(a)
 
 	b := newIconProvider(t, "b")
 	b.EXPECT().Search(mock.Anything, mock.Anything).Return(assetcore.SearchResult{Assets: []assetcore.Asset{
-		{Source: "s", Title: "camera", ID: "b:s/camera"},
+		{Source: "s", Title: titleCamera, ID: "b:s/camera"},
 		{Source: "s", Title: "gear", ID: "b:s/gear"},
 	}}, nil)
 	r.AddIcon(b)
@@ -39,7 +44,7 @@ func TestSearchIconsPreservesDistinctIDsWithSameTitle(t *testing.T) {
 		ids = append(ids, a.ID)
 	}
 
-	wantTitles := []string{"camera", "home", "camera", "gear"}
+	wantTitles := []string{titleCamera, "home", titleCamera, "gear"}
 	if len(titles) != len(wantTitles) {
 		t.Fatalf("merged titles = %v, want %v", titles, wantTitles)
 	}
@@ -72,7 +77,7 @@ func TestSearchIconsDegradesFailingProvider(t *testing.T) {
 
 	good := newIconProvider(t, "good")
 	good.EXPECT().Search(mock.Anything, mock.Anything).
-		Return(assetcore.SearchResult{Assets: []assetcore.Asset{{Source: "s", Title: "t", ID: "good:s/t"}}}, nil)
+		Return(assetcore.SearchResult{Assets: []assetcore.Asset{{Source: "s", Title: "t", ID: idGoodProvider}}}, nil)
 	r.AddIcon(good)
 
 	bad := newIconProvider(t, "bad")
@@ -81,7 +86,7 @@ func TestSearchIconsDegradesFailingProvider(t *testing.T) {
 
 	assets, _, warns := r.SearchIcons(t.Context(), assetcore.SearchOpts{})
 
-	if len(assets) != 1 || assets[0].ID != "good:s/t" {
+	if len(assets) != 1 || assets[0].ID != idGoodProvider {
 		t.Fatalf("assets = %+v, want the single good result", assets)
 	}
 
@@ -368,7 +373,7 @@ func TestSearchIconsRecoversPanickingProvider(t *testing.T) {
 
 	good := newIconProvider(t, "good")
 	good.EXPECT().Search(mock.Anything, mock.Anything).
-		Return(assetcore.SearchResult{Assets: []assetcore.Asset{{Source: "s", Title: "t", ID: "good:s/t"}}}, nil)
+		Return(assetcore.SearchResult{Assets: []assetcore.Asset{{Source: "s", Title: "t", ID: idGoodProvider}}}, nil)
 	r.AddIcon(good)
 
 	panicky := newIconProvider(t, "panicky")
@@ -381,7 +386,7 @@ func TestSearchIconsRecoversPanickingProvider(t *testing.T) {
 
 	assets, _, warns := r.SearchIcons(t.Context(), assetcore.SearchOpts{})
 
-	if len(assets) != 1 || assets[0].ID != "good:s/t" {
+	if len(assets) != 1 || assets[0].ID != idGoodProvider {
 		t.Fatalf("assets = %+v, want the single good result", assets)
 	}
 	if len(warns) != 1 {

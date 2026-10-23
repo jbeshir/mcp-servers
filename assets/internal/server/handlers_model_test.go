@@ -42,7 +42,7 @@ func TestHandleSearchModelsHappyPath(t *testing.T) {
 	}, nil)
 
 	res, err := s.handleSearchModels(t.Context(), newRequest(map[string]any{
-		"query": "chair",
+		paramQuery: "chair",
 	}))
 	if err != nil {
 		t.Fatalf("handleSearchModels: unexpected error: %v", err)
@@ -79,7 +79,7 @@ func TestHandleGetModelHappyPath(t *testing.T) {
 	modelProv.EXPECT().Fetch(mock.Anything, "chair", assetcore.ModelFetchOpts{}).Return(assetcore.Blob{
 		Asset: assetcore.Asset{
 			ID: id, Kind: assetcore.KindModel, Source: testModelProviderName, Title: "Chair",
-			License: assetcore.License{SPDX: "CC0-1.0"},
+			License: assetcore.License{SPDX: licenseCC0},
 		},
 		Content:     []byte("fake-glb-bytes"),
 		Filename:    "chair.glb",

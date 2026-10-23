@@ -23,25 +23,28 @@ type Region struct {
 	Currency string // e.g. "GBP"
 }
 
+// currencyEUR is shared by every eurozone region.
+const currencyEUR = "EUR"
+
 // Regions maps region IDs to their configuration.
 var Regions = map[string]Region{
 	"au": {Name: "Australia", BaseURL: "https://www.amazon.com.au", Currency: "AUD"},
-	"be": {Name: "Belgium", BaseURL: "https://www.amazon.com.be", Currency: "EUR"},
+	"be": {Name: "Belgium", BaseURL: "https://www.amazon.com.be", Currency: currencyEUR},
 	"br": {Name: "Brazil", BaseURL: "https://www.amazon.com.br", Currency: "BRL"},
 	"ca": {Name: "Canada", BaseURL: "https://www.amazon.ca", Currency: "CAD"},
 	"eg": {Name: "Egypt", BaseURL: "https://www.amazon.eg", Currency: "EGP"},
-	"fr": {Name: "France", BaseURL: "https://www.amazon.fr", Currency: "EUR"},
-	"de": {Name: "Germany", BaseURL: "https://www.amazon.de", Currency: "EUR"},
+	"fr": {Name: "France", BaseURL: "https://www.amazon.fr", Currency: currencyEUR},
+	"de": {Name: "Germany", BaseURL: "https://www.amazon.de", Currency: currencyEUR},
 	"in": {Name: "India", BaseURL: "https://www.amazon.in", Currency: "INR"},
 	"ie": {Name: "Ireland", BaseURL: "https://www.amazon.co.uk", Currency: "GBP"},
-	"it": {Name: "Italy", BaseURL: "https://www.amazon.it", Currency: "EUR"},
+	"it": {Name: "Italy", BaseURL: "https://www.amazon.it", Currency: currencyEUR},
 	"jp": {Name: "Japan", BaseURL: "https://www.amazon.co.jp", Currency: "JPY"},
 	"mx": {Name: "Mexico", BaseURL: "https://www.amazon.com.mx", Currency: "MXN"},
-	"nl": {Name: "Netherlands", BaseURL: "https://www.amazon.nl", Currency: "EUR"},
+	"nl": {Name: "Netherlands", BaseURL: "https://www.amazon.nl", Currency: currencyEUR},
 	"pl": {Name: "Poland", BaseURL: "https://www.amazon.pl", Currency: "PLN"},
 	"sa": {Name: "Saudi Arabia", BaseURL: "https://www.amazon.sa", Currency: "SAR"},
 	"sg": {Name: "Singapore", BaseURL: "https://www.amazon.sg", Currency: "SGD"},
-	"es": {Name: "Spain", BaseURL: "https://www.amazon.es", Currency: "EUR"},
+	"es": {Name: "Spain", BaseURL: "https://www.amazon.es", Currency: currencyEUR},
 	"se": {Name: "Sweden", BaseURL: "https://www.amazon.se", Currency: "SEK"},
 	"tr": {Name: "Turkey", BaseURL: "https://www.amazon.com.tr", Currency: "TRY"},
 	"ae": {Name: "United Arab Emirates", BaseURL: "https://www.amazon.ae", Currency: "AED"},

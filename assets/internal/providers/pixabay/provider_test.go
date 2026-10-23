@@ -17,6 +17,9 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
 
+// queryCat is the search query used by the Search tests.
+const queryCat = "cat"
+
 // lastPerPage records the per_page query param of the most recent search request, for the min-per_page
 // clamp assertion. A package-level atomic.Value since it's written from the test server's own goroutine.
 var lastPerPage atomic.Value
@@ -128,7 +131,7 @@ func TestSearchMapsAssetsAndAttribution(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2})
+	res, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2})
 	require.NoError(t, err)
 	require.Len(t, res.Assets, 2)
 
@@ -152,11 +155,11 @@ func TestSearchPaginationAdvancesThenStops(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	page1, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2})
+	page1, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2})
 	require.NoError(t, err)
 	require.Equal(t, "2", page1.NextCursor)
 
-	page2, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2, Cursor: page1.NextCursor})
+	page2, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2, Cursor: page1.NextCursor})
 	require.NoError(t, err)
 	require.Empty(t, page2.NextCursor)
 	require.Len(t, page2.Assets, 1)
@@ -168,7 +171,7 @@ func TestSearchClampsPerPageToPixabayMinimum(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	_, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 1})
+	_, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 1})
 	require.NoError(t, err)
 	require.Equal(t, "3", lastPerPage.Load())
 }

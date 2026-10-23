@@ -12,7 +12,7 @@ import (
 const setLucide = "lucide"
 
 func TestRenderLucideArrow(t *testing.T) {
-	svg, err := renderIcon("lucide", "a-arrow-down", "", 0)
+	svg, err := renderIcon(setLucide, "a-arrow-down", "", 0)
 	if err != nil {
 		t.Fatalf("renderIcon() error = %v, want nil", err)
 	}
@@ -29,7 +29,7 @@ func TestRenderLucideArrow(t *testing.T) {
 }
 
 func TestRenderColorAndSize(t *testing.T) {
-	svg, err := renderIcon("lucide", "a-arrow-down", "#ff0000", 32)
+	svg, err := renderIcon(setLucide, "a-arrow-down", "#ff0000", 32)
 	if err != nil {
 		t.Fatalf("renderIcon() error = %v, want nil", err)
 	}
@@ -42,7 +42,7 @@ func TestRenderColorAndSize(t *testing.T) {
 }
 
 func TestRenderColorEscaped(t *testing.T) {
-	svg, err := renderIcon("lucide", "a-arrow-down", `"><script>x</script>`, 0)
+	svg, err := renderIcon(setLucide, "a-arrow-down", `"><script>x</script>`, 0)
 	if err != nil {
 		t.Fatalf("renderIcon() error = %v, want nil", err)
 	}
@@ -79,29 +79,29 @@ func TestRenderPhosphorGrid(t *testing.T) {
 }
 
 func TestSearchLucideArrow(t *testing.T) {
-	results := searchIcons("arrow", assetcore.Filter{Only: []string{"lucide"}}, 10)
+	results := searchIcons("arrow", assetcore.Filter{Only: []string{setLucide}}, 10)
 	if len(results) == 0 {
 		t.Fatal("searchIcons() returned no results, want at least one")
 	}
 	for _, m := range results {
-		if m.set != "lucide" {
-			t.Errorf("searchIcons() result set = %q, want %q", m.set, "lucide")
+		if m.set != setLucide {
+			t.Errorf("searchIcons() result set = %q, want %q", m.set, setLucide)
 		}
 	}
 }
 
 func TestSearchExcludeSource(t *testing.T) {
 	// Excluding lucide must yield no lucide hits even though the query would otherwise match them.
-	results := searchIcons("arrow", assetcore.Filter{Except: []string{"lucide"}}, 200)
+	results := searchIcons("arrow", assetcore.Filter{Except: []string{setLucide}}, 200)
 	for _, m := range results {
-		if m.set == "lucide" {
+		if m.set == setLucide {
 			t.Errorf("searchIcons() with lucide excluded still returned a lucide hit: %+v", m)
 		}
 	}
 }
 
 func TestRenderNotFound(t *testing.T) {
-	if _, err := renderIcon("lucide", "definitely-not-an-icon", "", 0); !errors.Is(err, ErrNotFound) {
+	if _, err := renderIcon(setLucide, "definitely-not-an-icon", "", 0); !errors.Is(err, ErrNotFound) {
 		t.Errorf("renderIcon() unknown icon error = %v, want ErrNotFound", err)
 	}
 	if _, err := renderIcon("definitely-not-a-set", "a-arrow-down", "", 0); !errors.Is(err, ErrNotFound) {
@@ -111,7 +111,7 @@ func TestRenderNotFound(t *testing.T) {
 
 func TestSets(t *testing.T) {
 	want := []string{
-		"bootstrap-icons", "feather", "heroicons", "lucide",
+		"bootstrap-icons", "feather", "heroicons", setLucide,
 		"material-symbols", "phosphor", "simple-icons", "tabler",
 	}
 	got := loadedSetNames()
@@ -220,7 +220,7 @@ func TestSourcesReportsSetsWithLicenseAndCount(t *testing.T) {
 		byName[s.Name] = s
 	}
 
-	lucide, ok := byName["lucide"]
+	lucide, ok := byName[setLucide]
 	if !ok {
 		t.Fatal("Sources() missing lucide")
 	}
@@ -236,7 +236,7 @@ func TestSourcesReportsSetsWithLicenseAndCount(t *testing.T) {
 	if got := byName["material-symbols"].License.SPDX; got != "Apache-2.0" {
 		t.Errorf("material-symbols license = %q, want Apache-2.0", got)
 	}
-	if got := byName["feather"].License.SPDX; got != "MIT" {
+	if got := byName["feather"].License.SPDX; got != licenseMIT {
 		t.Errorf("feather license = %q, want MIT", got)
 	}
 }

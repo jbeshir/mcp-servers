@@ -14,6 +14,9 @@ import (
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/scraper"
 )
 
+// currencyGBP is the default ISO 4217 currency code for Tesco prices.
+const currencyGBP = "GBP"
+
 const baseURL = "https://www.tesco.com"
 
 // waitSelector is the CSS selector to wait for before capturing search HTML.

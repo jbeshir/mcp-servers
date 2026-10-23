@@ -18,6 +18,8 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
 
+const collectionMDI = "mdi"
+
 // testServer stands up a canned Iconify API double and returns the count of SVG requests served plus
 // the most recently requested SVG URL, for assertions on caching and query encoding.
 func testServer(t *testing.T) (svgRequests *int32, lastSVGURL *string) {
@@ -38,8 +40,8 @@ func testServer(t *testing.T) (svgRequests *int32, lastSVGURL *string) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/collections", func(w http.ResponseWriter, _ *http.Request) {
 		_ = json.NewEncoder(w).Encode(map[string]collectionInfo{
-			"mdi":    mdiLicense,
-			"lucide": lucideLicense,
+			collectionMDI: mdiLicense,
+			"lucide":      lucideLicense,
 		})
 	})
 	mux.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +55,7 @@ func testServer(t *testing.T) (svgRequests *int32, lastSVGURL *string) {
 				Total:       4,
 				Start:       0,
 				Limit:       32,
-				Collections: map[string]collectionInfo{"mdi": mdiLicense},
+				Collections: map[string]collectionInfo{collectionMDI: mdiLicense},
 			}
 		case 2:
 			resp = searchResponse{
@@ -148,11 +150,11 @@ func TestSearchHonoursSourcesFilter(t *testing.T) {
 	res, err := p.Search(ctx, assetcore.SearchOpts{
 		Query:   "a",
 		Limit:   2,
-		Sources: assetcore.Filter{Only: []string{"mdi"}},
+		Sources: assetcore.Filter{Only: []string{collectionMDI}},
 	})
 	require.NoError(t, err)
 	require.Len(t, res.Assets, 1)
-	require.Equal(t, "mdi", res.Assets[0].Source)
+	require.Equal(t, collectionMDI, res.Assets[0].Source)
 }
 
 func TestFetchEncodesColorAndCachesResult(t *testing.T) {

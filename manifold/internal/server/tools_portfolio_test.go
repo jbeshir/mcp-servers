@@ -8,6 +8,12 @@ import (
 	"github.com/jbeshir/mcp-servers/manifold/internal/client"
 )
 
+const (
+	marketIDBasic    = "abc"
+	marketIDMulti    = "multi"
+	marketIDResolved = "resolved"
+)
+
 func TestComputeBaseline_NoActivity(t *testing.T) {
 	// No bets at all — baseline should equal current probability.
 	result := computeBaselineAt(nil, 0.65, time.UnixMilli(1000), time.Hour)
@@ -106,9 +112,9 @@ func TestBaselineProbFromMarket_ZeroProbChanges(t *testing.T) {
 func TestBuildPortfolioResponse_BasicOpenPosition(t *testing.T) {
 	prob := 0.65
 	enriched := map[string]*enrichedMarket{
-		"abc": {
+		marketIDBasic: {
 			market: client.PortfolioMarket{
-				ID:          "abc",
+				ID:          marketIDBasic,
 				Question:    "Will X happen?",
 				Slug:        "will-x-happen",
 				OutcomeType: "BINARY",
@@ -117,7 +123,7 @@ func TestBuildPortfolioResponse_BasicOpenPosition(t *testing.T) {
 			},
 			positions: []client.ContractMetric{
 				{
-					ContractID:   "abc",
+					ContractID:   marketIDBasic,
 					HasYesShares: true,
 					TotalShares:  map[string]float64{outcomeYes: 100.0},
 					Profit:       20.0,
@@ -160,13 +166,13 @@ func TestBuildPortfolioResponse_BasicOpenPosition(t *testing.T) {
 
 func TestBuildPortfolioResponse_NonBinaryExcluded(t *testing.T) {
 	enriched := map[string]*enrichedMarket{
-		"multi": {
+		marketIDMulti: {
 			market: client.PortfolioMarket{
-				ID:          "multi",
+				ID:          marketIDMulti,
 				OutcomeType: "MULTIPLE_CHOICE",
 			},
 			positions: []client.ContractMetric{
-				{ContractID: "multi", HasYesShares: true, TotalShares: map[string]float64{outcomeYes: 50}},
+				{ContractID: marketIDMulti, HasYesShares: true, TotalShares: map[string]float64{outcomeYes: 50}},
 			},
 		},
 	}
@@ -185,9 +191,9 @@ func TestBuildPortfolioResponse_RecentResolved(t *testing.T) {
 	resolution := outcomeYes
 	resolvedAt := time.Now().UnixMilli() - 1000
 	enriched := map[string]*enrichedMarket{
-		"resolved": {
+		marketIDResolved: {
 			market: client.PortfolioMarket{
-				ID:             "resolved",
+				ID:             marketIDResolved,
 				Question:       "Did Y happen?",
 				Slug:           "did-y-happen",
 				OutcomeType:    "BINARY",
@@ -198,7 +204,7 @@ func TestBuildPortfolioResponse_RecentResolved(t *testing.T) {
 			},
 			positions: []client.ContractMetric{
 				{
-					ContractID:   "resolved",
+					ContractID:   marketIDResolved,
 					HasYesShares: true,
 					TotalShares:  map[string]float64{outcomeYes: 100.0},
 					Profit:       55.0,

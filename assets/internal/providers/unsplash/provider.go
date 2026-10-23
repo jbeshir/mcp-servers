@@ -23,6 +23,9 @@ import (
 // providerName is the stable registry key for the Unsplash provider.
 const providerName = "unsplash"
 
+// mimeJPEG is the Content-Type for JPEG images.
+const mimeJPEG = "image/jpeg"
+
 // baseURL is the Unsplash API root. A package-level var so tests can point it at an httptest server.
 var baseURL = "https://api.unsplash.com"
 
@@ -69,8 +72,8 @@ type photo struct {
 
 // extToContentType maps a lowercase file extension (without the leading dot) to its MIME type.
 var extToContentType = map[string]string{
-	"jpg":  "image/jpeg",
-	"jpeg": "image/jpeg",
+	"jpg":  mimeJPEG,
+	"jpeg": mimeJPEG,
 	"png":  "image/png",
 	"gif":  "image/gif",
 	"webp": "image/webp",
@@ -86,7 +89,7 @@ const (
 // contentTypeToExt maps a MIME type detected from image bytes back to the filename extension (with
 // leading dot) to label them with.
 var contentTypeToExt = map[string]string{
-	"image/jpeg": ".jpg",
+	mimeJPEG:     ".jpg",
 	"image/png":  ".png",
 	"image/gif":  ".gif",
 	"image/webp": ".webp",

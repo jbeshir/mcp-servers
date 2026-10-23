@@ -17,7 +17,7 @@ const (
 )
 
 func TestGetKnownFamilyByDisplayName(t *testing.T) {
-	f, err := getFont(knownFamily, 400, "normal")
+	f, err := getFont(knownFamily, 400, styleNormal)
 	if err != nil {
 		t.Fatalf("getFont(%q, 400, %q) returned unexpected error: %v", knownFamily, styleNormal, err)
 	}
@@ -33,7 +33,7 @@ func TestGetKnownFamilyByDisplayName(t *testing.T) {
 }
 
 func TestGetKnownFamilyBySlug(t *testing.T) {
-	f, err := getFont(knownSlug, 700, "normal")
+	f, err := getFont(knownSlug, 700, styleNormal)
 	if err != nil {
 		t.Fatalf("getFont(%q, 700, %q) returned unexpected error: %v", knownSlug, styleNormal, err)
 	}
@@ -46,7 +46,7 @@ func TestGetKnownFamilyBySlug(t *testing.T) {
 }
 
 func TestFontFace(t *testing.T) {
-	f, err := getFont(knownFamily, 400, "normal")
+	f, err := getFont(knownFamily, 400, styleNormal)
 	if err != nil {
 		t.Fatalf("getFont(%q, 400, %q) returned unexpected error: %v", knownFamily, styleNormal, err)
 	}
@@ -61,7 +61,7 @@ func TestFontFace(t *testing.T) {
 
 func TestParseFontFilename(t *testing.T) {
 	weight, style := parseFontFilename("inter-latin-700-normal.woff2")
-	if weight != 700 || style != "normal" {
+	if weight != 700 || style != styleNormal {
 		t.Errorf("parseFontFilename = (%d, %q), want (700, normal)", weight, style)
 	}
 
@@ -93,8 +93,8 @@ func TestGetNotFound(t *testing.T) {
 		weight int
 		style  string
 	}{
-		{name: "missing weight", family: knownFamily, weight: 123, style: "normal"},
-		{name: "unknown family", family: "Nope", weight: 400, style: "normal"},
+		{name: "missing weight", family: knownFamily, weight: 123, style: styleNormal},
+		{name: "unknown family", family: "Nope", weight: 400, style: styleNormal},
 		{name: "missing style", family: knownFamily, weight: 400, style: "italic"},
 	}
 

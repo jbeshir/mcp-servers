@@ -9,6 +9,8 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
+const wordTaberu = "食べる"
+
 func makeDetailsResponse(reviews []client.Resource[client.Review], included []client.Resource[client.ReviewableBaseAttributes], page, pages, count int) *client.SRSLevelDetailsResponse {
 	return &client.SRSLevelDetailsResponse{
 		Reviews: client.ReviewsWithInc{
@@ -37,7 +39,7 @@ func TestFormatSRSDetails_SlugUsedAsLookupID(t *testing.T) {
 			{Attributes: client.Review{ReviewableID: 42, Streak: 3, Accuracy: 80}},
 		},
 		[]client.Resource[client.ReviewableBaseAttributes]{
-			{Attributes: client.ReviewableBaseAttributes{ID: 42, Slug: "食べる", Title: "食べる", Meaning: "to eat"}},
+			{Attributes: client.ReviewableBaseAttributes{ID: 42, Slug: wordTaberu, Title: wordTaberu, Meaning: "to eat"}},
 		},
 		1, 1, 1,
 	)
@@ -57,7 +59,7 @@ func TestFormatSRSDetails_SlugUsedAsLookupID(t *testing.T) {
 	if len(items) != 1 {
 		t.Fatalf("items = %d, want 1", len(items))
 	}
-	if items[0].LookupID != "食べる" {
+	if items[0].LookupID != wordTaberu {
 		t.Errorf("lookup_id = %q, want 食べる (slug)", items[0].LookupID)
 	}
 	if items[0].AccuracyPct != 80 {

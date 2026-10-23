@@ -17,6 +17,9 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
 
+// queryFurniture is the search query used by the Search tests.
+const queryFurniture = "furniture"
+
 const (
 	testAPIKey = "test-api-key"
 	byID       = "5EGWBMpuXq"
@@ -125,7 +128,7 @@ func TestSearchMapsAssetsAndLicense(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "furniture", Limit: 2})
+	res, err := p.Search(ctx, assetcore.SearchOpts{Query: queryFurniture, Limit: 2})
 	require.NoError(t, err)
 	require.Len(t, res.Assets, 2)
 
@@ -162,11 +165,11 @@ func TestSearchPaginationAdvancesThenStops(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	page1, err := p.Search(ctx, assetcore.SearchOpts{Query: "furniture", Limit: 2})
+	page1, err := p.Search(ctx, assetcore.SearchOpts{Query: queryFurniture, Limit: 2})
 	require.NoError(t, err)
 	require.Equal(t, "2", page1.NextCursor)
 
-	page2, err := p.Search(ctx, assetcore.SearchOpts{Query: "furniture", Limit: 2, Cursor: page1.NextCursor})
+	page2, err := p.Search(ctx, assetcore.SearchOpts{Query: queryFurniture, Limit: 2, Cursor: page1.NextCursor})
 	require.NoError(t, err)
 	require.Empty(t, page2.NextCursor)
 	require.Len(t, page2.Assets, 1)

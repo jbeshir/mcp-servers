@@ -102,8 +102,8 @@ func TestCookiesAndWCAuthTokenSent(t *testing.T) {
 	defer srv.Close()
 
 	cookies := []*http.Cookie{
-		{Name: "session_id", Value: "abc123"},
-		{Name: "WC_AUTHENTICATION_12345", Value: "my-auth-token"},
+		{Name: "session_id", Value: "abc123", Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode},
+		{Name: "WC_AUTHENTICATION_12345", Value: "my-auth-token", Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode},
 	}
 	ds := sainsburys.NewDatasource(sainsburys.Config{BaseURL: srv.URL}, srv.Client())
 	ds.SetCookies(cookies)

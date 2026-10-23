@@ -48,7 +48,7 @@ func testBlob() assetcore.Blob {
 		Asset: assetcore.Asset{
 			ID:     "embedded-icons:lucide/camera",
 			Kind:   assetcore.KindIcon,
-			Source: "lucide",
+			Source: testIconSet,
 			Title:  "camera",
 			License: assetcore.License{
 				SPDX: "ISC",

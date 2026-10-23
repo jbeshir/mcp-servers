@@ -26,6 +26,9 @@ var ErrNotFound = errors.New("icon not found")
 // providerName is the stable registry key for the embedded icon provider.
 const providerName = "embedded-icons"
 
+// licenseMIT is the SPDX identifier shared by most vendored icon sets.
+const licenseMIT = "MIT"
+
 const (
 	dataDir      = "data"
 	jsonExt      = ".json"
@@ -37,11 +40,11 @@ const (
 // Every vendored set's SPDX identifier lives here; attribution is empty for all of them.
 var setLicenses = map[string]assetcore.License{
 	"lucide":           {SPDX: "ISC"},
-	"heroicons":        {SPDX: "MIT"},
-	"tabler":           {SPDX: "MIT"},
-	"phosphor":         {SPDX: "MIT"},
-	"feather":          {SPDX: "MIT"},
-	"bootstrap-icons":  {SPDX: "MIT"},
+	"heroicons":        {SPDX: licenseMIT},
+	"tabler":           {SPDX: licenseMIT},
+	"phosphor":         {SPDX: licenseMIT},
+	"feather":          {SPDX: licenseMIT},
+	"bootstrap-icons":  {SPDX: licenseMIT},
 	"material-symbols": {SPDX: "Apache-2.0"},
 	"simple-icons":     {SPDX: "CC0-1.0"},
 }

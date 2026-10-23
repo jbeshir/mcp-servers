@@ -16,6 +16,8 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
 
+const familyRoboto = "Roboto"
+
 const canned = "canned woff2 bytes"
 
 // newTestProvider builds a Provider wired to a fresh cache dir and a permissive rate limiter.
@@ -80,12 +82,12 @@ func TestSearchFiltersBySourcesAndClampsLimit(t *testing.T) {
 
 	res, err = p.Search(t.Context(), assetcore.SearchOpts{
 		Query:   "",
-		Sources: assetcore.Filter{Only: []string{"Roboto"}},
+		Sources: assetcore.Filter{Only: []string{familyRoboto}},
 	})
 	if err != nil {
 		t.Fatalf("Search with Sources filter: %v", err)
 	}
-	if len(res.Assets) != 1 || res.Assets[0].Title != "Roboto" {
+	if len(res.Assets) != 1 || res.Assets[0].Title != familyRoboto {
 		t.Fatalf("Search with Sources filter = %+v, want exactly [Roboto]", res.Assets)
 	}
 	if res.Assets[0].Meta[assetcore.MetaCategory] == "" {
@@ -129,7 +131,7 @@ func TestFetchDownloadsAndCaches(t *testing.T) {
 	if blob.ContentType != "font/woff2" {
 		t.Fatalf("ContentType = %q, want font/woff2", blob.ContentType)
 	}
-	if blob.Asset.Title != "Roboto" {
+	if blob.Asset.Title != familyRoboto {
 		t.Fatalf("Asset.Title = %q, want Roboto", blob.Asset.Title)
 	}
 	if blob.Asset.ID != "googlefonts:roboto" {

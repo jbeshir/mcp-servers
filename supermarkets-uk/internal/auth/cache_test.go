@@ -7,6 +7,9 @@ import (
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource"
 )
 
+// cachedTokenValue is the value of the cookie pre-saved in the store by the cache tests.
+const cachedTokenValue = "cached"
+
 func TestLoadCachedCookiesReturnsCached(t *testing.T) {
 	dir := t.TempDir()
 	store, err := NewCookieStore(dir)
@@ -15,7 +18,7 @@ func TestLoadCachedCookiesReturnsCached(t *testing.T) {
 	}
 
 	cached := []*http.Cookie{
-		{Name: "OAuth.AccessToken", Value: "cached", Domain: ".tesco.com", Path: "/"},
+		{Name: "OAuth.AccessToken", Value: cachedTokenValue, Domain: tescoDomain, Path: "/", Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode},
 	}
 	if err := store.Save(datasource.Tesco, cached); err != nil {
 		t.Fatal(err)
@@ -25,7 +28,7 @@ func TestLoadCachedCookiesReturnsCached(t *testing.T) {
 	result := LoadCachedCookies(logins, store)
 
 	cookies, ok := result[datasource.Tesco]
-	if !ok || len(cookies) != 1 || cookies[0].Value != "cached" {
+	if !ok || len(cookies) != 1 || cookies[0].Value != cachedTokenValue {
 		t.Errorf("expected cached cookie, got %v", cookies)
 	}
 }
@@ -54,7 +57,7 @@ func TestLoadCachedCookiesIgnoresUnflagged(t *testing.T) {
 
 	// Save cookies for Tesco, but don't flag it.
 	cached := []*http.Cookie{
-		{Name: "OAuth.AccessToken", Value: "cached", Domain: ".tesco.com", Path: "/"},
+		{Name: "OAuth.AccessToken", Value: cachedTokenValue, Domain: tescoDomain, Path: "/", Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode},
 	}
 	if err := store.Save(datasource.Tesco, cached); err != nil {
 		t.Fatal(err)

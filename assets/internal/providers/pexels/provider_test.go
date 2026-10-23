@@ -18,6 +18,9 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
 
+// queryCat is the search query used by the Search tests.
+const queryCat = "cat"
+
 const (
 	knownID          = 11111
 	testKey          = "test-api-key"
@@ -166,7 +169,7 @@ func TestSearchMapsAssetsAndAttribution(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2})
+	res, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2})
 	require.NoError(t, err)
 	require.Len(t, res.Assets, 2)
 
@@ -191,7 +194,7 @@ func TestSearchTitleFallsBackToPhotographerCredit(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2, Cursor: "2"})
+	res, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2, Cursor: "2"})
 	require.NoError(t, err)
 	require.Len(t, res.Assets, 1)
 	require.Equal(t, "Photo by "+photographerName, res.Assets[0].Title)
@@ -202,11 +205,11 @@ func TestSearchPaginationAdvancesThenStops(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	page1, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2})
+	page1, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2})
 	require.NoError(t, err)
 	require.Equal(t, "2", page1.NextCursor)
 
-	page2, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2, Cursor: page1.NextCursor})
+	page2, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2, Cursor: page1.NextCursor})
 	require.NoError(t, err)
 	require.Empty(t, page2.NextCursor)
 	require.Len(t, page2.Assets, 1)
@@ -217,7 +220,7 @@ func TestSearchCapsPerPageAtEighty(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 500})
+	res, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 500})
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Assets)
 	require.Equal(t, "80", c.LastPerPage())

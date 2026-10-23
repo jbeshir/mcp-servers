@@ -70,9 +70,12 @@ func handleSignIn(t *testing.T, w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:  "frontend_api_token",
-		Value: "test-token-abc123",
-		Path:  "/",
+		Name:     "frontend_api_token",
+		Value:    "test-token-abc123",
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
 	})
 	w.Header().Set("Location", "/dashboard")
 	w.WriteHeader(http.StatusFound)

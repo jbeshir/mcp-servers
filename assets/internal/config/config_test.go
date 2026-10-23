@@ -10,6 +10,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// JSON field names and values shared by the datapackage fixture.
+const (
+	keyName    = "name"
+	keyAssetID = "x_assetsdb:id"
+	keyKind    = "x_assetsdb:kind"
+	keySource  = "x_assetsdb:source"
+	keyPath    = "path"
+
+	sourcePack = "pack"
+)
+
 func writeAssetsDBFixture(t *testing.T) string {
 	t.Helper()
 	dir := t.TempDir()
@@ -17,14 +28,14 @@ func writeAssetsDBFixture(t *testing.T) string {
 	file, err := os.Create(filepath.Join(dir, "datapackage.json"))
 	require.NoError(t, err)
 	dataPackage := map[string]any{
-		"name": "fixture", "title": "Fixture", "version": "1",
+		keyName: "fixture", "title": "Fixture", "version": "1",
 		"created": "2026-07-18T00:00:00Z", "x_assetsdb:schemaVersion": 1,
-		"x_assetsdb:sources": []any{map[string]any{"name": "pack", "title": "Pack", "path": "sources/pack.zip", "licenses": []any{map[string]any{"name": "CC0-1.0"}}}},
+		"x_assetsdb:sources": []any{map[string]any{keyName: sourcePack, "title": "Pack", keyPath: "sources/pack.zip", "licenses": []any{map[string]any{keyName: "CC0-1.0"}}}},
 		"resources": []any{
-			map[string]any{"name": "model", "x_assetsdb:id": "assetsdb:pack/model.glb", "x_assetsdb:source": "pack", "x_assetsdb:kind": "model3d", "path": "model.glb"},
-			map[string]any{"name": "audio", "x_assetsdb:id": "assetsdb:pack/audio.ogg", "x_assetsdb:source": "pack", "x_assetsdb:kind": "audio", "path": "audio.ogg"},
-			map[string]any{"name": "font", "x_assetsdb:id": "assetsdb:pack/font.ttf", "x_assetsdb:source": "pack", "x_assetsdb:kind": "font", "path": "font.ttf"},
-			map[string]any{"name": "sprite", "x_assetsdb:id": "assetsdb:pack/sprite.png", "x_assetsdb:source": "pack", "x_assetsdb:kind": "sprite2d", "path": "sprite.png"},
+			map[string]any{keyName: "model", keyAssetID: "assetsdb:pack/model.glb", keySource: sourcePack, keyKind: "model3d", keyPath: "model.glb"},
+			map[string]any{keyName: "audio", keyAssetID: "assetsdb:pack/audio.ogg", keySource: sourcePack, keyKind: "audio", keyPath: "audio.ogg"},
+			map[string]any{keyName: "font", keyAssetID: "assetsdb:pack/font.ttf", keySource: sourcePack, keyKind: "font", keyPath: "font.ttf"},
+			map[string]any{keyName: "sprite", keyAssetID: "assetsdb:pack/sprite.png", keySource: sourcePack, keyKind: "sprite2d", keyPath: "sprite.png"},
 		},
 	}
 	require.NoError(t, json.NewEncoder(file).Encode(dataPackage))

@@ -17,9 +17,20 @@ import (
 
 // Composite ids exercised by the handler tests.
 const (
-	testIconID  = "embedded-icons:lucide/a-arrow-down"
-	testIconSet = "lucide"
-	testFontID  = "embedded-fonts:inter"
+	testIconID   = "embedded-icons:lucide/a-arrow-down"
+	testIconSet  = "lucide"
+	testFontID   = "embedded-fonts:inter"
+	testSpriteID = "assetsdb:tiny-pack/sprites/sheet.png#hero"
+)
+
+// Tool parameter names, datapackage keys and license ids shared by the handler tests.
+const (
+	paramQuery  = "query"
+	paramPackID = "pack_id"
+	keyName     = "name"
+	keyTitle    = "title"
+	packTiny    = "tiny-pack"
+	licenseCC0  = "CC0-1.0"
 )
 
 func TestSanitizeFilename(t *testing.T) {
@@ -48,10 +59,10 @@ func newAssetsDBTestServer(t *testing.T) (*Server, []byte, string) {
 	require.NoError(t, err)
 
 	index := map[string]any{
-		"name": "fixture", "title": "Fixture", "version": "1",
+		keyName: "fixture", keyTitle: "Fixture", "version": "1",
 		"created": "2026-07-18T00:00:00Z", "x_assetsdb:schemaVersion": 1,
-		"x_assetsdb:sources": []any{map[string]any{"name": "tiny-pack", "title": "Tiny Pack", "path": "sources/tiny-pack.zip", "licenses": []any{map[string]any{"name": "CC0-1.0", "title": "CC Zero"}}}},
-		"resources":          []any{map[string]any{"name": "hero", "title": "Hero", "x_assetsdb:id": "assetsdb:tiny-pack/sprites/sheet.png#hero", "x_assetsdb:source": "tiny-pack", "x_assetsdb:kind": "sprite2d", "path": itemPath, "mediatype": "image/png", "x_assetsdb:region": map[string]any{"x": 1, "y": 2, "width": 8, "height": 9}}},
+		"x_assetsdb:sources": []any{map[string]any{keyName: packTiny, keyTitle: "Tiny Pack", "path": "sources/tiny-pack.zip", "licenses": []any{map[string]any{keyName: licenseCC0, keyTitle: "CC Zero"}}}},
+		"resources":          []any{map[string]any{keyName: "hero", keyTitle: "Hero", "x_assetsdb:id": testSpriteID, "x_assetsdb:source": packTiny, "x_assetsdb:kind": "sprite2d", "path": itemPath, "mediatype": "image/png", "x_assetsdb:region": map[string]any{"x": 1, "y": 2, "width": 8, "height": 9}}},
 	}
 	require.NoError(t, json.NewEncoder(dataPackage).Encode(index))
 	require.NoError(t, dataPackage.Close())
@@ -246,7 +257,7 @@ func TestHandleSearchIconsHappyPath(t *testing.T) {
 	s := newTestServer(t)
 
 	res, err := s.handleSearchIcons(t.Context(), newRequest(map[string]any{
-		"query": "arrow",
+		paramQuery: "arrow",
 	}))
 	if err != nil {
 		t.Fatalf("handleSearchIcons: unexpected error: %v", err)
@@ -272,8 +283,8 @@ func TestHandleSearchIconsSourceFilter(t *testing.T) {
 	s := newTestServer(t)
 
 	res, err := s.handleSearchIcons(t.Context(), newRequest(map[string]any{
-		"query":   "arrow",
-		"sources": []any{"lucide"},
+		paramQuery: "arrow",
+		"sources":  []any{testIconSet},
 	}))
 	if err != nil {
 		t.Fatalf("handleSearchIcons: unexpected error: %v", err)
@@ -363,7 +374,7 @@ func TestHandleGetIllustration(t *testing.T) {
 	if len(m.Files) != 1 || m.Files[0].Kind != string(assetcore.KindIllustration) {
 		t.Fatalf("unexpected manifest: %+v", m)
 	}
-	if m.Files[0].License.SPDX != "CC0-1.0" {
+	if m.Files[0].License.SPDX != licenseCC0 {
 		t.Errorf("illustration license.spdx = %q, want CC0-1.0", m.Files[0].License.SPDX)
 	}
 }
@@ -380,7 +391,7 @@ func TestHandleListAssetSources(t *testing.T) {
 	}
 
 	listing := res.Content[0].(mcp.TextContent).Text
-	for _, want := range []string{"embedded-icons", "embedded-illustrations", "embedded-fonts", "lucide", "ISC"} {
+	for _, want := range []string{"embedded-icons", "embedded-illustrations", "embedded-fonts", testIconSet, "ISC"} {
 		if !strings.Contains(listing, want) {
 			t.Errorf("listing missing %q:\n%s", want, listing)
 		}
@@ -428,14 +439,14 @@ func TestHandleListAssetSourcesSourceFilter(t *testing.T) {
 	s := newTestServer(t)
 
 	res, err := s.handleListAssetSources(t.Context(), newRequest(map[string]any{
-		"sources": []any{"lucide"},
+		"sources": []any{testIconSet},
 	}))
 	if err != nil {
 		t.Fatalf("handleListAssetSources: unexpected error: %v", err)
 	}
 
 	listing := res.Content[0].(mcp.TextContent).Text
-	if !strings.Contains(listing, "lucide") {
+	if !strings.Contains(listing, testIconSet) {
 		t.Errorf("source=lucide listing missing lucide:\n%s", listing)
 	}
 	// Providers whose sources are all filtered out are omitted, so only embedded-icons should appear.
@@ -446,20 +457,20 @@ func TestHandleListAssetSourcesSourceFilter(t *testing.T) {
 
 func TestHandleSearchAndGetSpriteFromAssetsDB(t *testing.T) {
 	s, _, _ := newAssetsDBTestServer(t)
-	res, err := s.handleSearchSprites(t.Context(), newRequest(map[string]any{"query": "hero"}))
+	res, err := s.handleSearchSprites(t.Context(), newRequest(map[string]any{paramQuery: "hero"}))
 	require.NoError(t, err)
 	require.False(t, res.IsError)
 	listing := res.Content[0].(mcp.TextContent).Text
-	for _, want := range []string{"assetsdb:tiny-pack/sprites/sheet.png#hero", `pack=tiny-pack`, `pack_title="Tiny Pack"`, "region=1,2,8,9"} {
+	for _, want := range []string{testSpriteID, `pack=tiny-pack`, `pack_title="Tiny Pack"`, "region=1,2,8,9"} {
 		require.Contains(t, listing, want)
 	}
 
-	res, err = s.handleGetSprite(t.Context(), newRequest(map[string]any{"id": "assetsdb:tiny-pack/sprites/sheet.png#hero"}))
+	res, err = s.handleGetSprite(t.Context(), newRequest(map[string]any{"id": testSpriteID}))
 	require.NoError(t, err)
 	require.False(t, res.IsError)
 	m := res.StructuredContent.(fileManifest)
 	require.Len(t, m.Files, 1)
-	assertManifestFileShape(t, m.Files[0], "assetsdb:tiny-pack/sprites/sheet.png#hero", string(assetcore.KindSprite), "tiny-pack", "CC0-1.0")
+	assertManifestFileShape(t, m.Files[0], testSpriteID, string(assetcore.KindSprite), packTiny, licenseCC0)
 	got, err := os.ReadFile(m.Files[0].Path)
 	require.NoError(t, err)
 	require.Equal(t, []byte("sprite-bytes"), got)
@@ -467,13 +478,13 @@ func TestHandleSearchAndGetSpriteFromAssetsDB(t *testing.T) {
 
 func TestHandleGetPackWritesByteIdenticalInspectableZIP(t *testing.T) {
 	s, original, _ := newAssetsDBTestServer(t)
-	res, err := s.handleGetPack(t.Context(), newRequest(map[string]any{"pack_id": "tiny-pack"}))
+	res, err := s.handleGetPack(t.Context(), newRequest(map[string]any{paramPackID: packTiny}))
 	require.NoError(t, err)
 	require.False(t, res.IsError)
 	m := res.StructuredContent.(fileManifest)
 	require.Len(t, m.Files, 1)
 	require.Equal(t, "application/zip", m.Files[0].ContentType)
-	require.Equal(t, "CC0-1.0", m.Files[0].License.SPDX)
+	require.Equal(t, licenseCC0, m.Files[0].License.SPDX)
 	got, err := os.ReadFile(m.Files[0].Path)
 	require.NoError(t, err)
 	require.Equal(t, original, got)
@@ -487,7 +498,7 @@ func TestHandleGetPackErrors(t *testing.T) {
 	s, _, zipPath := newAssetsDBTestServer(t)
 	for name, args := range map[string]map[string]any{
 		"missing argument": {},
-		"unknown pack":     {"pack_id": "unknown"},
+		"unknown pack":     {paramPackID: "unknown"},
 	} {
 		t.Run(name, func(t *testing.T) {
 			res, err := s.handleGetPack(t.Context(), newRequest(args))
@@ -496,12 +507,12 @@ func TestHandleGetPackErrors(t *testing.T) {
 		})
 	}
 	require.NoError(t, os.Remove(zipPath))
-	res, err := s.handleGetPack(t.Context(), newRequest(map[string]any{"pack_id": "tiny-pack"}))
+	res, err := s.handleGetPack(t.Context(), newRequest(map[string]any{paramPackID: packTiny}))
 	require.NoError(t, err)
 	require.True(t, res.IsError)
 
 	unconfigured := NewServer(assetcore.NewRegistry(), t.TempDir(), nil)
-	res, err = unconfigured.handleGetPack(t.Context(), newRequest(map[string]any{"pack_id": "tiny-pack"}))
+	res, err = unconfigured.handleGetPack(t.Context(), newRequest(map[string]any{paramPackID: packTiny}))
 	require.NoError(t, err)
 	require.True(t, res.IsError)
 }

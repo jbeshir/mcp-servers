@@ -235,7 +235,7 @@ func resolveBasket(
 	basket := &datasource.Basket{
 		Supermarket: datasource.Tesco,
 		TotalPrice:  cb.TotalPrice,
-		Currency:    "GBP",
+		Currency:    currencyGBP,
 	}
 
 	// Resolve items from the first splitView (GHS summary).
@@ -456,7 +456,7 @@ func parseGraphQLBasket(
 	basket := &datasource.Basket{
 		Supermarket: datasource.Tesco,
 		TotalPrice:  resp.Basket.TotalPrice,
-		Currency:    "GBP",
+		Currency:    currencyGBP,
 	}
 
 	if len(resp.Basket.SplitView) > 0 {

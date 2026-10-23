@@ -16,6 +16,11 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
 
+// queryCat is the search query used by the Search tests.
+const queryCat = "cat"
+
+const licenseVersion4 = "4.0"
+
 const knownID = "11111111-1111-1111-1111-111111111111"
 
 // testServer stands up a canned Openverse API double: a search list, a single-image detail, and a raw
@@ -31,7 +36,7 @@ func testServer(t *testing.T) (imgRequests, totalRequests *int32) {
 	byResult := imageResult{
 		ID: knownID, Title: "A Photo", ForeignLandingURL: "https://example.com/photo",
 		Thumbnail: "https://example.com/thumb.jpg", Creator: "Someone",
-		License: "by", LicenseVersion: "4.0", LicenseURL: "https://creativecommons.org/licenses/by/4.0/",
+		License: "by", LicenseVersion: licenseVersion4, LicenseURL: "https://creativecommons.org/licenses/by/4.0/",
 		Attribution: "\"A Photo\" by Someone is licensed under CC BY 4.0.", Source: "flickr",
 	}
 
@@ -121,8 +126,8 @@ func TestLicenseMapping(t *testing.T) {
 		wantName        string
 		wantAttribution bool
 	}{
-		{"by", "4.0", "CC-BY-4.0", "CC BY 4.0", true},
-		{"by-nc-sa", "4.0", "CC-BY-NC-SA-4.0", "CC BY NC SA 4.0", true},
+		{"by", licenseVersion4, "CC-BY-4.0", "CC BY 4.0", true},
+		{"by-nc-sa", licenseVersion4, "CC-BY-NC-SA-4.0", "CC BY NC SA 4.0", true},
 		{"cc0", "1.0", "CC0-1.0", "CC0 1.0", false},
 		{"pdm", "1.0", "", "Public Domain Mark 1.0", false},
 	}
@@ -138,7 +143,7 @@ func TestSearchMapsAssetsAndAttribution(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2})
+	res, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2})
 	require.NoError(t, err)
 	require.Len(t, res.Assets, 2)
 
@@ -160,11 +165,11 @@ func TestSearchPaginationAdvancesThenStops(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	page1, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2})
+	page1, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2})
 	require.NoError(t, err)
 	require.Equal(t, "2", page1.NextCursor)
 
-	page2, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2, Cursor: page1.NextCursor})
+	page2, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2, Cursor: page1.NextCursor})
 	require.NoError(t, err)
 	require.Empty(t, page2.NextCursor)
 	require.Len(t, page2.Assets, 1)

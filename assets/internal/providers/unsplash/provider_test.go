@@ -17,6 +17,9 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
 
+// queryCat is the search query used by the Search tests.
+const queryCat = "cat"
+
 const (
 	knownID   = "Dwu85P9SOIk"
 	testKey   = "test-access-key"
@@ -222,7 +225,7 @@ func TestSearchMapsAssetsAndAttribution(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2})
+	res, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2})
 	require.NoError(t, err)
 	require.Len(t, res.Assets, 2)
 
@@ -246,7 +249,7 @@ func TestSearchTitleFallsBackToAltDescriptionThenID(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2, Cursor: "2"})
+	res, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2, Cursor: "2"})
 	require.NoError(t, err)
 	require.Len(t, res.Assets, 1)
 	require.Equal(t, "A Photo", res.Assets[0].Title)
@@ -257,11 +260,11 @@ func TestSearchPaginationAdvancesThenStops(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	page1, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2})
+	page1, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2})
 	require.NoError(t, err)
 	require.Equal(t, "2", page1.NextCursor)
 
-	page2, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 2, Cursor: page1.NextCursor})
+	page2, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 2, Cursor: page1.NextCursor})
 	require.NoError(t, err)
 	require.Empty(t, page2.NextCursor)
 	require.Len(t, page2.Assets, 1)
@@ -272,7 +275,7 @@ func TestSearchCapsPerPageAtThirty(t *testing.T) {
 	p := newTestProvider(t)
 	ctx := context.Background()
 
-	res, err := p.Search(ctx, assetcore.SearchOpts{Query: "cat", Limit: 500})
+	res, err := p.Search(ctx, assetcore.SearchOpts{Query: queryCat, Limit: 500})
 	require.NoError(t, err)
 	require.NotEmpty(t, res.Assets)
 	require.Equal(t, "30", c.LastPerPage())
@@ -293,7 +296,7 @@ func TestFetchColdTriggersDownloadBeforeImage(t *testing.T) {
 	require.Less(t, c.TrackOrder(), c.ImgOrder())
 
 	require.Equal(t, knownID+".jpg", blob.Filename)
-	require.Equal(t, "image/jpeg", blob.ContentType)
+	require.Equal(t, mimeJPEG, blob.ContentType)
 	require.Equal(t, jpegBytes, blob.Content)
 	require.Equal(t, creatorNm, blob.Asset.Source)
 	require.Equal(t, "Photo by Someone on Unsplash", blob.Asset.License.Attribution)

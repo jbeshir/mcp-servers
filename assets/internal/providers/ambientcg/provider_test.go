@@ -16,6 +16,13 @@ import (
 	"github.com/jbeshir/mcp-servers/assets/internal/ratelimit"
 )
 
+const (
+	categoryBricks   = "Bricks"
+	attrJPG1K        = "1K-JPG"
+	displayBricks097 = "Bricks 097"
+	assetIDBricks097 = "Bricks097"
+)
+
 const zipBytes = "canned zip bytes"
 
 // newTestProvider builds a Provider wired to a fresh cache dir and a permissive rate limiter.
@@ -136,7 +143,7 @@ func toFoundAsset(a stubAsset, base string) foundAsset {
 
 func TestSearchMapsAssetsAndPagination(t *testing.T) {
 	assets := []stubAsset{
-		{AssetID: "Bricks097", DisplayName: "Bricks 097", DisplayCategory: "Bricks", Tags: []string{"brick", "wall"}},
+		{AssetID: assetIDBricks097, DisplayName: displayBricks097, DisplayCategory: categoryBricks, Tags: []string{"brick", "wall"}},
 		{AssetID: "Metal032", DisplayName: "Metal 032", DisplayCategory: "Metal", Tags: []string{"metal"}},
 		{AssetID: "Wood012", DisplayName: "Wood 012", DisplayCategory: "Wood", Tags: []string{"wood"}},
 	}
@@ -160,10 +167,10 @@ func TestSearchMapsAssetsAndPagination(t *testing.T) {
 	if got.ID != "ambientcg:Bricks097" {
 		t.Errorf("Assets[0].ID = %q, want ambientcg:Bricks097", got.ID)
 	}
-	if got.Source != "Bricks" {
+	if got.Source != categoryBricks {
 		t.Errorf("Assets[0].Source = %q, want Bricks", got.Source)
 	}
-	if got.Title != "Bricks 097" {
+	if got.Title != displayBricks097 {
 		t.Errorf("Assets[0].Title = %q, want \"Bricks 097\"", got.Title)
 	}
 	if got.Kind != assetcore.KindTexture {
@@ -193,7 +200,7 @@ func TestSearchMapsAssetsAndPagination(t *testing.T) {
 
 func TestSearchNextCursorEmptyOnLastPage(t *testing.T) {
 	assets := []stubAsset{
-		{AssetID: "Bricks097", DisplayName: "Bricks 097", DisplayCategory: "Bricks"},
+		{AssetID: assetIDBricks097, DisplayName: displayBricks097, DisplayCategory: categoryBricks},
 	}
 
 	var zipRequests int32
@@ -214,7 +221,7 @@ func TestSearchNextCursorEmptyOnLastPage(t *testing.T) {
 
 func TestSearchMissingDisplayCategoryFallsBackToProviderName(t *testing.T) {
 	assets := []stubAsset{
-		{AssetID: "Bricks097", DisplayName: "Bricks 097"},
+		{AssetID: assetIDBricks097, DisplayName: displayBricks097},
 	}
 
 	var zipRequests int32
@@ -236,10 +243,10 @@ func TestSearchMissingDisplayCategoryFallsBackToProviderName(t *testing.T) {
 func TestFetchSelectsRequestedAttributeAndDefaults(t *testing.T) {
 	assets := []stubAsset{
 		{
-			AssetID:         "Bricks097",
-			DisplayName:     "Bricks 097",
-			DisplayCategory: "Bricks",
-			Attributes:      []string{"1K-JPG", "2K-PNG"},
+			AssetID:         assetIDBricks097,
+			DisplayName:     displayBricks097,
+			DisplayCategory: categoryBricks,
+			Attributes:      []string{attrJPG1K, "2K-PNG"},
 		},
 	}
 
@@ -251,7 +258,7 @@ func TestFetchSelectsRequestedAttributeAndDefaults(t *testing.T) {
 	p := newTestProvider(t)
 
 	// Default resolution/format (1K/JPG).
-	blob, err := p.Fetch(t.Context(), "Bricks097", assetcore.TextureFetchOpts{})
+	blob, err := p.Fetch(t.Context(), assetIDBricks097, assetcore.TextureFetchOpts{})
 	if err != nil {
 		t.Fatalf("Fetch (defaults): %v", err)
 	}
@@ -275,7 +282,7 @@ func TestFetchSelectsRequestedAttributeAndDefaults(t *testing.T) {
 	}
 
 	// Explicit resolution/format selects the other attribute.
-	blob2, err := p.Fetch(t.Context(), "Bricks097", assetcore.TextureFetchOpts{Resolution: "2K", Format: "PNG"})
+	blob2, err := p.Fetch(t.Context(), assetIDBricks097, assetcore.TextureFetchOpts{Resolution: "2K", Format: "PNG"})
 	if err != nil {
 		t.Fatalf("Fetch (2K/PNG): %v", err)
 	}
@@ -289,7 +296,7 @@ func TestFetchSelectsRequestedAttributeAndDefaults(t *testing.T) {
 
 func TestFetchCacheHitSkipsDownload(t *testing.T) {
 	assets := []stubAsset{
-		{AssetID: "Bricks097", DisplayName: "Bricks 097", DisplayCategory: "Bricks", Attributes: []string{"1K-JPG"}},
+		{AssetID: assetIDBricks097, DisplayName: displayBricks097, DisplayCategory: categoryBricks, Attributes: []string{attrJPG1K}},
 	}
 
 	var zipRequests int32
@@ -299,14 +306,14 @@ func TestFetchCacheHitSkipsDownload(t *testing.T) {
 
 	p := newTestProvider(t)
 
-	if _, err := p.Fetch(t.Context(), "Bricks097", assetcore.TextureFetchOpts{}); err != nil {
+	if _, err := p.Fetch(t.Context(), assetIDBricks097, assetcore.TextureFetchOpts{}); err != nil {
 		t.Fatalf("first Fetch: %v", err)
 	}
 	if atomic.LoadInt32(&zipRequests) != 1 {
 		t.Fatalf("zipRequests after first fetch = %d, want 1", zipRequests)
 	}
 
-	if _, err := p.Fetch(t.Context(), "Bricks097", assetcore.TextureFetchOpts{}); err != nil {
+	if _, err := p.Fetch(t.Context(), assetIDBricks097, assetcore.TextureFetchOpts{}); err != nil {
 		t.Fatalf("second Fetch: %v", err)
 	}
 	if atomic.LoadInt32(&zipRequests) != 1 {
@@ -330,7 +337,7 @@ func TestFetchUnknownAssetReturnsErrNotFound(t *testing.T) {
 
 func TestFetchMissingAttributeReturnsErrNotFound(t *testing.T) {
 	assets := []stubAsset{
-		{AssetID: "Bricks097", DisplayName: "Bricks 097", DisplayCategory: "Bricks", Attributes: []string{"1K-JPG"}},
+		{AssetID: assetIDBricks097, DisplayName: displayBricks097, DisplayCategory: categoryBricks, Attributes: []string{attrJPG1K}},
 	}
 
 	var zipRequests int32
@@ -340,7 +347,7 @@ func TestFetchMissingAttributeReturnsErrNotFound(t *testing.T) {
 
 	p := newTestProvider(t)
 
-	_, err := p.Fetch(t.Context(), "Bricks097", assetcore.TextureFetchOpts{Resolution: "4K", Format: "EXR"})
+	_, err := p.Fetch(t.Context(), assetIDBricks097, assetcore.TextureFetchOpts{Resolution: "4K", Format: "EXR"})
 	if !errors.Is(err, assetcore.ErrNotFound) {
 		t.Fatalf("Fetch(missing attribute) error = %v, want assetcore.ErrNotFound", err)
 	}

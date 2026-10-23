@@ -8,6 +8,14 @@ import (
 	"github.com/jbeshir/mcp-servers/supermarkets-uk/internal/datasource/scraper"
 )
 
+// Shared HTML attribute and tag names used by the OSP selector configs.
+const (
+	attrDataTest = "data-test"
+
+	tagDiv  = "div"
+	tagSpan = "span"
+)
+
 const morrisonsBaseURL = "https://groceries.morrisons.com"
 
 var morrisonsCfg = ospConfig{
@@ -18,25 +26,25 @@ var morrisonsCfg = ospConfig{
 	selectors: scraper.Config{
 		ID:          datasource.Morrisons,
 		BaseURL:     morrisonsBaseURL,
-		Container:   scraper.ElemSel{Tag: "div", Cls: "product-card-container"},
-		CategorySel: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "root-category-link"},
+		Container:   scraper.ElemSel{Tag: tagDiv, Cls: "product-card-container"},
+		CategorySel: scraper.ElemSel{Tag: "a", Att: attrDataTest, Val: "root-category-link"},
 		SearchSel: scraper.ProductSelectors{
-			Title:       scraper.ElemSel{Tag: "h3", Att: "data-test", Val: "fop-title"},
-			Link:        scraper.ElemSel{Tag: "a", Att: "data-test", Val: "fop-product-link"},
-			Price:       scraper.ElemSel{Tag: "span", Att: "data-test", Val: "fop-price"},
-			Unit:        scraper.ElemSel{Tag: "span", Att: "data-test", Val: "fop-price-per-unit"},
-			Promo:       scraper.ElemSel{Tag: "span", Att: "data-test", Val: "fop-offer-text"},
-			Image:       scraper.ElemSel{Tag: "img", Att: "data-test", Val: "fop-image"},
-			Weight:      scraper.ElemSel{Tag: "div", Att: "data-test", Val: "fop-size"},
-			Unavailable: scraper.ElemSel{Tag: "span", Att: "data-test", Val: "product-card-out-of-stock-badge"},
+			Title:       scraper.ElemSel{Tag: "h3", Att: attrDataTest, Val: "fop-title"},
+			Link:        scraper.ElemSel{Tag: "a", Att: attrDataTest, Val: "fop-product-link"},
+			Price:       scraper.ElemSel{Tag: tagSpan, Att: attrDataTest, Val: "fop-price"},
+			Unit:        scraper.ElemSel{Tag: tagSpan, Att: attrDataTest, Val: "fop-price-per-unit"},
+			Promo:       scraper.ElemSel{Tag: tagSpan, Att: attrDataTest, Val: "fop-offer-text"},
+			Image:       scraper.ElemSel{Tag: "img", Att: attrDataTest, Val: "fop-image"},
+			Weight:      scraper.ElemSel{Tag: tagDiv, Att: attrDataTest, Val: "fop-size"},
+			Unavailable: scraper.ElemSel{Tag: tagSpan, Att: attrDataTest, Val: "product-card-out-of-stock-badge"},
 		},
 		ProductSel: scraper.ProductSelectors{
 			Title: scraper.ElemSel{Tag: "h1"},
-			Price: scraper.ElemSel{Tag: "div", Att: "data-test", Val: "price-container"},
-			Promo: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "offer-card-promotion"},
+			Price: scraper.ElemSel{Tag: tagDiv, Att: attrDataTest, Val: "price-container"},
+			Promo: scraper.ElemSel{Tag: "a", Att: attrDataTest, Val: "offer-card-promotion"},
 		},
 	},
-	sessionCheckQuery: scraper.ElemSel{Tag: "a", Att: "data-test", Val: "logout-button"},
+	sessionCheckQuery: scraper.ElemSel{Tag: "a", Att: attrDataTest, Val: "logout-button"},
 	nutritionTableSel: scraper.ElemSel{Tag: "table", Cls: "nutrition"},
 }
 
