@@ -218,14 +218,17 @@ func extractCookies(
 			c.Domain != strings.TrimPrefix(cfg.Domain, ".") {
 			continue
 		}
+		// Requests only send name/value, so the attribute flags are fixed to
+		// secure defaults rather than copied from the browser.
 		cookies = append(cookies, &http.Cookie{
 			Name:     c.Name,
 			Value:    sanitizeCookieValue(c.Value),
 			Domain:   c.Domain,
 			Path:     c.Path,
 			Expires:  time.Unix(int64(c.Expires), 0),
-			Secure:   c.Secure,
-			HttpOnly: c.HTTPOnly,
+			Secure:   true,
+			HttpOnly: true,
+			SameSite: http.SameSiteLaxMode,
 		})
 	}
 

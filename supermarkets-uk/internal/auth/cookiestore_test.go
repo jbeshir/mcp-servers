@@ -132,7 +132,9 @@ func assertLaxSecureFlags(t *testing.T, c *http.Cookie) {
 	}
 }
 
-func TestCookieStoreLoadPreservesUnsetFlags(t *testing.T) {
+// TestCookieStoreLoadAppliesSecureDefaults checks that Load forces Secure, HttpOnly and
+// SameSite=Lax even when the stored cookie was saved without those flags.
+func TestCookieStoreLoadAppliesSecureDefaults(t *testing.T) {
 	dir := t.TempDir()
 	store, err := NewCookieStore(dir)
 	if err != nil {
@@ -156,8 +158,5 @@ func TestCookieStoreLoadPreservesUnsetFlags(t *testing.T) {
 	if len(loaded) != 1 {
 		t.Fatalf("expected 1 cookie, got %d", len(loaded))
 	}
-	c := loaded[0]
-	if c.Secure || c.HttpOnly || c.SameSite != 0 {
-		t.Errorf("cookie flags: Secure=%v HttpOnly=%v SameSite=%v, want all unset", c.Secure, c.HttpOnly, c.SameSite)
-	}
+	assertLaxSecureFlags(t, loaded[0])
 }

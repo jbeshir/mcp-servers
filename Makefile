@@ -22,24 +22,24 @@ lint:
 
 .PHONY: test-short
 test-short:
-	@for mod in $(MODULES); do \
+	@status=0; for mod in $(MODULES); do \
 		echo "==> Testing $$mod"; \
-		(cd $$mod && go test -v -short ./...); \
-	done
+		(cd $$mod && go test -v -short ./...) || status=1; \
+	done; exit $$status
 
 .PHONY: test
 test:
-	@for mod in $(MODULES); do \
+	@status=0; for mod in $(MODULES); do \
 		echo "==> Testing $$mod"; \
-		(cd $$mod && go test -v ./...); \
-	done
+		(cd $$mod && go test -v ./...) || status=1; \
+	done; exit $$status
 
 .PHONY: fmt
 fmt:
-	@for mod in $(MODULES); do \
+	@status=0; for mod in $(MODULES); do \
 		echo "==> Formatting $$mod"; \
-		(cd $$mod && go fmt ./...); \
-	done
+		(cd $$mod && go fmt ./...) || status=1; \
+	done; exit $$status
 	goimports -w .
 
 # ── Mocks ────────────────────────────────────────────────────

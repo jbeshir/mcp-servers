@@ -12,6 +12,8 @@ import (
 )
 
 // SerializedCookie is a JSON-friendly representation of an http.Cookie.
+// Load ignores the stored Secure, HttpOnly and SameSite fields and always
+// applies Secure, HttpOnly and SameSite=Lax.
 type SerializedCookie struct {
 	Name     string    `json:"name"`
 	Value    string    `json:"value"`
@@ -55,7 +57,8 @@ func (s *CookieStore) path(id datasource.SupermarketID) string {
 }
 
 // Load reads cookies for the given supermarket from disk.
-// Returns nil, nil if no cookie file exists.
+// Returns nil, nil if no cookie file exists. Loaded cookies always have
+// Secure, HttpOnly and SameSite=Lax set, whatever the file stores.
 func (s *CookieStore) Load(id datasource.SupermarketID) ([]*http.Cookie, error) {
 	data, err := os.ReadFile(s.path(id))
 	if os.IsNotExist(err) {
@@ -78,9 +81,9 @@ func (s *CookieStore) Load(id datasource.SupermarketID) ([]*http.Cookie, error) 
 			Domain:   sc.Domain,
 			Path:     sc.Path,
 			Expires:  sc.Expires,
-			Secure:   sc.Secure,
-			HttpOnly: sc.HttpOnly,
-			SameSite: http.SameSite(sc.SameSite),
+			Secure:   true,
+			HttpOnly: true,
+			SameSite: http.SameSiteLaxMode,
 		}
 	}
 	return cookies, nil
